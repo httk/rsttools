@@ -144,6 +144,13 @@ class Parser:
         #    sources_dir = os.path.abspath(os.path.dirname(__file__)+'/reveal')
         #    import shutil
         #    shutil.copytree(sources_dir, curr_dir+'/reveal')
+
+        # Copy the rst2reveal.css
+        if not os.path.exists(curr_dir+'/rst2reveal.css'):
+            source_file = os.path.abspath(os.path.dirname(__file__)+'/reveal/css/rst2reveal.css')
+            import shutil
+            shutil.copyfile(source_file, curr_dir+'/rst2reveal.css')
+
         # Generate the Pygments CSS file
         self.is_pygments = False
         if not self.pygments_style == '':
@@ -289,7 +296,7 @@ class Parser:
 		        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no">
 		        <link rel="stylesheet" href="%(reveal_root)s/css/reveal.css">
 		        %(pygments)s
-		        <link rel="stylesheet" href="reveal/css/rst2reveal.css">
+		        <link rel="stylesheet" href="rst2reveal.css">
 		        <!--link rel="stylesheet" href="%(reveal_root)s/css/theme/default.css" id="theme"-->
 		        <link rel="stylesheet" href="%(reveal_root)s/css/theme/%(theme)s.css" id="theme">
 		        <link rel="stylesheet" href="%(reveal_root)s/css/print/pdf.css" type="text/css" media="print"> 
