@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, sys
+import os, sys, codecs
 import argparse
 import rst2reveal 
 
@@ -70,7 +70,7 @@ if input_file.split('.')[-1] in ['conf', 'cfg', 'ini']:
         import configparser as ConfigParser
         
     parser = ConfigParser.RawConfigParser()
-    parser.read(input_file)
+    parser.readfp(codecs.open(input_file, "r", "utf8"))
     # input file name
     filename= parser.get('rst2reveal', 'input_file')
     # theme
@@ -148,6 +148,17 @@ if input_file.split('.')[-1] in ['conf', 'cfg', 'ini']:
         footer_template = parser.get('footer', 'template')
     except:
         footer_template = ''
+    # init_html
+    try:
+        init_html = parser.get('init_html', 'template')
+    except:
+        init_html = False
+    # reveal_root
+    try:
+        reveal_root = parser.get('rst2reveal', 'reveal_root')
+    except:
+        reveal_root = False        
+        
 else:
     # input file name
     filename = args.input_file
@@ -280,7 +291,9 @@ parser = rst2reveal.Parser(     input_file=filename,
                                 page_number = numbering,
                                 controls = controls,
                                 firstslide_template = firstslide_template,
-                                footer_template = footer_template )
+                                footer_template = footer_template,
+                                init_html = init_html,
+                                reveal_root = reveal_root)
                                 
 parser.create_slides()
 print('The output is in', parser.output_file)

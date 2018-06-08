@@ -1,0 +1,5 @@
+build
+dist
+*.pyc
+*~
+rst2reveal.egg-info

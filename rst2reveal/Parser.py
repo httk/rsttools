@@ -4,7 +4,7 @@ try:
 except:
     pass
 
-import os, sys
+import os, sys, codecs
 import docutils.core
 
 from .RevealTranslator import RST2RevealTranslator, RST2RevealWriter
@@ -23,7 +23,7 @@ class Parser:
     def __init__(self, input_file, output_file='', theme='default', transition = 'default', stylesheet='', 
                  mathjax_path='', pygments_style='', vertical_center=False, 
                  horizontal_center=False, title_center=False, footer=False, page_number=False, 
-                 controls=False, firstslide_template='', footer_template=''):
+                 controls=False, firstslide_template='', footer_template='', init_html=False, reveal_root='reveal'):
         """ Constructor of the Parser class.
         
         ``create_slides()`` must then be called to actually produce the presentation.
@@ -114,18 +114,23 @@ class Parser:
         
         # Temnplate for the footer
         self.footer_template = footer_template
-        
+
+        # Initalization html for reveal.js
+        self.init_html = init_html
+
+        # Root path to reaveal
+        self.reveal_root = reveal_root
 
     def create_slides(self):
         """Creates the HTML5 presentation based on the arguments given to the constructor."""
     
         # Copy the reveal library in the current directory
-        self._copy_reveal()
+        #self._copy_reveal()
         
         # Create the writer and retrieve the parts
         self.html_writer = RST2RevealWriter()
         self.html_writer.translator_class = RST2RevealTranslator
-        with open(self.input_file, 'r') as infile:
+        with codecs.open(self.input_file, 'r', 'utf8') as infile:
             self.parts = docutils.core.publish_parts(source=infile.read(), writer=self.html_writer)
 
         # Produce the html file
@@ -154,8 +159,8 @@ class Parser:
             import subprocess, shutil
             os.system("pygmentize -S "+self.pygments_style+" -f html -O bg=light > reveal/css/pygments.css")      
             # Fix the bug where the literal color goes to math blocks...
-            with open('reveal/css/pygments.css', 'r') as infile:
-                with open('reveal/css/pygments.css.tmp', 'w') as outfile:
+            with codecs.open('reveal/css/pygments.css', 'r', 'utf8') as infile:
+                with codecs.open('reveal/css/pygments.css.tmp', 'w', 'utf8') as outfile:
                     for aline in infile:
                         outfile.write('.highlight '+aline)
             shutil.move('reveal/css/pygments.css.tmp', 'reveal/css/pygments.css')
@@ -173,7 +178,7 @@ class Parser:
         document_content = header + body + footer
         
 
-        with open(self.output_file, 'w') as wfile:
+        with codecs.open(self.output_file, 'w', 'utf8') as wfile:
             wfile.write(document_content)
         
     def _generate_body(self):
@@ -194,6 +199,7 @@ class Parser:
     def _analyse_metainfo(self):
         
         def clean(text):
+
             import re
             if len(re.findall(r'<paragraph>', text)) > 0:
                 text = re.findall(r'<paragraph>(.+)</paragraph>', text)[0]
@@ -206,7 +212,7 @@ class Parser:
             return text
         
         self.meta_info ={'author': ''}
-        
+
         texts=self.parts['metadata'].split('\n')
         for t in texts:
             if not t == '':
@@ -246,18 +252,17 @@ class Parser:
             
         if self.firstslide_template == "":
              self.firstslide_template = """
+    <section class="titleslide">
     <h1>%(title)s</h1>
     <h3>%(subtitle)s</h3>
     <br>
     <p><a href="mailto:%(email)s">%(author)s</a> %(is_institution)s %(institution)s</p>
     <p><small>%(email)s</small></p>
     <p>%(date)s</p>
+    </section>
 """ 
-         
-        self.titleslide="""
-<section class="titleslide">""" + self.firstslide_template % self.meta_info + """
-</section>
-"""
+
+        self.titleslide=self.firstslide_template % self.meta_info
         if self.footer_template=="":
             self.footer_template = """<b>%(title)s %(is_subtitle)s %(subtitle)s.</b> %(author)s%(is_institution)s %(institution)s. %(date)s"""
         
@@ -282,12 +287,12 @@ class Parser:
 		        <meta name="apple-mobile-web-app-capable" content="yes" />
 		        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 		        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no">
-		        <link rel="stylesheet" href="reveal/css/reveal.min.css">
+		        <link rel="stylesheet" href="%(reveal_root)s/css/reveal.css">
 		        %(pygments)s
 		        <link rel="stylesheet" href="reveal/css/rst2reveal.css">
-		        <link rel="stylesheet" href="reveal/css/theme/default.css" id="theme">
-		        <link rel="stylesheet" href="reveal/css/theme/%(theme)s.css" id="theme">
-		        <link rel="stylesheet" href="reveal/css/print/pdf.css" type="text/css" media="print"> 
+		        <!--link rel="stylesheet" href="%(reveal_root)s/css/theme/default.css" id="theme"-->
+		        <link rel="stylesheet" href="%(reveal_root)s/css/theme/%(theme)s.css" id="theme">
+		        <link rel="stylesheet" href="%(reveal_root)s/css/print/pdf.css" type="text/css" media="print"> 
 		        <script type="text/javascript" src="%(mathjax_path)s?config=TeX-AMS-MML_HTMLorMML"></script>
 		        <!-- Extra styles -->
                 <style>
@@ -300,12 +305,13 @@ class Parser:
                 </style>
                 %(custom_stylesheet)s
 		        <!--[if lt IE 9]>
-		        <script src="reveal/lib/js/html5shiv.js"></script>
+		        <script src="%(reveal_root)s/lib/js/html5shiv.js"></script>
 		        <![endif]-->
 	        </head>
         """%{'title': self.title,
              'meta' : self.parts['meta'],
              'theme': self.theme,
+             'reveal_root' : self.reveal_root,
              'pygments': '<link rel="stylesheet" href="reveal/css/pygments.css">' if self.is_pygments else '',
              'mathjax_path': self.mathjax_path,
              'horizontal_center': 'center' if self.horizontal_center else 'left',
@@ -338,10 +344,13 @@ class Parser:
                     </script>"""
         else:
             script_page_number = ""
-     
-        footer="""
-		        <script src="reveal/lib/js/head.min.js"></script>
-		        <script src="reveal/js/reveal.min.js"></script>
+
+        if self.init_html:
+            footer = self.init_html
+        else:
+            footer="""
+		        <script src="%(reveal_root)s/lib/js/head.min.js"></script>
+		        <script src="%(reveal_root)s/js/reveal.min.js"></script>
 		        <script>
 			        // Full list of configuration options available here:
 			        // https://github.com/hakimel/reveal.js#configuration
@@ -360,16 +369,21 @@ class Parser:
 				        rollingLinks: false,
 				        transition: '%(transition)s'
 			        });
-		        </script>
+		        </script>"""
+
+        footer+="""            
             %(script_page_number)s
 		    
 	        %(footer)s
 	        </body>
-        </html>""" % {'transition' : self.transition,
-                        'footer' : self.footer_html,
-                        'script_page_number' : script_page_number,
-                        'vertical_center' : 'true' if self.vertical_center else 'false',
-                        'controls': 'true' if self.controls else 'false'}
+        </html>"""
+
+        footer = footer % {'transition' : self.transition,
+                           'footer' : self.footer_html,
+                           'reveal_root' : self.reveal_root,
+                           'script_page_number' : script_page_number,
+                           'vertical_center' : 'true' if self.vertical_center else 'false',
+                           'controls': 'true' if self.controls else 'false'}
 
         return footer
             

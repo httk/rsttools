@@ -20,6 +20,15 @@
     width: 47%;
     float: right;
 }
+.columns div.main{
+    width: 61.8%;
+    float: left;
+}
+.columns div.side{
+    width: 38.2%;
+    float: right;
+}
+
 
 /*********************************************
  * IMAGES

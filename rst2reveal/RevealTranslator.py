@@ -6,8 +6,7 @@ import re
 import docutils
 from docutils import nodes
 from docutils.writers.html4css1 import HTMLTranslator, Writer
-
-
+import HTMLParser
 
 class RST2RevealWriter(Writer):
     """ Writer to be used with the RevealTranslator class."""
@@ -32,7 +31,8 @@ class RST2RevealTranslator(HTMLTranslator):
         self.metadata = []
         self.subsection_previous =False
         self.inline_lists = False
-    
+        self.section_params = ''
+        self.in_section_title = False
         
     def visit_header(self, node):
         self.context.append(len(self.body))
@@ -63,18 +63,39 @@ class RST2RevealTranslator(HTMLTranslator):
             self.body.append(' '*12 + 
                   self.starttag(node, 'caption', ''))
             close_tag = ' '*12 + '</caption>\n'
-        elif isinstance(node.parent, nodes.document):
+        elif isinstance(node.parent, nodes.document):            
             self.body.append(' '*8 + self.starttag(node, 'h2'))
             close_tag = '</h2>\n'
             self.in_document_title = len(self.body)
         else:
             assert isinstance(node.parent, nodes.section)
-            self.body.append(' '*8 + self.starttag(node, 'h2', ''))
+            #self.context.append(' '*8 + self.starttag(node, 'h2', ''))
+            self.in_section_title = len(self.body)
             close_tag = '</h2>\n'
         self.context.append(close_tag)
 
     def depart_title(self, node):
-        self.body.append(self.context.pop())
+        closing = self.context.pop()
+        if self.in_section_title:
+            section_title_full = self.body.pop()
+            try:
+                title = section_title_full[:section_title_full.index('{')].strip()
+                section_params = section_title_full[section_title_full.index('{')+1:section_title_full.rindex('}')]
+                section_params = HTMLParser.HTMLParser().unescape(section_params)
+                section_params, _part, title_params = section_params.partition(';')
+                if section_params != '':
+                    section_params = ' '+section_params
+                if title_params != '':
+                    title_params = ' '+title_params
+            except ValueError:
+                title = section_title_full
+                section_params = ''
+                title_params = ''
+            self.body.append('    <section'+section_params+'>\n')
+            self.body.append(' '*8 + '<h2'+title_params+'>')
+            self.body.append(title)
+            self.in_section_title = 0
+        self.body.append(closing)
         if self.in_document_title:
             self.title = self.body[self.in_document_title:-1]
             self.in_document_title = 0
@@ -82,14 +103,13 @@ class RST2RevealTranslator(HTMLTranslator):
             self.html_title.extend(self.body)
             del self.body[:]
             
-            
     def visit_section(self, node):
         self.section_level += 1
         if not self.section_level == 2:
             self.body.append('<section>\n')
         else:
             self.body.append('    </section>\n')
-        self.body.append('    <section>\n')
+        #self.context.append('    <section'+self.section_params+'>\n')
 
     def depart_section(self, node):
         self.section_level -= 1
@@ -113,7 +133,7 @@ class RST2RevealTranslator(HTMLTranslator):
         self.body = []
 
     def visit_docinfo_item(self, node, name, meta=True):
-        self.metadata.append(name + '=' + str(node)+'\n')
+        self.metadata.append(name + '=' + unicode(node)+'\n')
         self.body.append(self.starttag(node, 'tr', ''))
         if len(node):
             if isinstance(node[0], nodes.Element):
@@ -131,8 +151,8 @@ class RST2RevealTranslator(HTMLTranslator):
         pass
 
     def visit_field_body(self, node):
-        field_names = re.findall(r'<field_name>(.+)</field_name>', str(node.parent[0]))
-        field_values = re.findall(r'<field_body>(.+)</field_body>', str(node.parent[1]))
+        field_names = re.findall(r'<field_name>(.+)</field_name>', unicode(node.parent[0]))
+        field_values = re.findall(r'<field_body>(.+)</field_body>', unicode(node.parent[1]))
         if len(field_names) > 0 and len(field_values) > 0:
             name = field_names[0]
             value = field_values[0]
@@ -180,9 +200,9 @@ class RST2RevealTranslator(HTMLTranslator):
                     self.settings.record_dependencies.add(
                         imagepath.replace('\\', '/'))
                     if 'width' not in atts:
-                        atts['width'] = str(img.size[0])
+                        atts['width'] = unicode(img.size[0])
                     if 'height' not in atts:
-                        atts['height'] = str(img.size[1])
+                        atts['height'] = unicode(img.size[1])
                     del img
             for att_name in 'width', 'height':
                 if att_name in atts:
