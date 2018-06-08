@@ -125,7 +125,7 @@ class Parser:
         """Creates the HTML5 presentation based on the arguments given to the constructor."""
     
         # Copy the reveal library in the current directory
-        #self._copy_reveal()
+        self._copy_reveal()
         
         # Create the writer and retrieve the parts
         self.html_writer = RST2RevealWriter()
@@ -140,10 +140,10 @@ class Parser:
         curr_dir = os.path.dirname(os.path.realpath(self.output_file))
         cwd = os.getcwd()
         # Copy the reveal subfolder
-        if not os.path.isdir(curr_dir+'/reveal'):
-            sources_dir = os.path.abspath(os.path.dirname(__file__)+'/reveal')
-            import shutil
-            shutil.copytree(sources_dir, curr_dir+'/reveal')
+        #if not os.path.isdir(curr_dir+'/reveal'):
+        #    sources_dir = os.path.abspath(os.path.dirname(__file__)+'/reveal')
+        #    import shutil
+        #    shutil.copytree(sources_dir, curr_dir+'/reveal')
         # Generate the Pygments CSS file
         self.is_pygments = False
         if not self.pygments_style == '':
@@ -157,13 +157,13 @@ class Parser:
                 return
             os.chdir(curr_dir) 
             import subprocess, shutil
-            os.system("pygmentize -S "+self.pygments_style+" -f html -O bg=light > reveal/css/pygments.css")      
+            os.system("pygmentize -S "+self.pygments_style+" -f html -O bg=light > pygments.css")      
             # Fix the bug where the literal color goes to math blocks...
-            with codecs.open('reveal/css/pygments.css', 'r', 'utf8') as infile:
-                with codecs.open('reveal/css/pygments.css.tmp', 'w', 'utf8') as outfile:
+            with codecs.open('pygments.css', 'r', 'utf8') as infile:
+                with codecs.open('pygments.css.tmp', 'w', 'utf8') as outfile:
                     for aline in infile:
                         outfile.write('.highlight '+aline)
-            shutil.move('reveal/css/pygments.css.tmp', 'reveal/css/pygments.css')
+            shutil.move('pygments.css.tmp', 'pygments.css')
             os.chdir(cwd)        
             
     def _produce_output(self):
@@ -312,7 +312,7 @@ class Parser:
              'meta' : self.parts['meta'],
              'theme': self.theme,
              'reveal_root' : self.reveal_root,
-             'pygments': '<link rel="stylesheet" href="reveal/css/pygments.css">' if self.is_pygments else '',
+             'pygments': '<link rel="stylesheet" href="pygments.css">' if self.is_pygments else '',
              'mathjax_path': self.mathjax_path,
              'horizontal_center': 'center' if self.horizontal_center else 'left',
              'title_center': 'center' if self.title_center else 'left',
