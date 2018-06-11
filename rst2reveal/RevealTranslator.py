@@ -6,7 +6,8 @@ import re
 import docutils
 from docutils import nodes
 from docutils.writers.html4css1 import HTMLTranslator, Writer
-import HTMLParser
+
+
 
 class RST2RevealWriter(Writer):
     """ Writer to be used with the RevealTranslator class."""
@@ -31,8 +32,10 @@ class RST2RevealTranslator(HTMLTranslator):
         self.metadata = []
         self.subsection_previous =False
         self.inline_lists = False
-        self.section_params = ''
-        self.in_section_title = False
+        self.slide_tile_level = 0 
+        self.in_slide_title = False
+        self.hide_next_title = True
+        self.delayed_header_attributes = {}
         
     def visit_header(self, node):
         self.context.append(len(self.body))
@@ -63,62 +66,57 @@ class RST2RevealTranslator(HTMLTranslator):
             self.body.append(' '*12 + 
                   self.starttag(node, 'caption', ''))
             close_tag = ' '*12 + '</caption>\n'
-        elif isinstance(node.parent, nodes.document):            
+        elif isinstance(node.parent, nodes.document):
             self.body.append(' '*8 + self.starttag(node, 'h2'))
             close_tag = '</h2>\n'
             self.in_document_title = len(self.body)
         else:
+            self.slide_tile_level += 1
+            self.in_slide_title = True
             assert isinstance(node.parent, nodes.section)
-            #self.context.append(' '*8 + self.starttag(node, 'h2', ''))
-            self.in_section_title = len(self.body)
+            if self.hide_next_title:
+                self.body.append(' '*8 + self.starttag(node, 'h2', '', style='display:none', **self.delayed_header_attributes))
+            else:
+                self.body.append(' '*8 + self.starttag(node, 'h2', '', **self.delayed_header_attributes))
+            self.delayed_header_attributes = {}
             close_tag = '</h2>\n'
         self.context.append(close_tag)
 
     def depart_title(self, node):
-        closing = self.context.pop()
-        if self.in_section_title:
-            section_title_full = self.body.pop()
-            try:
-                title = section_title_full[:section_title_full.index('{')].strip()
-                section_params = section_title_full[section_title_full.index('{')+1:section_title_full.rindex('}')]
-                section_params = HTMLParser.HTMLParser().unescape(section_params)
-                section_params, _part, title_params = section_params.partition(';')
-                if section_params != '':
-                    section_params = ' '+section_params
-                if title_params != '':
-                    title_params = ' '+title_params
-            except ValueError:
-                title = section_title_full
-                section_params = ''
-                title_params = ''
-            self.body.append('    <section'+section_params+'>\n')
-            self.body.append(' '*8 + '<h2'+title_params+'>')
-            self.body.append(title)
-            self.in_section_title = 0
-        self.body.append(closing)
+        self.body.append(self.context.pop())
         if self.in_document_title:
             self.title = self.body[self.in_document_title:-1]
             self.in_document_title = 0
             self.body_pre_docinfo.extend(self.body)
             self.html_title.extend(self.body)
             del self.body[:]
+        if self.in_slide_title:
+            self.in_slide_title = False
+            self.slide_title_level = 0
             
     def visit_section(self, node):
         self.section_level += 1
-        if not self.section_level == 2:
-            self.body.append('<section>\n')
+        if self.section_level == 2:
+            if not self.hide_next_title:
+                self.body.append('    </section>\n')
+            self.delayed_header_attributes = node.get('attributes',{})
+            node.attributes['attributes']=node.get('slide-attributes',{})
+            self.body.append('    ' + self.starttag(node, 'section','\n',check="me"))
+            self.hide_next_title = False
         else:
-            self.body.append('    </section>\n')
-        #self.context.append('    <section'+self.section_params+'>\n')
-
+            self.body.append('<section>\n')
+            self.hide_next_title = True
+            
     def depart_section(self, node):
         self.section_level -= 1
         if not self.section_level == 1:
             self.subsection_previous =False
-            self.body.append('    </section>\n')
+            if not self.hide_next_title:
+                self.body.append('    </section>\n')
         else:
             self.subsection_previous =True
         if not self.subsection_previous:
+            self.hide_next_title = True
             self.body.append('</section>\n\n')
         self.inline_lists = False
         
@@ -316,3 +314,65 @@ class RST2RevealTranslator(HTMLTranslator):
                 self.inline_lists = True
         HTMLTranslator.visit_sidebar(self, node)
 
+    def starttag(self, node, tagname, suffix='\n', empty=False, **attributes):
+        """
+        Construct and return a start tag given a node (id & class attributes
+        are extracted), tag name, and optional attributes.
+        """
+        tagname = tagname.lower()
+        prefix = []
+        atts = node.get('attributes',{})
+        ids = []
+        for (name, value) in attributes.items():
+            atts[name.lower()] = value            
+        classes = []
+        languages = []
+        # unify class arguments and move language specification
+        for cls in node.get('classes', []) + atts.pop('class', '').split() :
+            if cls.startswith('language-'):
+                languages.append(cls[9:])
+            elif cls.strip() and cls not in classes:
+                classes.append(cls)
+        if languages:
+            # attribute name is 'lang' in XHTML 1.0 but 'xml:lang' in 1.1
+            atts[self.lang_attribute] = languages[0]
+        if classes:
+            atts['class'] = ' '.join(classes)
+        assert 'id' not in atts
+        ids.extend(node.get('ids', []))
+        if 'ids' in atts:
+            ids.extend(atts['ids'])
+            del atts['ids']
+        if ids:
+            atts['id'] = ids[0]
+            for id in ids[1:]:
+                # Add empty "span" elements for additional IDs.  Note
+                # that we cannot use empty "a" elements because there
+                # may be targets inside of references, but nested "a"
+                # elements aren't allowed in XHTML (even if they do
+                # not all have a "href" attribute).
+                if empty:
+                    # Empty tag.  Insert target right in front of element.
+                    prefix.append('<span id="%s"></span>' % id)
+                else:
+                    # Non-empty tag.  Place the auxiliary <span> tag
+                    # *inside* the element, as the first child.
+                    suffix += '<span id="%s"></span>' % id
+        attlist = atts.items()
+        attlist.sort()
+        parts = [tagname]
+        for name, value in attlist:
+            if value is None:
+                parts.append('%s' % (name.lower()))
+            elif isinstance(value, list):
+                values = [unicode(v) for v in value]
+                parts.append('%s="%s"' % (name.lower(),
+                                          self.attval(' '.join(values))))
+            else:
+                parts.append('%s="%s"' % (name.lower(),
+                                          self.attval(unicode(value))))
+        if empty:
+            infix = ' /'
+        else:
+            infix = ''
+        return ''.join(prefix) + '<%s%s>' % (' '.join(parts), infix) + suffix
