@@ -387,6 +387,7 @@ class Parser:
 
         footer = footer % {'transition' : self.transition,
                            'footer' : self.footer_html,
+                           'mathjax_path': self.mathjax_path,
                            'reveal_root' : self.reveal_root,
                            'script_page_number' : script_page_number,
                            'vertical_center' : 'true' if self.vertical_center else 'false',
