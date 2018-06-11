@@ -24,7 +24,11 @@ The intent of this forked version is to introduce changes that makes it easier t
   a python dictionary. Use, e.g., {'data-background-video':None} to set a boolean attribute.
 
 * Two more column types are added: 'main' and 'side' that provide a golden ratio division between a broader column and a side column.
-    
+
+* Third level slide headlines are not shown in the actual presentation, but are meant to just be used as short 'category' names in which slides are grouped.
+  This works very well with plugins that let you navigate over categories.
+  Headlines to be shown on the actual slides needs to be fourth level. So if you want the same title, just repeat it on the fourth level.
+  
 Other reveal.js features should be accessible via raw::html directives.
 	
 Unlike the original **rst2reveal**, this fork does not include Reveal.js.
