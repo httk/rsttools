@@ -54,7 +54,7 @@ def video_directive(name, args, options, content, lineno,
     if 'align' in args.keys():
         string_vars['align'] = args['align'].strip()
     if 'autoplay' in args.keys():
-        string_vars['autoplay'] = 'autoplay'
+        string_vars['autoplay'] = 'data-autoplay'
     if 'loop' in args.keys():
         string_vars['loop'] = 'loop'
 #    if 'controls' in args.keys(): # TODO: no controls by default, but still clickable
