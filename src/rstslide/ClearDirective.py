@@ -12,7 +12,7 @@ Usage:
 
 # Define the nodes.
 from docutils import nodes
-from .RevealTranslator import RST2RevealTranslator
+from .RevealTranslator import RSTTranslator
 
 class ClearBothNode(nodes.Part, nodes.Element): pass
 class ClearLeftNode(nodes.Part, nodes.Element): pass
@@ -48,8 +48,8 @@ def add_node(node, **kwds):
 
         assert key == 'html', 'accept html only'
 
-        setattr(RST2RevealTranslator, 'visit_'+node.__name__, visit)
-        setattr(RST2RevealTranslator, 'depart_'+node.__name__, depart)
+        setattr(RSTTranslator, 'visit_'+node.__name__, visit)
+        setattr(RSTTranslator, 'depart_'+node.__name__, depart)
             
 
 add_node(ClearBothNode, html=(visit_clear_both, depart_clear_both))

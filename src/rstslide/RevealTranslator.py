@@ -9,7 +9,7 @@ from docutils.writers.html4css1 import HTMLTranslator, Writer
 
 
 
-class RST2RevealWriter(Writer):
+class RSTWriter(Writer):
     """ Writer to be used with the RevealTranslator class."""
 
     visitor_attributes = (
@@ -20,7 +20,7 @@ class RST2RevealWriter(Writer):
         'html_body', 'metadata')
 
                     
-class RST2RevealTranslator(HTMLTranslator):
+class RSTTranslator(HTMLTranslator):
     """ Translator converting the reST items into HTML5 code usable by Reveal.js.
     
     Derived from docutils.writers.html4css1.HTMLTranslator.

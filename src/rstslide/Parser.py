@@ -7,7 +7,7 @@ except:
 import os, sys, codecs
 import docutils.core
 
-from .RevealTranslator import RST2RevealTranslator, RST2RevealWriter
+from .RevealTranslator import RSTTranslator, Writer
 
 # Import custom directives
 from .TwoColumnsDirective import *
@@ -131,8 +131,8 @@ class Parser:
         self._copy_reveal()
         
         # Create the writer and retrieve the parts
-        self.html_writer = RST2RevealWriter()
-        self.html_writer.translator_class = RST2RevealTranslator
+        self.html_writer = Writer()
+        self.html_writer.translator_class = RSTTranslator
         with codecs.open(self.input_file, 'r', 'utf8') as infile:
             self.parts = docutils.core.publish_parts(source=infile.read(), writer=self.html_writer)
 
@@ -148,11 +148,11 @@ class Parser:
         #    import shutil
         #    shutil.copytree(sources_dir, curr_dir+'/reveal')
 
-        # Copy the rst2reveal.css
-        if not os.path.exists(curr_dir+'/rst2reveal.css'):
-            source_file = os.path.abspath(os.path.dirname(__file__)+'/reveal/css/rst2reveal.css')
+        # Copy the rstslide.css
+        if not os.path.exists(curr_dir+'/rstslide.css'):
+            source_file = os.path.abspath(os.path.dirname(__file__)+'/reveal/css/rstslide.css')
             import shutil
-            shutil.copyfile(source_file, curr_dir+'/rst2reveal.css')
+            shutil.copyfile(source_file, curr_dir+'/rstslide.css')
 
         # Generate the Pygments CSS file
         self.is_pygments = False
@@ -300,7 +300,7 @@ class Parser:
 		        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no">
 		        <link rel="stylesheet" href="%(reveal_root)s/css/reveal.css">
 		        %(pygments)s
-		        <link rel="stylesheet" href="rst2reveal.css">
+		        <link rel="stylesheet" href="rstslide.css">
 		        <!--link rel="stylesheet" href="%(reveal_root)s/css/theme/default.css" id="theme"-->
 		        <link rel="stylesheet" href="%(reveal_root)s/css/theme/%(theme)s.css" id="theme">
 		        <link rel="stylesheet" href="%(reveal_root)s/css/print/pdf.css" type="text/css" media="print"> 

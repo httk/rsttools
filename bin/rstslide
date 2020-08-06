@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import os, sys, codecs
 import argparse
-import rst2reveal 
+import rstslide
 
-print("rst2reveal: ReST to Reveal.js HTML5 slide generator.")
+print("rstslide: ReStructuredText HTML slide generator.")
 
 # Test the presence of Pygments
 isPygments=False
@@ -22,7 +22,7 @@ if isPygments:
 
 # Define arguments 
 parser = argparse.ArgumentParser()
-parser.description="""rst2reveal: ReST to Reveal.js slide generator."""
+parser.description="""rstslide: ReST to Reveal.js slide generator."""
 # Name of the ReST file to process
 parser.add_argument("input_file", help="The name of the ReStructuredText file to parse (.rst or .txt) or a configuration file defining all the options (.ini, .conf, .cfg).")
 # Generates a configuration file
@@ -72,70 +72,70 @@ if input_file.split('.')[-1] in ['conf', 'cfg', 'ini']:
     parser = ConfigParser.RawConfigParser()
     parser.readfp(codecs.open(input_file, "r", "utf8"))
     # input file name
-    filename= parser.get('rst2reveal', 'input_file')
+    filename= parser.get('rstslide', 'input_file')
     # theme
     try:
-        theme = parser.get('rst2reveal', 'theme')
+        theme = parser.get('rstslide', 'theme')
     except:
         theme = 'default'
     # stylesheet
     try:
-        stylesheet = parser.get('rst2reveal', 'stylesheet')
+        stylesheet = parser.get('rstslide', 'stylesheet')
     except:
         stylesheet = ''
     # transition
     try:
-        transition = parser.get('rst2reveal', 'transition')
+        transition = parser.get('rstslide', 'transition')
     except:
         transition = 'default'
     # pygments_style
     try:
-        pygments_style = parser.get('rst2reveal', 'pygments_style')
+        pygments_style = parser.get('rstslide', 'pygments_style')
     except:
         pygments_style = ''
     # stylesheet
     try:
-        stylesheet = parser.get('rst2reveal', 'stylesheet')
+        stylesheet = parser.get('rstslide', 'stylesheet')
     except:
         stylesheet = ''
     # output_file
     try:
-        output_file = parser.get('rst2reveal', 'output_file')
+        output_file = parser.get('rstslide', 'output_file')
     except:
         output_file = ''
     # mathjax_path
     try:
-        mathjax_path = parser.get('rst2reveal', 'mathjax_path')
+        mathjax_path = parser.get('rstslide', 'mathjax_path')
     except:
         mathjax_path = ''
     # vertical_center
     try:
-        vertical_center = parser.getboolean('rst2reveal', 'vertical_center') 
+        vertical_center = parser.getboolean('rstslide', 'vertical_center') 
     except:
         vertical_center = False
     # horizontal_center
     try:
-        horizontal_center = parser.getboolean('rst2reveal', 'horizontal_center')
+        horizontal_center = parser.getboolean('rstslide', 'horizontal_center')
     except:
         horizontal_center = False
     # title_center
     try:
-        title_center = parser.getboolean('rst2reveal', 'title_center') 
+        title_center = parser.getboolean('rstslide', 'title_center') 
     except:
         title_center = False
     # footer
     try:
-        footer = parser.getboolean('rst2reveal', 'footer') 
+        footer = parser.getboolean('rstslide', 'footer') 
     except:
         footer = False
     # numbering
     try:
-        numbering = parser.getboolean('rst2reveal', 'numbering') 
+        numbering = parser.getboolean('rstslide', 'numbering') 
     except:
         numbering = False
     # controls
     try:
-        controls = parser.getboolean('rst2reveal', 'controls') 
+        controls = parser.getboolean('rstslide', 'controls') 
     except:
         controls = False
     # first slide
@@ -155,7 +155,7 @@ if input_file.split('.')[-1] in ['conf', 'cfg', 'ini']:
         init_html = False
     # reveal_root
     try:
-        reveal_root = parser.get('rst2reveal', 'reveal_root')
+        reveal_root = parser.get('rstslide', 'reveal_root')
     except:
         reveal_root = False        
         
@@ -241,20 +241,20 @@ else:
         print('Generating the configuration file', args.generate_configuration, 'with current options.')
         import ConfigParser
         config = ConfigParser.RawConfigParser()
-        config.add_section('rst2reveal')
-        config.set('rst2reveal', 'input_file', filename)
-        config.set('rst2reveal', 'output_file', output_file)
-        config.set('rst2reveal', 'theme', theme)
-        config.set('rst2reveal', 'stylesheet', stylesheet)
-        config.set('rst2reveal', 'transition', transition)
-        config.set('rst2reveal', 'mathjax_path', mathjax_path)
-        config.set('rst2reveal', 'pygments_style', pygments_style)
-        config.set('rst2reveal', 'vertical_center', vertical_center)
-        config.set('rst2reveal', 'horizontal_center', horizontal_center)
-        config.set('rst2reveal', 'title_center', title_center)
-        config.set('rst2reveal', 'footer', footer)
-        config.set('rst2reveal', 'numbering', numbering)
-        config.set('rst2reveal', 'controls', controls)
+        config.add_section('rstslide')
+        config.set('rstslide', 'input_file', filename)
+        config.set('rstslide', 'output_file', output_file)
+        config.set('rstslide', 'theme', theme)
+        config.set('rstslide', 'stylesheet', stylesheet)
+        config.set('rstslide', 'transition', transition)
+        config.set('rstslide', 'mathjax_path', mathjax_path)
+        config.set('rstslide', 'pygments_style', pygments_style)
+        config.set('rstslide', 'vertical_center', vertical_center)
+        config.set('rstslide', 'horizontal_center', horizontal_center)
+        config.set('rstslide', 'title_center', title_center)
+        config.set('rstslide', 'footer', footer)
+        config.set('rstslide', 'numbering', numbering)
+        config.set('rstslide', 'controls', controls)
         config.add_section('firstslide')
         config.set('firstslide', 'template', """
     <h1>%(title)s</h1>
@@ -273,11 +273,11 @@ else:
         with open(args.generate_configuration, 'wb') as configfile:
             config.write(configfile)
             
-        print('You can now run: rst2reveal', args.generate_configuration)
+        print('You can now run: rstslide', args.generate_configuration)
         exit(0)
 
 # Create the RST parser and create the slides
-parser = rst2reveal.Parser(     input_file=filename, 
+parser = rstslide.Parser(     input_file=filename, 
                                 output_file=output_file,
                                 theme=theme, 
                                 stylesheet = stylesheet,
