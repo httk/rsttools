@@ -230,8 +230,8 @@ class RST2RevealTranslator(HTMLTranslator):
         if 'align' in node:
             atts['class'] = 'align-%s' % node['align']
             align=atts['class']
-            if node['align'] in ['left', 'right']:
-                self.inline_lists = True
+            #if node['align'] in ['left', 'right']:
+            #    self.inline_lists = True
         self.context.append('')
         if ext in ('.swf'): # place in an object element,
             # do NOT use an empty tag: incorrect rendering in browsers

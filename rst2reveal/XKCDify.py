@@ -10,19 +10,22 @@ including axes labels and titles (but not axes tick labels).
 The idea for this comes from work by Damon McDougall
   http://www.mail-archive.com/matplotlib-users@lists.sourceforge.net/msg25499.html
 """
+import os
+
 import numpy as np
 import pylab as pl
 from scipy import interpolate, signal
 import matplotlib.font_manager as fm
 
+script_path = os.path.dirname(os.path.abspath(__file__))
 
 # We need a special font for the code below.  It can be downloaded this way:
-import os
-import urllib2
-if not os.path.exists('Humor-Sans.ttf'):
-    print 'Downloading the font Humor-sans.'
-    fhandle = urllib2.urlopen('http://antiyawn.com/uploads/Humor-Sans.ttf')
-    open('Humor-Sans.ttf', 'wb').write(fhandle.read())
+#import os
+#import urllib2
+#if not os.path.exists('Humor-Sans.ttf'):
+#    print 'Downloading the font Humor-sans.'
+#    fhandle = urllib2.urlopen('http://antiyawn.com/uploads/Humor-Sans.ttf')
+#    open('Humor-Sans.ttf', 'wb').write(fhandle.read())
 
     
 def xkcd_line(x, y, xlim=None, ylim=None,
@@ -228,7 +231,7 @@ def XKCDify(ax, mag=1.0,
                 color=forecolor, lw=2)
 
     # Change all the fonts to humor-sans.
-    prop = fm.FontProperties(fname='Humor-Sans.ttf', size=16)
+    prop = fm.FontProperties(fname=os.path.join(script_path,'..','fonts','Humor-Sans.ttf'), size=16)
     for text in ax.texts:
         text.set_fontproperties(prop)
     
