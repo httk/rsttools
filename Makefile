@@ -37,6 +37,8 @@ autopep8:
 
 tests: unittests2 unittests3
 
+pytests: pytest2 pytest3
+
 unittests:
 	(cd tests; TEST_EXPECT_PYVER=ignore python all.py)
 
