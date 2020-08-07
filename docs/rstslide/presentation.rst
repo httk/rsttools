@@ -52,7 +52,7 @@ ReStructuredText HTML slide generator
 
 
 :email: test@example.com
-:theme: liu
+:theme: default
 
 :test: This is a
    multiline value.

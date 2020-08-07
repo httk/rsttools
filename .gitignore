@@ -143,5 +143,6 @@ dmypy.json
 *.pyc
 /tests/python_versions/ver2
 /tests/python_versions/ver3
+/try
 
 rst2reveal.egg-info

@@ -5,9 +5,16 @@ except BaseException:
     pass
 
 import os, sys, codecs, shutil, subprocess
-import docutils.core
+import docutils, docutils.core
 
-from .RevealTranslator import RSTTranslator, HTMLWriter
+# Pyhton2 compatibility
+try:
+    from html import unescape
+except ImportError:
+    from cgi import unescape
+
+
+from .RevealTranslator import RevealTranslator, HTMLWriter
 
 # Import custom directives
 from .TwoColumnsDirective import *
@@ -101,10 +108,14 @@ class Parser:
         # Path to MathJax
         self.mathjax_path = os.path.join(self.rstslide_root, 'resources', 'mini-mathjax', 'build', 'MathJax.js')
 
+        self.settings = {}
+
         # Css to embed in the document
         self.css_embedd = ''
+        self.settings['css_embedd'] = []
 
-        self.settings = {}
+        # Extra css files to add
+        self.settings['css_files'] = []
 
         # Style
         self.settings['reveal_theme'] = 'simple'
@@ -134,10 +145,10 @@ class Parser:
 
         # Create the writer and retrieve the parts
         self.html_writer = HTMLWriter()
-        self.html_writer.translator_class = RSTTranslator
+        self.html_writer.translator_class = RevealTranslator
         #with codecs.open(self.input_file, 'r', 'utf8') as infile:
         #    self.parts = docutils.core.publish_parts(source=infile.read(), writer=self.html_writer)
-        self.parts = docutils.core.publish_parts(self.source, writer=self.html_writer)
+        self.parts = self.publish_parts_from_doctree(self.doctree, writer=self.html_writer)
 
         # Produce the html file
         self._produce_output()
@@ -145,13 +156,32 @@ class Parser:
     def _setup(self):
 
         with codecs.open(self.input_file, 'r', 'utf8') as infile:
-            self.source = infile.read()
+            source = infile.read()
 
-        self.settings = self._parse_docinfo(self.source, self.settings)
+        self.doctree = docutils.core.publish_doctree(source)
+        self.settings = self._parse_docinfo(self.doctree, self.settings)
+
+        if 'theme' in self.settings:
+            if os.path.exists(os.path.join('themes', self.settings['theme'])):
+                template = {'theme_path': os.path.join('themes', self.settings['theme'])}
+                with codecs.open(os.path.join('themes', self.settings['theme'], 'theme.rst'), 'r', 'utf8') as infile:
+                    source = infile.read()
+                doctree = docutils.core.publish_doctree(source)
+                self.settings = self._parse_docinfo(doctree, self.settings, template)
+
+            elif os.path.exists(os.path.join(self.rstslide_root, 'themes', self.settings['theme'])):
+                template = {'theme_path': os.path.join(self.rstslide_root, 'themes', self.settings['theme'])}
+                with codecs.open(os.path.join(self.rstslide_root, 'themes', self.settings['theme'], 'theme.rst'), 'r', 'utf8') as infile:
+                    source = infile.read()
+                doctree = docutils.core.publish_doctree(source)
+                self.settings = self._parse_docinfo(doctree, self.settings, template)
+
+            else:
+                print(os.path.join(self.rstslide_root, 'themes', self.settings['theme'],'theme.rst'))
+                print("WARNING: theme "+self.settings['theme']+" does not exist")
 
         curr_dir = os.path.dirname(os.path.realpath(self.output_file))
         cwd = os.getcwd()
-
         #if os.path.exists(os.path.join(curr_dir, 'rstslide')):
         #    shutil.rmtree(os.path.join(curr_dir, 'rstslide'))
         #os.makedirs(os.path.join(curr_dir, 'rstslide'))
@@ -268,6 +298,8 @@ class Parser:
     <p>%(date)s</p>
     </section>
 """
+        else:
+            self.settings['firstslide_template'] = unescape(self.settings['firstslide_template'])
 
         self.titleslide = self.settings['firstslide_template'] % self.meta_info
         if self.settings['footer_template'] == "":
@@ -291,6 +323,11 @@ class Parser:
             for author in self.settings['authors']:
                 extra_meta += '<meta author="%(author)s" />\n' % {'author' : author}
 
+        custom_stylesheets = ""
+        if 'css_files' in self.settings:
+            for css_file in self.settings['css_files']:
+                custom_stylesheets += '<link rel="stylesheet" href="%(css_file)s" />\n' % {'css_file' : css_file}
+
         header = """<!doctype html>
         <html lang="en">
 	        <head>
@@ -304,8 +341,8 @@ class Parser:
 		        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no">
 		        <link rel="stylesheet" href="%(reveal_root)s/reveal.css">
 		        %(pygments)s
-		        <link rel="stylesheet" href="%(rstslide_root)s/css/rstslide.css">
 		        <link rel="stylesheet" href="%(reveal_root)s/theme/%(reveal_theme)s.css" id="theme">
+		        <link rel="stylesheet" href="%(rstslide_root)s/css/rstslide.css">
                         <script type="text/x-mathjax-config">
                           MathJax.Hub.Config({
                             jax: ["input/TeX","output/SVG"],
@@ -331,10 +368,7 @@ class Parser:
                       text-align: %(title_center)s;
                     }
                 </style>
-                %(custom_stylesheet)s
-		        <!--[if lt IE 9]>
-		        <script src="%(reveal_root)s/lib/js/html5shiv.js"></script>
-		        <![endif]-->
+                %(custom_stylesheets)s
 	        </head>
         """ % {'title': self.title,
                'meta': self.parts['meta'],
@@ -346,8 +380,8 @@ class Parser:
                'mathjax_path': self.mathjax_path,
                'horizontal_center': 'center' if self.settings['horizontal_center'] else 'left',
                'title_center': 'center' if self.settings['title_center'] else 'left',
-               'css_embedd': self.css_embedd,
-               'custom_stylesheet': '<link rel="stylesheet" href="%s">' % self.settings['stylesheet'] if self.settings['stylesheet'] != '' else ''}
+               'css_embedd': self.css_embedd + "\n".join(self.settings['css_embedd']),
+               'custom_stylesheets': custom_stylesheets }
 
         return header
 
@@ -461,12 +495,13 @@ class Parser:
 
         return footer
 
-    def _parse_docinfo(self, source, d=None):
+    def _parse_docinfo(self, doctree, d=None, template=None):
 
         if d is None:
             d = {}
 
-        doctree = docutils.core.publish_doctree(source)
+        if template == None:
+            template = {}
 
         #print(doctree)
 
@@ -488,15 +523,22 @@ class Parser:
                     if field_name_str.endswith("-list"):
                         field_name = field_name_str[:-len("-list")]
                         if field_body.firstChild.tagName == 'bullet_list':
-                            d[field_name_str] = [x.firstChild.firstChild.nodeValue for c in field_body.childNodes for x in c.childNodes]
+                            d[field_name] = [x.firstChild.firstChild.nodeValue % template for c in field_body.childNodes for x in c.childNodes]
                         else:
-                            d[field_name_str] = [c.firstChild.toxml() for c in field_body.childNodes]
+                            d[field_name] = [c.firstChild.toxml() % template for c in field_body.childNodes]
+                    elif field_name_str.endswith("-list-add"):
+                        field_name = field_name_str[:-len("-list-add")]
+                        if not field_name in d:
+                            d[field_name] = []
+                        if field_body.firstChild.tagName == 'bullet_list':
+                            d[field_name] += [x.firstChild.firstChild.nodeValue % template for c in field_body.childNodes for x in c.childNodes]
+                        else:
+                            d[field_name] += [c.firstChild.toxml() % template for c in field_body.childNodes]
                     else:
-                        d[field_name_str] = " ".join(c.firstChild.toxml() for c in field_body.childNodes)
+                        d[field_name_str] = " ".join(c.firstChild.toxml() for c in field_body.childNodes) % template
 
                 else:
-                    field_value = field.firstChild.nodeValue
-                    d[tag] = field_value
+                    d[tag] = field.firstChild.nodeValue % template
 
         topics = docdom.getElementsByTagName('topic')
         for topic in topics:
@@ -506,6 +548,22 @@ class Parser:
 
         return d
 
+    def publish_parts_from_doctree(self, document, destination_path=None,
+                                   writer=None, writer_name='pseudoxml',
+                                   settings=None, settings_spec=None,
+                                   settings_overrides=None, config_section=None,
+                                   enable_exit_status=False):
+        reader = docutils.readers.doctree.Reader(parser_name='null')
+        pub = docutils.core.Publisher(reader, None, writer,
+                        source=docutils.io.DocTreeInput(document),
+                        destination_class=docutils.io.StringOutput, settings=settings)
+        if not writer and writer_name:
+            pub.set_writer(writer_name)
+        pub.process_programmatic_settings(
+            settings_spec, settings_overrides, config_section)
+        pub.set_destination(None, destination_path)
+        pub.publish(enable_exit_status=enable_exit_status)
+        return pub.writer.parts
 
 if __name__ == '__main__':
     # Create the object

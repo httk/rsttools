@@ -19,7 +19,7 @@ Also available: column:: main and column:: side
 
 # Define the nodes.
 from docutils import nodes
-from .RevealTranslator import RSTTranslator
+from .RevealTranslator import RevealTranslator
 
 
 class LeftColumnNode(nodes.Part, nodes.Element):
@@ -81,8 +81,8 @@ def add_node(node, **kwds):
 
         assert key == 'html', 'accept html only'
 
-        setattr(RSTTranslator, 'visit_'+node.__name__, visit)
-        setattr(RSTTranslator, 'depart_'+node.__name__, depart)
+        setattr(RevealTranslator, 'visit_'+node.__name__, visit)
+        setattr(RevealTranslator, 'depart_'+node.__name__, depart)
 
 
 add_node(LeftColumnNode, html=(visit_left_column, depart_left_column))

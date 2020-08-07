@@ -12,6 +12,11 @@ if sys.version[0] == "2":
 else:
     unicode_type = str
 
+class DummyBody:
+    def append(self, s):
+        return
+
+dummy_body = DummyBody()
 
 class HTMLWriter(Writer):
     """ Writer to be used with the RevealTranslator class."""
@@ -24,7 +29,7 @@ class HTMLWriter(Writer):
         'html_body', 'metadata')
 
 
-class RSTTranslator(HTMLTranslator):
+class RevealTranslator(HTMLTranslator):
     """ Translator converting the reST items into HTML5 code usable by Reveal.js.
 
     Derived from docutils.writers.html4css1.HTMLTranslator.
@@ -55,6 +60,7 @@ class RSTTranslator(HTMLTranslator):
 
     def visit_title(self, node):
         """Only 6 section levels are supported by HTML."""
+
         check_id = 0  # TODO: is this a bool (False) or a counter?
         close_tag = ' '*12 + '</p>\n'
         if isinstance(node.parent, nodes.topic):
@@ -97,6 +103,20 @@ class RSTTranslator(HTMLTranslator):
         if self.in_slide_title:
             self.in_slide_title = False
             self.slide_title_level = 0
+
+    def visit_topic(self, node):
+        # For now we just strip out dedication, abstract since I don't know how to set them nicely
+        if node.get("classes") in [ ['dedication'], ['abstract'] ]:
+            self.real_body = self.body
+            self.body = dummy_body
+            return
+        HTMLTranslator.visit_topic(self, node)
+
+    def depart_topic(self, node):
+        if node.get("classes") in [ ['dedication'], ['abstract'] ]:
+            self.body = self.real_body
+            return
+        HTMLTranslator.depart_topic(self, node)
 
     def visit_section(self, node):
         self.section_level += 1
