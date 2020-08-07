@@ -31,3 +31,7 @@ build:
 
 clean:
 	rm -rf build
+
+autopep8:
+	autopep8 --ignore=E501,E401,E402,W291,W293,W391,E265,E266,E226 --aggressive --in-place -r src/
+

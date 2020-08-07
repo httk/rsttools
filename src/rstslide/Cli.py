@@ -4,32 +4,33 @@ import os, sys, codecs, argparse
 from .Parser import Parser
 from ._version import __version__ as version
 
+
 class Cli:
-    
+
     @staticmethod
     def run():
         # Test the presence of Pygments
-        isPygments=False
+        isPygments = False
         try:
             from pygments.styles import STYLE_MAP
-            isPygments=True
-        except:
+            isPygments = True
+        except BaseException:
             print("Pygments is not installed, code blocks won't be highlighted")
 
         # Allowed themes and transitions
         themes = ['default', 'beige', 'night']
         transitions = ['default', 'cube', 'page', 'concave', 'zoom', 'linear', 'fade', 'none']
-        options=['input_file', 'output_file', 'theme', 'transition', 'mathjax_path', 'pygments_style']
+        options = ['input_file', 'output_file', 'theme', 'transition', 'mathjax_path', 'pygments_style']
         if isPygments:
-            pygments_styles=STYLE_MAP.keys()
+            pygments_styles = STYLE_MAP.keys()
 
         # Define arguments
         argparser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
-        argparser.description="reStructuredText to HTML slide generator using reveal.js."
+        argparser.description = "reStructuredText to HTML slide generator using reveal.js."
         argparser.add_argument("input_file", help="The name of the reStructuredText file to parse.")
         argparser.add_argument("-o", "--output_file", type=str, help="The name of the HTML file to produce (by default the same basename as the input file with a .html suffix.")
         argparser.add_argument("-u", "--update_file", type=str, help="The name of a previously generated HTML file for updating only the headers part.")
-        argparser.add_argument('-v','--version', action='version', version='rstslide '+ version)
+        argparser.add_argument('-v', '--version', action='version', version='rstslide ' + version)
 
         resource_mgmt_choices = {
             'central': "Use centralized resources from where rstslide is installed",

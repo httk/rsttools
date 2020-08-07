@@ -1,5 +1,6 @@
 from docutils.parsers.rst import Directive, directives, roles, convert_directive_function
 
+
 class CustomTemplate:
     """
     Wrapper for custom templates.
@@ -19,13 +20,11 @@ class CustomTemplate:
 
     def __call__(self, role, rawtext, text, lineno, inliner,
                  options={}, content=[]):
-        opts = {'format':'html'}
+        opts = {'format': 'html'}
         opts.update(options)
         text = self.prefix + text + self.suffix
         return self.base_role(role, rawtext, text, lineno, inliner,
                               options=opts, content=content)
-
-
 
 
 class Template(Directive):
@@ -34,9 +33,9 @@ class Template(Directive):
     optional_arguments = 0
     final_argument_whitespace = False    
     has_content = False
-    
+
     option_spec = {'prefix': directives.unchanged, 'suffix': directives.unchanged}
-    
+
     def run(self):
         """Dynamically create and register a custom interpreted text template."""
         try:
@@ -51,5 +50,6 @@ class Template(Directive):
         role = CustomTemplate(new_role_name, base_role, self.options)
         roles.register_local_role(new_role_name, role)
         return messages
+
 
 directives.register_directive('template', Template)

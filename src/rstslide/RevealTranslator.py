@@ -8,9 +8,9 @@ from docutils.writers.html4css1 import HTMLTranslator, Writer
 
 # Retain python2 compatibility
 if sys.version[0] == "2":
-    unicode_type=unicode
+    unicode_type = unicode
 else:
-    unicode_type=str
+    unicode_type = str
 
 
 class HTMLWriter(Writer):
@@ -23,10 +23,10 @@ class HTMLWriter(Writer):
         'html_prolog', 'html_head', 'html_title', 'html_subtitle',
         'html_body', 'metadata')
 
-                    
+
 class RSTTranslator(HTMLTranslator):
     """ Translator converting the reST items into HTML5 code usable by Reveal.js.
-    
+
     Derived from docutils.writers.html4css1.HTMLTranslator.
     """ 
 
@@ -34,13 +34,13 @@ class RSTTranslator(HTMLTranslator):
         HTMLTranslator.__init__(self, document) 
         self.math_output = 'mathjax' 
         self.metadata = []
-        self.subsection_previous =False
+        self.subsection_previous = False
         self.inline_lists = False
         self.slide_tile_level = 0 
         self.in_slide_title = False
         self.hide_next_title = True
         self.delayed_header_attributes = {}
-        
+
     def visit_header(self, node):
         self.context.append(len(self.body))
 
@@ -52,23 +52,23 @@ class RSTTranslator(HTMLTranslator):
         self.body_prefix.extend(header)
         self.header.extend(header)
         del self.body[start:]
-        
+
     def visit_title(self, node):
         """Only 6 section levels are supported by HTML."""
         check_id = 0  # TODO: is this a bool (False) or a counter?
         close_tag = ' '*12 + '</p>\n'
         if isinstance(node.parent, nodes.topic):
             self.body.append(' '*12 + 
-                  self.starttag(node, 'p', '', CLASS='topic-title first'))
+                             self.starttag(node, 'p', '', CLASS='topic-title first'))
         elif isinstance(node.parent, nodes.sidebar):
             self.body.append(' '*12 + 
-                  self.starttag(node, 'p', '', CLASS='sidebar-title'))
+                             self.starttag(node, 'p', '', CLASS='sidebar-title'))
         elif isinstance(node.parent, nodes.Admonition):
             self.body.append(' '*12 + 
-                  self.starttag(node, 'p', '', CLASS='admonition-title'))
+                             self.starttag(node, 'p', '', CLASS='admonition-title'))
         elif isinstance(node.parent, nodes.table):
             self.body.append(' '*12 + 
-                  self.starttag(node, 'caption', ''))
+                             self.starttag(node, 'caption', ''))
             close_tag = ' '*12 + '</caption>\n'
         elif isinstance(node.parent, nodes.document):
             self.body.append(' '*8 + self.starttag(node, 'h2'))
@@ -97,33 +97,33 @@ class RSTTranslator(HTMLTranslator):
         if self.in_slide_title:
             self.in_slide_title = False
             self.slide_title_level = 0
-            
+
     def visit_section(self, node):
         self.section_level += 1
         if self.section_level == 2:
             if not self.hide_next_title:
                 self.body.append('    </section>\n')
-            self.delayed_header_attributes = node.get('attributes',{})
-            node.attributes['attributes']=node.get('slide-attributes',{})
-            self.body.append('    ' + self.starttag(node, 'section','\n',check="me"))
+            self.delayed_header_attributes = node.get('attributes', {})
+            node.attributes['attributes'] = node.get('slide-attributes', {})
+            self.body.append('    ' + self.starttag(node, 'section', '\n', check="me"))
             self.hide_next_title = False
         else:
             self.body.append('<section>\n')
             self.hide_next_title = True
-            
+
     def depart_section(self, node):
         self.section_level -= 1
         if not self.section_level == 1:
-            self.subsection_previous =False
+            self.subsection_previous = False
             if not self.hide_next_title:
                 self.body.append('    </section>\n')
         else:
-            self.subsection_previous =True
+            self.subsection_previous = True
         if not self.subsection_previous:
             self.hide_next_title = True
             self.body.append('</section>\n\n')
         self.inline_lists = False
-        
+
     def visit_docinfo(self, node):
         self.context.append(len(self.body))
         self.in_docinfo = True
@@ -145,7 +145,7 @@ class RSTTranslator(HTMLTranslator):
 
     def depart_docinfo_item(self):
         pass
-        
+
     def visit_field(self, node):
         pass
 
@@ -159,10 +159,10 @@ class RSTTranslator(HTMLTranslator):
             name = field_names[0]
             value = field_values[0]
             self.metadata.append(name + '=' + value + '\n')
-            
+
     def depart_field_body(self, node):
         pass
-        
+
     def visit_block_quote(self, node):
         if not isinstance(node.parent, nodes.list_item):
             self.body.append(' '*12 + self.starttag(node, 'blockquote'))
@@ -170,7 +170,6 @@ class RSTTranslator(HTMLTranslator):
     def depart_block_quote(self, node):
         if not isinstance(node.parent, nodes.list_item):
             self.body.append(' '*12 + '</blockquote>\n')
-        
 
     def visit_image(self, node):
         atts = {}
@@ -191,13 +190,13 @@ class RSTTranslator(HTMLTranslator):
             atts['height'] = node['height']
         if 'scale' in node:
             if (PIL and not ('width' in node and 'height' in node)
-                and self.settings.file_insertion_enabled):
+                    and self.settings.file_insertion_enabled):
                 imagepath = urllib.url2pathname(uri)
                 try:
                     img = PIL.Image.open(
-                            imagepath.encode(sys.getfilesystemencoding()))
+                        imagepath.encode(sys.getfilesystemencoding()))
                 except (IOError, UnicodeEncodeError):
-                    pass # TODO: warn?
+                    pass  # TODO: warn?
                 else:
                     self.settings.record_dependencies.add(
                         imagepath.replace('\\', '/'))
@@ -230,14 +229,14 @@ class RSTTranslator(HTMLTranslator):
             suffix = ''
         else:
             suffix = '\n'
-        align='align-center'
+        align = 'align-center'
         if 'align' in node:
             atts['class'] = 'align-%s' % node['align']
-            align=atts['class']
+            align = atts['class']
             #if node['align'] in ['left', 'right']:
             #    self.inline_lists = True
         self.context.append('')
-        if ext in ('.swf',): # place in an object element,
+        if ext in ('.swf',):  # place in an object element,
             # do NOT use an empty tag: incorrect rendering in browsers
             self.body.append(self.starttag(node, 'object', suffix, **atts) +
                              node.get('alt', uri) + '</object>' + suffix)
@@ -249,21 +248,20 @@ class RSTTranslator(HTMLTranslator):
     def depart_image(self, node):
         self.body.append(self.context.pop())
 
-        
     def visit_bullet_list(self, node):
         atts = {}
         old_compact_simple = self.compact_simple
         self.context.append((self.compact_simple, self.compact_p))
         self.compact_p = None
         self.compact_simple = self.is_compactable(node)
-        
+
         if 'fragment' in node['classes']:
             node['classes'].remove('fragment')
             node['classes'].append('fragmented_list')
-            
+
         if self.compact_simple and not old_compact_simple:
             atts['class'] = 'simple'
-        if self.inline_lists: # the list  should wrap an image
+        if self.inline_lists:  # the list  should wrap an image
             self.body.append(' '*12 + '<ul style="display: inline;">')
         else:
             self.body.append(' '*12 + self.starttag(node, 'ul', **atts))
@@ -271,7 +269,7 @@ class RSTTranslator(HTMLTranslator):
     def depart_bullet_list(self, node):
         self.compact_simple, self.compact_p = self.context.pop()
         self.body.append(' '*12 + '</ul>\n')
-        
+
     def visit_enumerated_list(self, node):
         """
         The 'start' attribute does not conform to HTML 4.01's strict.dtd, but
@@ -299,7 +297,7 @@ class RSTTranslator(HTMLTranslator):
     def depart_enumerated_list(self, node):
         self.compact_simple, self.compact_p = self.context.pop()
         self.body.append(' '*12 + '</ol>\n')
-                
+
     def visit_list_item(self, node):
         if 'fragmented_list' in node.parent['classes']:
             self.body.append(' '*16 + self.starttag(node, 'li', '', CLASS='fragment'))
@@ -310,8 +308,7 @@ class RSTTranslator(HTMLTranslator):
 
     def depart_list_item(self, node):
         self.body.append('</li>\n')
-                
-                
+
     def visit_sidebar(self, node):
         if 'classes' in node:
             if node['classes'][0] in ['left', 'right']:
@@ -325,14 +322,14 @@ class RSTTranslator(HTMLTranslator):
         """
         tagname = tagname.lower()
         prefix = []
-        atts = node.get('attributes',{})
+        atts = node.get('attributes', {})
         ids = []
         for (name, value) in attributes.items():
             atts[name.lower()] = value            
         classes = []
         languages = []
         # unify class arguments and move language specification
-        for cls in node.get('classes', []) + atts.pop('class', '').split() :
+        for cls in node.get('classes', []) + atts.pop('class', '').split():
             if cls.startswith('language-'):
                 languages.append(cls[9:])
             elif cls.strip() and cls not in classes:
@@ -362,8 +359,7 @@ class RSTTranslator(HTMLTranslator):
                     # Non-empty tag.  Place the auxiliary <span> tag
                     # *inside* the element, as the first child.
                     suffix += '<span id="%s"></span>' % id
-        attlist = list(atts.items())
-        attlist.sort()
+        attlist = sorted(atts.items())
         parts = [tagname]
         for name, value in attlist:
             if value is None:

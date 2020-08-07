@@ -27,7 +27,7 @@ script_path = os.path.dirname(os.path.abspath(__file__))
 #    fhandle = urllib2.urlopen('http://antiyawn.com/uploads/Humor-Sans.ttf')
 #    open('Humor-Sans.ttf', 'wb').write(fhandle.read())
 
-    
+
 def xkcd_line(x, y, xlim=None, ylim=None,
               mag=1.0, f1=30, f2=0.05, f3=15):
     """
@@ -45,7 +45,7 @@ def xkcd_line(x, y, xlim=None, ylim=None,
     f1, f2, f3 : int, float, int
         filtering parameters.  f1 gives the size of the window, f2 gives
         the high-frequency cutoff, f3 gives the size of the filter
-    
+
     Returns
     -------
     x, y : ndarrays
@@ -53,7 +53,7 @@ def xkcd_line(x, y, xlim=None, ylim=None,
     """
     x = np.asarray(x)
     y = np.asarray(y)
-    
+
     # get limits for rescaling
     if xlim is None:
         xlim = (x.min(), x.max())
@@ -62,7 +62,7 @@ def xkcd_line(x, y, xlim=None, ylim=None,
 
     if xlim[1] == xlim[0]:
         xlim = ylim
-        
+
     if ylim[1] == ylim[0]:
         ylim = xlim
 
@@ -100,7 +100,7 @@ def xkcd_line(x, y, xlim=None, ylim=None,
     # un-scale data
     x_int = x_int[1:-1] * (xlim[1] - xlim[0]) + xlim[0]
     y_int = y_int[1:-1] * (ylim[1] - ylim[0]) + ylim[0]
-    
+
     return x_int, y_int
 
 
@@ -118,7 +118,7 @@ def XKCDify(ax, mag=1.0,
 
     This adjusts all lines, text, legends, and axes in the figure to look
     like xkcd plots.  Other plot elements are not modified.
-    
+
     Parameters
     ----------
     ax : Axes instance
@@ -200,7 +200,7 @@ def XKCDify(ax, mag=1.0,
 #            line_bg = pl.Line2D(x_int, y_int, color=bgcolor,
 #                                linewidth=8 * lw)
 #            ax.add_line(line_bg)
-            
+
         ax.add_line(line)
 
     # Draw arrow-heads at the end of axes lines
@@ -231,15 +231,15 @@ def XKCDify(ax, mag=1.0,
                 color=forecolor, lw=2)
 
     # Change all the fonts to humor-sans.
-    prop = fm.FontProperties(fname=os.path.join(script_path,'..','..','fonts','Humor-Sans.ttf'), size=16)
+    prop = fm.FontProperties(fname=os.path.join(script_path, '..', '..', 'fonts', 'Humor-Sans.ttf'), size=16)
     for text in ax.texts:
         text.set_fontproperties(prop)
-    
+
     # modify legend
     leg = ax.get_legend()
     if leg is not None:
         leg.set_frame_on(False)
-        
+
         for child in leg.get_children():
             if isinstance(child, pl.Line2D):
                 x, y = child.get_data()
@@ -247,7 +247,7 @@ def XKCDify(ax, mag=1.0,
                 child.set_linewidth(2 * child.get_linewidth())
             if isinstance(child, pl.Text):
                 child.set_fontproperties(prop)
-    
+
     # Set the axis limits
     ax.set_xlim(xax_lim[0] - 0.1 * xspan,
                 xax_lim[1] + 0.1 * xspan)
@@ -262,5 +262,5 @@ def XKCDify(ax, mag=1.0,
         ax.figure.set_facecolor(bgcolor)
         ax.set_axis_off()
         ax.set_position([0, 0, 1, 1])
-    
+
     return ax

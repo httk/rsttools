@@ -6,6 +6,7 @@ from docutils import nodes
 
 import ast
 
+
 class ClassAttribute2(Transform):
 
     """
@@ -24,7 +25,7 @@ class ClassAttribute2(Transform):
             for index in range(parent.index(child) + 1, len(parent)):
                 element = parent[index]
                 if (isinstance(element, nodes.Invisible) or
-                    isinstance(element, nodes.system_message)):
+                        isinstance(element, nodes.system_message)):
                     continue
                 if 'class' in pending.details and pending.details['class'] is not None:
                     element['classes'] += pending.details['class']
@@ -78,7 +79,6 @@ class Class(Directive):
         else:
             class_value = None
 
-
         if 'attributes' in self.options and self.options['attributes'] is not None:
             try:
                 attributes = ast.literal_eval(self.options['attributes'])
@@ -100,7 +100,7 @@ class Class(Directive):
                 slide_attributes = None
         else:
             slide_attributes = None
-    
+
         node_list = []
         if self.content:
             container = nodes.Element()
@@ -119,7 +119,7 @@ class Class(Directive):
                         node['slide-attributes'].update(slide_attributes)
                     else:
                         node['slide-attributes'] = slide_attributes
-                        
+
             node_list.extend(container.children)
         else:
             if 'attributes' in self.options and self.options['attributes'] is not None:
@@ -144,10 +144,11 @@ class Class(Directive):
                 slide_attributes = None
             pending = nodes.pending(
                 ClassAttribute2,
-                {'class': class_value, 'directive': self.name, 'attributes':attributes, 'slide-attributes':slide_attributes},
+                {'class': class_value, 'directive': self.name, 'attributes': attributes, 'slide-attributes': slide_attributes},
                 self.block_text)
             self.state_machine.document.note_pending(pending)
             node_list.append(pending)
         return node_list
+
 
 directives.register_directive('class', Class)

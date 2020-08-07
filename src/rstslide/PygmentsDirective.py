@@ -18,6 +18,7 @@ from docutils.parsers.rst import directives
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name, TextLexer
 
+
 def pygments_directive(name, arguments, options, content, lineno,
                        content_offset, block_text, state, state_machine):
     try:
@@ -30,6 +31,7 @@ def pygments_directive(name, arguments, options, content, lineno,
     parsed = highlight(u'\n'.join(content), lexer, formatter)
     parsed = ' '*12 + '<code>%s</code>' % parsed
     return [nodes.raw('', parsed, format='html')]
+
 
 pygments_directive.arguments = (1, 0, 1)
 pygments_directive.content = 1

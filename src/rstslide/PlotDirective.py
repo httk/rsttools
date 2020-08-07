@@ -3,19 +3,20 @@ from docutils import nodes
 from docutils.parsers.rst import directives
 try:
     from matplotlib.pylab import *
-except:
+except BaseException:
     pass
 
+
 def plot_directive(name, arguments, options, content, lineno,
-                       content_offset, block_text, state, state_machine):
+                   content_offset, block_text, state, state_machine):
 
     # Check if matplotlib is installed
     try:
         import matplotlib.pylab 
-    except:
+    except BaseException:
         print('Warning: matplotlib is not installed on your system. Plots will not be generated.')
         return []
-        
+
     # Process the options
     if 'width' in options.keys():
         width = 'width='+options['width']
@@ -33,11 +34,11 @@ def plot_directive(name, arguments, options, content, lineno,
         alpha = '0.0'
     try:
         alpha = float(alpha)
-        if alpha <0.0:
+        if alpha < 0.0:
             alpha = 0.0
         elif alpha > 1.0:
             alpha = 1.0
-    except:
+    except BaseException:
         print('Error: alpha must be a floating value between 0.0 and 1.0')
         return []
 
@@ -51,17 +52,16 @@ def plot_directive(name, arguments, options, content, lineno,
         matplotlib.rcParams['xtick.color'] = 'w'
         matplotlib.rcParams['ytick.color'] = 'w'
         matplotlib.rcParams['legend.frameon'] = False
-        if not 'alpha' in options.keys(): # not specified, so default = 0.0
+        if not 'alpha' in options.keys():  # not specified, so default = 0.0
             alpha = 0.0
-    
-    
+
     # Execute the code line by line
     try:
         fig = figure()
         lscope = locals()
         gscope = globals()
         for line in content:
-            exec(line,gscope,lscope)
+            exec(line, gscope, lscope)
         # Set transparency
         fig.patch.set_alpha(alpha)
         for ax in fig.axes:
@@ -74,25 +74,25 @@ def plot_directive(name, arguments, options, content, lineno,
             if options['xkcd'] != '':
                 try:
                     mag = float(options['xkcd'])
-                except:
+                except BaseException:
                     print('Error: the argument to :xkcd: must be a float.')
                     return []
             else:
-                mag=1.5
+                mag = 1.5
             from .XKCDify import XKCDify
             for ax in fig.axes:
                 XKCDify(ax, mag=mag, 
-                        bgcolor = 'k' if 'invert' in options.keys() else 'w',
-                        forecolor = 'w' if 'invert' in options.keys() else 'k',
+                        bgcolor='k' if 'invert' in options.keys() else 'w',
+                        forecolor='w' if 'invert' in options.keys() else 'k',
                         xaxis_arrow='+', yaxis_arrow='+',
-                        ax_extend= 0.05,
+                        ax_extend=0.05,
                         expand_axes=(len(fig.axes) == 1))
         # Save the figure in a temporary SVG file
         fig.savefig('__temp.svg', dpi=600, edgecolor='w')
         # Optionally save the figure
         if 'save' in options.keys():
             fig.savefig(options['save'], dpi=600)
-        
+
     except Exception as e:
         print('Error while generating the figure:')
         for line in content:
@@ -100,7 +100,6 @@ def plot_directive(name, arguments, options, content, lineno,
         print(e)
         return []
 
-        
     # Extract the generated data
     start = False
     text = "<div class=\"align-%(align)s\">\n" % {'align': align}
@@ -112,12 +111,13 @@ def plot_directive(name, arguments, options, content, lineno,
             elif start:
                 try:
                     text += '   ' + unicode(aline) 
-                except: 
+                except BaseException: 
                     pass
     text += "\n</div>\n"
     os.system('rm -f __temp.svg')
-        
+
     return [nodes.raw('matplotlib', text, format='html')]
+
 
 plot_directive.content = 1
 plot_directive.arguments = (0, 0, 0)
