@@ -92,39 +92,40 @@ class Parser:
         self.input_file = input_file
         self.output_file = output_file
 
-        # Style
-        self.reveal_theme = 'simple'
-        self.transition = 'fade'
-        self.pygments_style = 'default'
-        self.stylesheet = ''
-        self.vertical_center = False
-        self.horizontal_center = False
-        self.title_center = False
-        self.write_footer = False
-        self.page_number = False
-        self.controls = False
-
-        self.css_embedd = ''
-
-        # Pygments
-
-        # Template for the first slide
-        self.firstslide_template = ''
-
-        # Temnplate for the footer
-        self.footer_template = ''
-
-        # Initalization html for reveal.js
-        self.init_html = ''
-
-        # Root path to rstslide
+        # Path to rstslide
         self.rstslide_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-        # Root path to rstslide
+        # Path to reveal
         self.reveal_root = os.path.join(self.rstslide_root, 'resources', 'reveal.js', 'dist')
 
-        # MathJax
+        # Path to MathJax
         self.mathjax_path = os.path.join(self.rstslide_root, 'resources', 'mini-mathjax', 'build', 'MathJax.js')
+
+        # Css to embed in the document
+        self.css_embedd = ''
+
+        self.settings = {}
+
+        # Style
+        self.settings['reveal_theme'] = 'simple'
+        self.settings['transition'] = 'fade'
+        self.settings['pygments_style'] = 'default'
+        self.settings['stylesheet'] = ''
+        self.settings['vertical_center'] = False
+        self.settings['horizontal_center'] = False
+        self.settings['title_center'] = False
+        self.settings['write_footer'] = False
+        self.settings['page_number'] = False
+        self.settings['controls'] = False
+
+        # Template for the first slide
+        self.settings['firstslide_template'] = ''
+
+        # Template for the footer
+        self.settings['footer_template'] = ''
+
+        # Initalization html for reveal.js
+        self.settings['init_html'] = ''
 
     def create_slides(self):
         """Creates the HTML5 presentation based on the arguments given to the constructor."""
@@ -134,13 +135,20 @@ class Parser:
         # Create the writer and retrieve the parts
         self.html_writer = HTMLWriter()
         self.html_writer.translator_class = RSTTranslator
-        with codecs.open(self.input_file, 'r', 'utf8') as infile:
-            self.parts = docutils.core.publish_parts(source=infile.read(), writer=self.html_writer)
+        #with codecs.open(self.input_file, 'r', 'utf8') as infile:
+        #    self.parts = docutils.core.publish_parts(source=infile.read(), writer=self.html_writer)
+        self.parts = docutils.core.publish_parts(self.source, writer=self.html_writer)
 
         # Produce the html file
         self._produce_output()
 
     def _setup(self):
+
+        with codecs.open(self.input_file, 'r', 'utf8') as infile:
+            self.source = infile.read()
+
+        self._parse_docinfo()
+
         curr_dir = os.path.dirname(os.path.realpath(self.output_file))
         cwd = os.getcwd()
         if os.path.exists(os.path.join(curr_dir, 'rstslide')):
@@ -152,7 +160,7 @@ class Parser:
 
         # Generate the Pygments CSS file
         self.is_pygments = False
-        if not self.pygments_style == '':
+        if not self.settings['pygments_style'] == '':
             # Check if Pygments is installed
             try:
                 import pygments
@@ -163,7 +171,7 @@ class Parser:
                 return
             os.chdir(curr_dir)
             #os.system("pygmentize -S "+self.pygments_style+" -f html -O bg=light > pygments.css")
-            self.css_embedd += codecs.decode(subprocess.check_output(['pygmentize', '-S', self.pygments_style, "-f", "html", "-O", "bg=light"]), 'utf-8')
+            self.css_embedd += codecs.decode(subprocess.check_output(['pygmentize', '-S', self.settings['pygments_style'], "-f", "html", "-O", "bg=light"]), 'utf-8')
             # Fix the bug where the literal color goes to math blocks...
             #with codecs.open('pygments.css', 'r', 'utf8') as infile:
             #    with codecs.open('pygments.css.tmp', 'w', 'utf8') as outfile:
@@ -255,8 +263,8 @@ class Parser:
         self.meta_info['is_author'] = '.' if self.meta_info['author'] != '' else ''
         self.meta_info['is_subtitle'] = '.' if self.meta_info['subtitle'] != '' else ''
 
-        if self.firstslide_template == "":
-            self.firstslide_template = """
+        if self.settings['firstslide_template'] == "":
+            self.settings['firstslide_template'] = """
     <section class="titleslide">
     <h1>%(title)s</h1>
     <h3>%(subtitle)s</h3>
@@ -267,18 +275,27 @@ class Parser:
     </section>
 """
 
-        self.titleslide = self.firstslide_template % self.meta_info
-        if self.footer_template == "":
-            self.footer_template = """<b>%(title)s %(is_subtitle)s %(subtitle)s.</b> %(author)s%(is_institution)s %(institution)s. %(date)s"""
+        self.titleslide = self.settings['firstslide_template'] % self.meta_info
+        if self.settings['footer_template'] == "":
+            self.settings['footer_template'] = """<b>%(title)s %(is_subtitle)s %(subtitle)s.</b> %(author)s%(is_institution)s %(institution)s. %(date)s"""
 
-        if self.write_footer:
-            self.footer_html = """<footer id=\"footer\">""" + self.footer_template % self.meta_info + """<b id=\"slide_number\" style=\"padding: 1em;\"></b></footer>"""
-        elif self.page_number:
+        if self.settings['write_footer']:
+            self.footer_html = """<footer id=\"footer\">""" + self.settings['footer_template'] % self.meta_info + """<b id=\"slide_number\" style=\"padding: 1em;\"></b></footer>"""
+        elif self.settings['page_number']:
             self.footer_html = """<footer><b id=\"slide_number\"></b></footer>"""
         else:
             self.footer_html = ""
 
     def _generate_header(self):
+
+        extra_meta = ""
+        if 'abstract' in self.settings:
+            extra_meta += '<meta description="%(abstract)s" />\n' % {'abstract' : self.settings['abstract']}
+        if 'author' in self.settings:
+            extra_meta += '<meta author="%(author)s" />\n' % {'author' : self.settings['author']}
+        if 'authors' in self.settings:
+            for author in self.settings['authors']:
+                extra_meta += '<meta author="%(author)s" />\n' % {'author' : author}
 
         header = """<!doctype html>
         <html lang="en">
@@ -287,6 +304,7 @@ class Parser:
 		        <title>%(title)s</title>
 		        <meta name="description" content="%(title)s">
 		        %(meta)s
+		        %(extra_meta)s
 		        <meta name="apple-mobile-web-app-capable" content="yes" />
 		        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 		        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no">
@@ -326,21 +344,22 @@ class Parser:
 	        </head>
         """ % {'title': self.title,
                'meta': self.parts['meta'],
-               'reveal_theme': self.reveal_theme,
+               'extra_meta': extra_meta,
+               'reveal_theme': self.settings['reveal_theme'],
                'reveal_root': self.reveal_root,
                'rstslide_root': self.rstslide_root,
                'pygments': '<link rel="stylesheet" href="pygments.css">' if self.is_pygments else '',
                'mathjax_path': self.mathjax_path,
-               'horizontal_center': 'center' if self.horizontal_center else 'left',
-               'title_center': 'center' if self.title_center else 'left',
+               'horizontal_center': 'center' if self.settings['horizontal_center'] else 'left',
+               'title_center': 'center' if self.settings['title_center'] else 'left',
                'css_embedd': self.css_embedd,
-               'custom_stylesheet': '<link rel="stylesheet" href="%s">' % self.stylesheet if self.stylesheet != '' else ''}
+               'custom_stylesheet': '<link rel="stylesheet" href="%s">' % self.settings['stylesheet'] if self.settings['stylesheet'] != '' else ''}
 
         return header
 
     def _generate_footer(self):
 
-        if self.page_number:
+        if self.settings['page_number']:
             script_page_number = """
 		            <script>
                         // Fires each time a new slide is activated
@@ -362,8 +381,8 @@ class Parser:
         else:
             script_page_number = ""
 
-        if self.init_html:
-            footer = self.init_html
+        if self.settings['init_html']:
+            footer = self.settings['init_html']
         else:
             footer = """
 		        <script src="%(reveal_root)s/reveal.js"></script>
@@ -437,16 +456,60 @@ class Parser:
 	        </body>
         </html>"""
 
-        footer = footer % {'transition': self.transition,
+        footer = footer % {'transition': self.settings['transition'],
                            'footer': self.footer_html,
                            'mathjax_path': self.mathjax_path,
                            'reveal_root': self.reveal_root,
                            'rstslide_root': self.rstslide_root,
                            'script_page_number': script_page_number,
-                           'vertical_center': 'true' if self.vertical_center else 'false',
-                           'controls': 'true' if self.controls else 'false'}
+                           'vertical_center': 'true' if self.settings['vertical_center'] else 'false',
+                           'controls': 'true' if self.settings['controls'] else 'false'}
 
         return footer
+
+    def _parse_docinfo(self):
+
+        d = self.settings
+
+        doctree = docutils.core.publish_doctree(self.source)
+
+        #print(doctree)
+
+        docdom = doctree.asdom()
+
+        # Get all field lists in the document.
+        docinfos = docdom.getElementsByTagName('docinfo')
+
+        for docinfo in docinfos:
+            for field in docinfo.childNodes:
+                tag = field.tagName
+                if tag == "authors":
+                    authors = field.getElementsByTagName('author')
+                    d["authors"] = [x.firstChild.nodeValue for x in authors]
+                elif tag == "field":
+                    field_name = field.getElementsByTagName('field_name')[0]
+                    field_name_str = field_name.firstChild.nodeValue.lower()
+                    field_body = field.getElementsByTagName('field_body')[0]
+                    if field_name_str.endswith("-list"):
+                        field_name = field_name_str[:-len("-list")]
+                        if field_body.firstChild.tagName == 'bullet_list':
+                            d[field_name_str] = [x.firstChild.firstChild.nodeValue for c in field_body.childNodes for x in c.childNodes]
+                        else:
+                            d[field_name_str] = [c.firstChild.toxml() for c in field_body.childNodes]
+                    else:
+                        d[field_name_str] = " ".join(c.firstChild.toxml() for c in field_body.childNodes)
+
+                else:
+                    field_value = field.firstChild.nodeValue
+                    d[tag] = field_value
+
+        topics = docdom.getElementsByTagName('topic')
+        for topic in topics:
+            classes = topic.getAttribute("classes").lower()
+            if classes in [ 'abstract', 'dedication' ]:
+                d[classes] = " ".join(c.firstChild.toxml() for c in topic.childNodes)
+
+
 
 
 if __name__ == '__main__':
