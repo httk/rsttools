@@ -13,6 +13,9 @@ ReStructuredText HTML slide generator
 Background
 ==========
 
+Background
+----------
+
 ReStructuredText HTML slide generator
 -------------------------------------
 
@@ -40,9 +43,15 @@ Basic ReST markup
 
 * Subscripts H\ :sub:`2`\ O and supscripts E = mc\ :sup:`2` : 
 
-    ``H\ :sub:`2`\ O and E = mc\ :sup:`2```
+::
+  
+    H\ :sub:`2`\ O and E = mc\ :sup:`2`
 
-* `Links <http://www.example.com>`_ : ```Links <http://www.example.com>`_``
+* `Links <http://www.example.com>`_ 
+
+::
+  
+    `Links <http://www.example.com>`_
 
 
 Lists
@@ -105,7 +114,7 @@ The input file should have a hierarchical structure, with the different sections
 
 
 Structure of a ReST document
-============================
+----------------------------
 
 The choice of the marker characters is free. The line must be at least as long as the text.
 
@@ -134,7 +143,7 @@ The choice of the marker characters is free. The line must be at least as long a
     
     
 Field lists
-===========
+-----------
 
 It is possible to define *field lists* at the beginning of the document to generate the metadata used for the generation of the first slide and of the footer::
 
@@ -227,14 +236,14 @@ Images
 ------
 
 
-.. image:: http://collider.com/wp-content/uploads/monty-python-image-600x450.jpg
+.. image:: https://images.unsplash.com/photo-1554475901-e2ce1a3f857e?w=1652
     :width: 40%
     :align: center
     
     
 * Images can be centered and scaled between 0 and 100% using the ``image`` directive::
        
-    .. image:: http://collider.com/wp-content/uploads/monty-python-image-600x450.jpg
+    .. image:: https://images.unsplash.com/photo-1554475901-e2ce1a3f857e?w=1652
         :width: 40%
         :align: center
         
@@ -243,15 +252,16 @@ Images
 Images
 ------
 
-.. image:: http://collider.com/wp-content/uploads/monty-python-image-600x450.jpg
+.. image:: https://images.unsplash.com/photo-1554475901-e2ce1a3f857e?w=1652
     :width: 50%
     :align: right
     
 * Images can also be aligned to the left or to the right, with the corresponding scaling:
-       
-``:width: 50%``
 
-``:align: right``
+::
+  
+  :width: 50%
+  :align: right
 
 Code blocks
 -----------
@@ -444,7 +454,7 @@ Sidebar
     :subtitle: with its subtitle
     :class: left
 
-    .. image:: http://collider.com/wp-content/uploads/monty-python-image-600x450.jpg
+    .. image:: https://images.unsplash.com/photo-1554475901-e2ce1a3f857e?w=1652
         :width: 100%
         
     :small:`Fig. 1: legend of the image.`
@@ -751,19 +761,4 @@ and modify the CSS properties that you need.
     rstslide presentation.rst --stylesheet custom.css
     
 * You can also use both a basic theme and a slight modification in your own CSS file.
-
-Using a configuration file
---------------------------
-
-* To avoid re-typing all the arguments to ``rstslide``, you can also generate a configuration file with::
-
-    rstslide --generate_configuration presentation.conf
-    
-* Once adapted to your needs, you only need to call::
-
-    rstslide presentation.conf 
-    
-to compile the ReST file with the desired options.
-
-* The configuration file must end with ``.conf``, ``.cfg`` or ``.ini``.
 

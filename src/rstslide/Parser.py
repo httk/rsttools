@@ -4,10 +4,10 @@ try:
 except:
     pass
 
-import os, sys, codecs
+import os, sys, codecs, shutil, subprocess
 import docutils.core
 
-from .RevealTranslator import RSTTranslator, Writer
+from .RevealTranslator import RSTTranslator, HTMLWriter
 
 # Import custom directives
 from .TwoColumnsDirective import *
@@ -23,10 +23,7 @@ from .TemplateDirective import *
 class Parser:
     """Class converting a stand-alone reST file into a Reveal.js-powered HTML5 file, using the provided options."""
     
-    def __init__(self, input_file, output_file='', theme='default', transition = 'default', stylesheet='', 
-                 mathjax_path='', pygments_style='', vertical_center=False, 
-                 horizontal_center=False, title_center=False, footer=False, page_number=False, 
-                 controls=False, firstslide_template='', footer_template='', init_html=False, reveal_root='reveal'):
+    def __init__(self, input_file, output_file=''):
         """ Constructor of the Parser class.
         
         ``create_slides()`` must then be called to actually produce the presentation.
@@ -36,13 +33,15 @@ class Parser:
             * input_file : name of the reST file to be processed (obligatory).
             
             * output_file: name of the HTML file to be generated (default: same as input_file, but with a .html extension).
+
+        The input rst file allows the following settings in the first field list:         
             
             * theme: the name of the theme to be used ({**default**, beige, night}). 
-            
+
             * transition: the transition between slides ({**default**, cube, page, concave, zoom, linear, fade, none}).
-            * stylesheet: a custom CSS file which extends or replaces the used theme.
-            
-            * mathjax_path: URL or path to the MathJax library (default: http://cdn.mathjax.org/mathjax/latest/MathJax.js).
+
+            * stylesheet: a custom CSS file which extends or replaces the used theme.            
+
             * pygments_style: the style to be used for syntax color-highlighting using Pygments. The list depends on your Pygments version, type::
                 
                 from pygments.styles import STYLE_MAP
@@ -93,45 +92,44 @@ class Parser:
         self.output_file = output_file
         
         # Style
-        self.theme = theme 
-        self.stylesheet = stylesheet
-        self.transition = transition 
-        self.vertical_center=vertical_center
-        self.horizontal_center = horizontal_center
-        self.title_center = title_center
-        self.write_footer=footer
-        self.page_number=page_number
-        self.controls=controls
+        self.reveal_theme = 'simple'
+        self.transition = 'fade'
+        self.pygments_style = 'default'
+        self.stylesheet = ''
+        self.vertical_center=False
+        self.horizontal_center = False
+        self.title_center = False
+        self.write_footer=False
+        self.page_number=False
+        self.controls=False
         
-        # MathJax
-        if mathjax_path =='':
-            self.mathjax_path = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js'
-        else:
-            self.mathjax_path = mathjax_path
-            
         # Pygments
-        self.pygments_style = pygments_style
         
         # Template for the first slide
-        self.firstslide_template = firstslide_template
+        self.firstslide_template = ''
         
         # Temnplate for the footer
-        self.footer_template = footer_template
+        self.footer_template = ''
 
         # Initalization html for reveal.js
-        self.init_html = init_html
+        self.init_html = ''
 
-        # Root path to reaveal
-        self.reveal_root = reveal_root
+        # Root path to rstslide
+        self.rstslide_root = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','..'))
 
+        # Root path to rstslide
+        self.reveal_root = os.path.join(self.rstslide_root,'resources','reveal.js','dist')
+
+        # MathJax
+        self.mathjax_path = os.path.join(self.rstslide_root,'resources','mini-mathjax','build','MathJax.js')
+        
     def create_slides(self):
         """Creates the HTML5 presentation based on the arguments given to the constructor."""
     
-        # Copy the reveal library in the current directory
-        self._copy_reveal()
+        self._setup()
         
         # Create the writer and retrieve the parts
-        self.html_writer = Writer()
+        self.html_writer = HTMLWriter()
         self.html_writer.translator_class = RSTTranslator
         with codecs.open(self.input_file, 'r', 'utf8') as infile:
             self.parts = docutils.core.publish_parts(source=infile.read(), writer=self.html_writer)
@@ -139,21 +137,16 @@ class Parser:
         # Produce the html file
         self._produce_output()
         
-    def _copy_reveal(self):
+    def _setup(self):
         curr_dir = os.path.dirname(os.path.realpath(self.output_file))
         cwd = os.getcwd()
-        # Copy the reveal subfolder
-        #if not os.path.isdir(curr_dir+'/reveal'):
-        #    sources_dir = os.path.abspath(os.path.dirname(__file__)+'/reveal')
-        #    import shutil
-        #    shutil.copytree(sources_dir, curr_dir+'/reveal')
+        if os.path.exists(os.path.join(curr_dir,'rstslide')):
+            shutil.rmtree(os.path.join(curr_dir,'rstslide'))
+        os.makedirs(os.path.join(curr_dir,'rstslide'))
 
-        # Copy the rstslide.css
-        if not os.path.exists(curr_dir+'/rstslide.css'):
-            source_file = os.path.abspath(os.path.dirname(__file__)+'/reveal/css/rstslide.css')
-            import shutil
-            shutil.copyfile(source_file, curr_dir+'/rstslide.css')
-
+        #source_file = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','..','css','rstslide.css'))
+        #shutil.copyfile(source_file, os.path.join(curr_dir,'rstslide.css'))
+        
         # Generate the Pygments CSS file
         self.is_pygments = False
         if not self.pygments_style == '':
@@ -166,14 +159,14 @@ class Parser:
                 print('You should install it with `pip install pygments`')
                 return
             os.chdir(curr_dir) 
-            import subprocess, shutil
+
             os.system("pygmentize -S "+self.pygments_style+" -f html -O bg=light > pygments.css")      
             # Fix the bug where the literal color goes to math blocks...
             with codecs.open('pygments.css', 'r', 'utf8') as infile:
                 with codecs.open('pygments.css.tmp', 'w', 'utf8') as outfile:
                     for aline in infile:
                         outfile.write('.highlight '+aline)
-            shutil.move('pygments.css.tmp', 'pygments.css')
+            shutil.move('pygments.css.tmp', os.path.join('rstslide','pygments.css'))
             os.chdir(cwd)        
             
     def _produce_output(self):
@@ -298,13 +291,23 @@ class Parser:
 		        <meta name="apple-mobile-web-app-capable" content="yes" />
 		        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 		        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no">
-		        <link rel="stylesheet" href="%(reveal_root)s/css/reveal.css">
+		        <link rel="stylesheet" href="%(reveal_root)s/reveal.css">
 		        %(pygments)s
-		        <link rel="stylesheet" href="rstslide.css">
-		        <!--link rel="stylesheet" href="%(reveal_root)s/css/theme/default.css" id="theme"-->
-		        <link rel="stylesheet" href="%(reveal_root)s/css/theme/%(theme)s.css" id="theme">
-		        <link rel="stylesheet" href="%(reveal_root)s/css/print/pdf.css" type="text/css" media="print"> 
-		        <script type="text/javascript" src="%(mathjax_path)s?config=TeX-AMS-MML_HTMLorMML"></script>
+		        <link rel="stylesheet" href="%(rstslide_root)s/css/rstslide.css">
+		        <link rel="stylesheet" href="%(reveal_root)s/theme/%(reveal_theme)s.css" id="theme">
+                        <script type="text/x-mathjax-config">
+                          MathJax.Hub.Config({
+                            jax: ["input/TeX","output/SVG"],
+                            extensions: ["tex2jax.js"],
+                            TeX: {
+                              extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"]
+                            },
+                            SVG: {
+                               font: "Gyre-Pagella"
+                            }
+                          });
+                        </script>
+		        <script type="text/javascript" src="%(mathjax_path)s"></script>
 		        <!-- Extra styles -->
                 <style>
                     .reveal section {
@@ -321,8 +324,9 @@ class Parser:
 	        </head>
         """%{'title': self.title,
              'meta' : self.parts['meta'],
-             'theme': self.theme,
+             'reveal_theme': self.reveal_theme,
              'reveal_root' : self.reveal_root,
+             'rstslide_root' : self.rstslide_root,
              'pygments': '<link rel="stylesheet" href="pygments.css">' if self.is_pygments else '',
              'mathjax_path': self.mathjax_path,
              'horizontal_center': 'center' if self.horizontal_center else 'left',
@@ -360,8 +364,7 @@ class Parser:
             footer = self.init_html
         else:
             footer="""
-		        <script src="%(reveal_root)s/lib/js/head.min.js"></script>
-		        <script src="%(reveal_root)s/js/reveal.min.js"></script>
+		        <script src="%(reveal_root)s/reveal.js"></script>
 		        <script>
 			        // Full list of configuration options available here:
 			        // https://github.com/hakimel/reveal.js#configuration
@@ -375,11 +378,54 @@ class Parser:
 				        touch: true,
 				        rtl: false,
 				        center: %(vertical_center)s,
-				        mouseWheel: true,
+				        mouseWheel: false,
 				        fragments: true,
 				        rollingLinks: false,
-				        transition: '%(transition)s'
-			        });
+				        transition: '%(transition)s',
+                                        transitionSpeed: 'fast',
+                                        slideNumber: '',
+                                        menu : {
+                                          side: 'right',
+                                          width: 'normal',
+                                          numbers: false,
+                                          titleSelector: 'h1, h2, h3, h4, h5, h6',
+                                          useTextContentForMissingTitles: false,
+                                          hideMissingTitles: false,
+                                          markers: true,
+                                          custom: false,
+                                          themes: false,
+                                          themesPath: 'css/theme/',
+                                          transitions: false,
+                                          openButton: true,
+                                          openSlideNumber: false,
+                                          keyboard: true,
+                                          sticky: false,
+                                          autoOpen: true,
+                                          delayInit: false,
+                                          openOnInit: false,
+                                          loadIcons: true,
+                                        },
+      	keyboard: {
+        37: 'prev', // go to the next slide when the ENTER key is pressed
+      	39: 'next', // go to the next slide when the ENTER key is pressed
+      	33: 'prev', // go to the next slide when the ENTER key is pressed
+      	34: 'next', // go to the next slide when the ENTER key is pressed
+	190: 'right', // go to the next slide when the ENTER key is pressed
+      	188: 'left', // go to the next slide when the ENTER key is pressed
+      	},
+        dependencies: [
+          { src: '%(rstslide_root)s/resources/reveal-plugins/reveal.js-menu/menu.js', async: true },  
+          { src: '%(rstslide_root)s/resources/reveal-plugins/toc-progress/toc-progress.js',
+                async: true,
+                callback: function()
+                {
+                    toc_progress.initialize(null,null,'{ background-color: white; color: var(--liublue0);}');
+                    toc_progress.create();
+                }
+          }
+          ]
+        });
+        
 		        </script>"""
 
         footer+="""            
@@ -393,6 +439,7 @@ class Parser:
                            'footer' : self.footer_html,
                            'mathjax_path': self.mathjax_path,
                            'reveal_root' : self.reveal_root,
+                           'rstslide_root' : self.rstslide_root,
                            'script_page_number' : script_page_number,
                            'vertical_center' : 'true' if self.vertical_center else 'false',
                            'controls': 'true' if self.controls else 'false'}

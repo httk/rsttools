@@ -9,7 +9,7 @@ from docutils.writers.html4css1 import HTMLTranslator, Writer
 
 
 
-class RSTWriter(Writer):
+class HTMLWriter(Writer):
     """ Writer to be used with the RevealTranslator class."""
 
     visitor_attributes = (
@@ -174,7 +174,7 @@ class RSTTranslator(HTMLTranslator):
         # place SWF images in an <object> element
         types = {'.swf': 'application/x-shockwave-flash'}
         ext = os.path.splitext(uri)[1].lower()
-        if ext in ('.swf'):
+        if ext in ('.swf',):
             atts['data'] = uri
             atts['type'] = types[ext]
         else:
@@ -233,7 +233,7 @@ class RSTTranslator(HTMLTranslator):
             #if node['align'] in ['left', 'right']:
             #    self.inline_lists = True
         self.context.append('')
-        if ext in ('.swf'): # place in an object element,
+        if ext in ('.swf',): # place in an object element,
             # do NOT use an empty tag: incorrect rendering in browsers
             self.body.append(self.starttag(node, 'object', suffix, **atts) +
                              node.get('alt', uri) + '</object>' + suffix)

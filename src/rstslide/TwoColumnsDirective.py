@@ -19,7 +19,7 @@ Also available: column:: main and column:: side
 
 # Define the nodes.
 from docutils import nodes
-from .RevealTranslator import RSTranslator
+from .RevealTranslator import RSTTranslator
 
 class LeftColumnNode(nodes.Part, nodes.Element): pass
 class RightColumnNode(nodes.Part, nodes.Element): pass

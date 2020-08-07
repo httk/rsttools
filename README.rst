@@ -1,13 +1,15 @@
-========
-rstslide
-========
+=============
+httk-rsttools
+=============
 
-ReStructuredText (ReST) HTML slide generator for reveal.js
-----------------------------------------------------------
+This repository is a side repository to `httk <https://github.com/rartino/httk>`_ to support various forms of information publishing. Presently, the only components are `rstslide` and `rstpaper`.
 
-**rstslide** is a fork of **rst2reveal** from https://github.com/vitay/rst2reveal
+rstslide: reStructuredText HTML slide generator using reveal.js
+---------------------------------------------------------------
 
-**rstslide** transforms reStructuredText (ReST) text files to HTML5 slides using the `Reveal.js <https://github.com/hakimel/reveal.js>`_ Javascript library developped by `Hakim El Hattab <http://hakim.se>`_. 
+**rstslide** forks **rst2reveal** from https://github.com/vitay/rst2reveal
+
+**rstslide** transforms reStructuredText (ReST) text files to HTML5 slides that uses the `Reveal.js <https://github.com/hakimel/reveal.js>`_ Javascript library developped by `Hakim El Hattab <http://hakim.se>`_.
 
 Dependencies
 ------------
@@ -19,7 +21,7 @@ In addition to Python 2.6 or 2.7 (not 3.x yet), **rstslide** requires the follow
 * `setuptools <http://pypi.python.org/pypi/setuptools>`_
 
 * `Reveal.js<https://github.com/hakimel/reveal.js>`_
-  
+
 If you want to display code in your slides, it is strongly advised to have `pygments <http://www.pygments.org>`_ installed for syntaxic color highlighting in many languages.
 
 To directly generate plots within the ReST script, you will need `Matplotlib <http://matplotlib.org/>`_ (version >= 1.1) installed.
@@ -34,7 +36,7 @@ Simply clone the git repository and run make::
     $ make
 
 and then add the `bin` directory to your path.
-    
+
 **rstslide** has been tested only on GNU/Linux systems, but perhaps it works on other platforms.
 
 Usage
