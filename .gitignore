@@ -135,10 +135,9 @@ dmypy.json
 .pyre/
 
 /plugins
-/resources
-!/themes
-/themes/**
-!/themes/default
+/rstslide/resources
+/rstslide/themes/*
+!/rstslide/themes/default
 /build
 /dist
 *.pyc

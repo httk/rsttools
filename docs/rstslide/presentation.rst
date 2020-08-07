@@ -8,19 +8,21 @@ ReStructuredText HTML slide generator
 
 .. Below follows the docinfo segment
 
-   There are three types of docinfo fields.
+   There are four types of docinfo fields, each grouped by double newline below.
 
-   The ones in the top group have defined bibliographic meaning.
+   1. Those with defined bibliographic meaning in rst.
 
-   The ones in the second group, abstract and dedication, are
-   not formally part of the docinfo, but are meant to be typeset in
-   the document.
+   2. The abstract and dedication are defined in rst to be lifted out of the docinfo,
+      and are meant to be typeset somehow in the document.
 
-   The final ones are custom ones. These are used in rstslide to
-   set configuration options.
+   3. Non-rst fields that have defined meaning in rstslide.
+      This is how you set configuration options.
 
-   One cannot put comments inside the docinfo block.
-   Only the first field list counts as the docinfo, and
+   4. Non-rst fields with no meaning in rstslide.
+      These are ignored.
+
+   Note: one cannot put comments inside the docinfo block.
+   Only the first field list counts as part of the docinfo, and
    a comment ends it.
 
 :author: Rickard Armiento (forked from Julien Vitay)
@@ -50,6 +52,8 @@ ReStructuredText HTML slide generator
 
 
 :email: test@example.com
+:theme: liu
+
 :test: This is a
    multiline value.
    yep it is.

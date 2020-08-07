@@ -147,18 +147,19 @@ class Parser:
         with codecs.open(self.input_file, 'r', 'utf8') as infile:
             self.source = infile.read()
 
-        self._parse_docinfo()
+        self.settings = self._parse_docinfo(self.source, self.settings)
 
         curr_dir = os.path.dirname(os.path.realpath(self.output_file))
         cwd = os.getcwd()
-        if os.path.exists(os.path.join(curr_dir, 'rstslide')):
-            shutil.rmtree(os.path.join(curr_dir, 'rstslide'))
-        os.makedirs(os.path.join(curr_dir, 'rstslide'))
+
+        #if os.path.exists(os.path.join(curr_dir, 'rstslide')):
+        #    shutil.rmtree(os.path.join(curr_dir, 'rstslide'))
+        #os.makedirs(os.path.join(curr_dir, 'rstslide'))
 
         #source_file = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','..','css','rstslide.css'))
         #shutil.copyfile(source_file, os.path.join(curr_dir,'rstslide.css'))
 
-        # Generate the Pygments CSS file
+        # Generate CSS for pygments
         self.is_pygments = False
         if not self.settings['pygments_style'] == '':
             # Check if Pygments is installed
@@ -170,14 +171,7 @@ class Parser:
                 print('You should install it with `pip install pygments`')
                 return
             os.chdir(curr_dir)
-            #os.system("pygmentize -S "+self.pygments_style+" -f html -O bg=light > pygments.css")
             self.css_embedd += codecs.decode(subprocess.check_output(['pygmentize', '-S', self.settings['pygments_style'], "-f", "html", "-O", "bg=light"]), 'utf-8')
-            # Fix the bug where the literal color goes to math blocks...
-            #with codecs.open('pygments.css', 'r', 'utf8') as infile:
-            #    with codecs.open('pygments.css.tmp', 'w', 'utf8') as outfile:
-            #        for aline in infile:
-            #            outfile.write('.highlight '+aline)
-            #shutil.move('pygments.css.tmp', os.path.join('rstslide','pygments.css'))
             os.chdir(cwd)
 
     def _produce_output(self):
@@ -467,11 +461,12 @@ class Parser:
 
         return footer
 
-    def _parse_docinfo(self):
+    def _parse_docinfo(self, source, d=None):
 
-        d = self.settings
+        if d is None:
+            d = {}
 
-        doctree = docutils.core.publish_doctree(self.source)
+        doctree = docutils.core.publish_doctree(source)
 
         #print(doctree)
 
@@ -509,7 +504,7 @@ class Parser:
             if classes in [ 'abstract', 'dedication' ]:
                 d[classes] = " ".join(c.firstChild.toxml() for c in topic.childNodes)
 
-
+        return d
 
 
 if __name__ == '__main__':
