@@ -103,6 +103,8 @@ class Parser:
         self.page_number=False
         self.controls=False
         
+        self.css_embedd = ''
+        
         # Pygments
         
         # Template for the first slide
@@ -158,15 +160,15 @@ class Parser:
                 print('Warning: Pygments is not installed, the code will not be highlighted.')
                 print('You should install it with `pip install pygments`')
                 return
-            os.chdir(curr_dir) 
-
-            os.system("pygmentize -S "+self.pygments_style+" -f html -O bg=light > pygments.css")      
+            os.chdir(curr_dir)
+            #os.system("pygmentize -S "+self.pygments_style+" -f html -O bg=light > pygments.css")
+            self.css_embedd += codecs.decode(subprocess.check_output(['pygmentize', '-S', self.pygments_style, "-f","html","-O","bg=light"]),'utf-8')
             # Fix the bug where the literal color goes to math blocks...
-            with codecs.open('pygments.css', 'r', 'utf8') as infile:
-                with codecs.open('pygments.css.tmp', 'w', 'utf8') as outfile:
-                    for aline in infile:
-                        outfile.write('.highlight '+aline)
-            shutil.move('pygments.css.tmp', os.path.join('rstslide','pygments.css'))
+            #with codecs.open('pygments.css', 'r', 'utf8') as infile:
+            #    with codecs.open('pygments.css.tmp', 'w', 'utf8') as outfile:
+            #        for aline in infile:
+            #            outfile.write('.highlight '+aline)
+            #shutil.move('pygments.css.tmp', os.path.join('rstslide','pygments.css'))
             os.chdir(cwd)        
             
     def _produce_output(self):
@@ -310,9 +312,12 @@ class Parser:
 		        <script type="text/javascript" src="%(mathjax_path)s"></script>
 		        <!-- Extra styles -->
                 <style>
+                    %(css_embedd)s
+
                     .reveal section {
                       text-align: %(horizontal_center)s; 
                     }
+
                     .reveal h2{
                       text-align: %(title_center)s; 
                     }
@@ -331,7 +336,8 @@ class Parser:
              'mathjax_path': self.mathjax_path,
              'horizontal_center': 'center' if self.horizontal_center else 'left',
              'title_center': 'center' if self.title_center else 'left',
-             'custom_stylesheet' : '<link rel="stylesheet" href="%s">'%self.stylesheet if not self.stylesheet is '' else ''}
+             'css_embedd': self.css_embedd,
+             'custom_stylesheet' : '<link rel="stylesheet" href="%s">'%self.stylesheet if self.stylesheet != '' else ''}
              
         return header
              

@@ -1,12 +1,16 @@
 __docformat__ = 'reStructuredText'
 
-import os
-import re
+import os, re, sys
 
 import docutils
 from docutils import nodes
 from docutils.writers.html4css1 import HTMLTranslator, Writer
 
+# Retain python2 compatibility
+if sys.version[0] == "2":
+    unicode_type=unicode
+else:
+    unicode_type=str
 
 
 class HTMLWriter(Writer):
@@ -131,7 +135,7 @@ class RSTTranslator(HTMLTranslator):
         self.body = []
 
     def visit_docinfo_item(self, node, name, meta=True):
-        self.metadata.append(name + '=' + unicode(node)+'\n')
+        self.metadata.append(name + '=' + unicode_type(node)+'\n')
         self.body.append(self.starttag(node, 'tr', ''))
         if len(node):
             if isinstance(node[0], nodes.Element):
@@ -149,8 +153,8 @@ class RSTTranslator(HTMLTranslator):
         pass
 
     def visit_field_body(self, node):
-        field_names = re.findall(r'<field_name>(.+)</field_name>', unicode(node.parent[0]))
-        field_values = re.findall(r'<field_body>(.+)</field_body>', unicode(node.parent[1]))
+        field_names = re.findall(r'<field_name>(.+)</field_name>', unicode_type(node.parent[0]))
+        field_values = re.findall(r'<field_body>(.+)</field_body>', unicode_type(node.parent[1]))
         if len(field_names) > 0 and len(field_values) > 0:
             name = field_names[0]
             value = field_values[0]
@@ -198,9 +202,9 @@ class RSTTranslator(HTMLTranslator):
                     self.settings.record_dependencies.add(
                         imagepath.replace('\\', '/'))
                     if 'width' not in atts:
-                        atts['width'] = unicode(img.size[0])
+                        atts['width'] = unicode_type(img.size[0])
                     if 'height' not in atts:
-                        atts['height'] = unicode(img.size[1])
+                        atts['height'] = unicode_type(img.size[1])
                     del img
             for att_name in 'width', 'height':
                 if att_name in atts:
@@ -358,19 +362,17 @@ class RSTTranslator(HTMLTranslator):
                     # Non-empty tag.  Place the auxiliary <span> tag
                     # *inside* the element, as the first child.
                     suffix += '<span id="%s"></span>' % id
-        attlist = atts.items()
+        attlist = list(atts.items())
         attlist.sort()
         parts = [tagname]
         for name, value in attlist:
             if value is None:
                 parts.append('%s' % (name.lower()))
             elif isinstance(value, list):
-                values = [unicode(v) for v in value]
-                parts.append('%s="%s"' % (name.lower(),
-                                          self.attval(' '.join(values))))
+                values = [unicode_type(v) for v in value]
+                parts.append('%s="%s"' % (name.lower(), self.attval(' '.join(values))))
             else:
-                parts.append('%s="%s"' % (name.lower(),
-                                          self.attval(unicode(value))))
+                parts.append('%s="%s"' % (name.lower(), self.attval(unicode_type(value))))
         if empty:
             infix = ' /'
         else:

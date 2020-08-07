@@ -1,4 +1,4 @@
 from .Parser import Parser
-
-__version__ = '0.2'
+from .Cli import Cli
+from ._version import __version__
 

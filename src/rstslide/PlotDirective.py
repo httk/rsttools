@@ -58,8 +58,10 @@ def plot_directive(name, arguments, options, content, lineno,
     # Execute the code line by line
     try:
         fig = figure()
+        lscope = locals()
+        gscope = globals()
         for line in content:
-            exec(line)
+            exec(line,gscope,lscope)
         # Set transparency
         fig.patch.set_alpha(alpha)
         for ax in fig.axes:
@@ -77,7 +79,7 @@ def plot_directive(name, arguments, options, content, lineno,
                     return []
             else:
                 mag=1.5
-            from XKCDify import XKCDify
+            from .XKCDify import XKCDify
             for ax in fig.axes:
                 XKCDify(ax, mag=mag, 
                         bgcolor = 'k' if 'invert' in options.keys() else 'w',
@@ -102,7 +104,7 @@ def plot_directive(name, arguments, options, content, lineno,
     # Extract the generated data
     start = False
     text = "<div class=\"align-%(align)s\">\n" % {'align': align}
-    with open('__temp.svg', 'rb') as infile:
+    with open('__temp.svg', 'rt') as infile:
         for aline in infile:
             if aline.find('<svg ') != -1:
                 start = True

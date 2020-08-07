@@ -26,7 +26,7 @@ def pygments_directive(name, arguments, options, content, lineno,
         # no lexer found - use the text one instead of an exception
         lexer = TextLexer()
     # take an arbitrary option if more than one is given
-    formatter = options and VARIANTS[options.keys()[0]] or DEFAULT
+    formatter = options and VARIANTS[next(iter(options.keys()))] or DEFAULT
     parsed = highlight(u'\n'.join(content), lexer, formatter)
     parsed = ' '*12 + '<code>%s</code>' % parsed
     return [nodes.raw('', parsed, format='html')]
