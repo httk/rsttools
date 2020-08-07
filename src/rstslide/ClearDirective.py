@@ -36,7 +36,7 @@ def depart_clear_both(self, node):
 
 
 def visit_clear_left(self, node):
-    self.body.append(' '*12 + '<div style="clear:left"/>\n')    
+    self.body.append(' '*12 + '<div style="clear:left"/>\n')
 
 
 def depart_clear_left(self, node):
@@ -96,9 +96,9 @@ class Clear(Directive):
         else:
             raise self.error("Uknown argument to clear directive %s" % (self.arguments[0],))
         column_node = self.node_class()
-        return [column_node]    
+        return [column_node]
 
 
 from docutils.parsers.rst import directives
-directives.register_directive('clear', Clear)         
+directives.register_directive('clear', Clear)
 

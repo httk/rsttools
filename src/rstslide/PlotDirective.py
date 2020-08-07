@@ -12,7 +12,7 @@ def plot_directive(name, arguments, options, content, lineno,
 
     # Check if matplotlib is installed
     try:
-        import matplotlib.pylab 
+        import matplotlib.pylab
     except BaseException:
         print('Warning: matplotlib is not installed on your system. Plots will not be generated.')
         return []
@@ -81,7 +81,7 @@ def plot_directive(name, arguments, options, content, lineno,
                 mag = 1.5
             from .XKCDify import XKCDify
             for ax in fig.axes:
-                XKCDify(ax, mag=mag, 
+                XKCDify(ax, mag=mag,
                         bgcolor='k' if 'invert' in options.keys() else 'w',
                         forecolor='w' if 'invert' in options.keys() else 'k',
                         xaxis_arrow='+', yaxis_arrow='+',
@@ -110,8 +110,8 @@ def plot_directive(name, arguments, options, content, lineno,
                 text += '   <svg class=\"align-%(align)s\" %(width)s viewBox="0 0 576 432" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg >"\n' % {'align': align, 'width': width}
             elif start:
                 try:
-                    text += '   ' + unicode(aline) 
-                except BaseException: 
+                    text += '   ' + unicode(aline)
+                except BaseException:
                     pass
     text += "\n</div>\n"
     os.system('rm -f __temp.svg')

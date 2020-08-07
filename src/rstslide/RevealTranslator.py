@@ -28,15 +28,15 @@ class RSTTranslator(HTMLTranslator):
     """ Translator converting the reST items into HTML5 code usable by Reveal.js.
 
     Derived from docutils.writers.html4css1.HTMLTranslator.
-    """ 
+    """
 
     def __init__(self, document):
-        HTMLTranslator.__init__(self, document) 
-        self.math_output = 'mathjax' 
+        HTMLTranslator.__init__(self, document)
+        self.math_output = 'mathjax'
         self.metadata = []
         self.subsection_previous = False
         self.inline_lists = False
-        self.slide_tile_level = 0 
+        self.slide_tile_level = 0
         self.in_slide_title = False
         self.hide_next_title = True
         self.delayed_header_attributes = {}
@@ -58,16 +58,16 @@ class RSTTranslator(HTMLTranslator):
         check_id = 0  # TODO: is this a bool (False) or a counter?
         close_tag = ' '*12 + '</p>\n'
         if isinstance(node.parent, nodes.topic):
-            self.body.append(' '*12 + 
+            self.body.append(' '*12 +
                              self.starttag(node, 'p', '', CLASS='topic-title first'))
         elif isinstance(node.parent, nodes.sidebar):
-            self.body.append(' '*12 + 
+            self.body.append(' '*12 +
                              self.starttag(node, 'p', '', CLASS='sidebar-title'))
         elif isinstance(node.parent, nodes.Admonition):
-            self.body.append(' '*12 + 
+            self.body.append(' '*12 +
                              self.starttag(node, 'p', '', CLASS='admonition-title'))
         elif isinstance(node.parent, nodes.table):
-            self.body.append(' '*12 + 
+            self.body.append(' '*12 +
                              self.starttag(node, 'caption', ''))
             close_tag = ' '*12 + '</caption>\n'
         elif isinstance(node.parent, nodes.document):
@@ -325,7 +325,7 @@ class RSTTranslator(HTMLTranslator):
         atts = node.get('attributes', {})
         ids = []
         for (name, value) in attributes.items():
-            atts[name.lower()] = value            
+            atts[name.lower()] = value
         classes = []
         languages = []
         # unify class arguments and move language specification

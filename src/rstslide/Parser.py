@@ -35,13 +35,13 @@ class Parser:
 
             * output_file: name of the HTML file to be generated (default: same as input_file, but with a .html extension).
 
-        The input rst file allows the following settings in the first field list:         
+        The input rst file allows the following settings in the first field list:
 
-            * theme: the name of the theme to be used ({**default**, beige, night}). 
+            * theme: the name of the theme to be used ({**default**, beige, night}).
 
             * transition: the transition between slides ({**default**, cube, page, concave, zoom, linear, fade, none}).
 
-            * stylesheet: a custom CSS file which extends or replaces the used theme.            
+            * stylesheet: a custom CSS file which extends or replaces the used theme.
 
             * pygments_style: the style to be used for syntax color-highlighting using Pygments. The list depends on your Pygments version, type::
 
@@ -84,7 +84,7 @@ class Parser:
 
             * %(is_institution)s : the '-' character if the :institution: field is defined, '' otherwise.
 
-        You can also use your own fields in the templates.            
+        You can also use your own fields in the templates.
 
         """
 
@@ -170,7 +170,7 @@ class Parser:
             #        for aline in infile:
             #            outfile.write('.highlight '+aline)
             #shutil.move('pygments.css.tmp', os.path.join('rstslide','pygments.css'))
-            os.chdir(cwd)        
+            os.chdir(cwd)
 
     def _produce_output(self):
 
@@ -234,12 +234,12 @@ class Parser:
         if self.parts['title'] != '':  # A title has been given
             self.meta_info['title'] = self.parts['title']
         elif not 'title' in self.meta_info.keys():
-            self.meta_info['title'] = '' 
+            self.meta_info['title'] = ''
 
         if self.parts['subtitle'] != '':  # defined with a underlined text instead of :subtitle:
             self.meta_info['subtitle'] = self.parts['subtitle']
         elif not 'subtitle' in self.meta_info.keys():
-            self.meta_info['subtitle'] = ''    
+            self.meta_info['subtitle'] = ''
 
         if not 'email' in self.meta_info.keys():
             self.meta_info['email'] = ''
@@ -248,7 +248,7 @@ class Parser:
             self.meta_info['institution'] = ''
 
         if not 'date' in self.meta_info.keys():
-            self.meta_info['date'] = ''  
+            self.meta_info['date'] = ''
 
         # Separators
         self.meta_info['is_institution'] = '-' if self.meta_info['institution'] != '' else ''
@@ -265,7 +265,7 @@ class Parser:
     <p><small>%(email)s</small></p>
     <p>%(date)s</p>
     </section>
-""" 
+"""
 
         self.titleslide = self.firstslide_template % self.meta_info
         if self.footer_template == "":
@@ -312,11 +312,11 @@ class Parser:
                     %(css_embedd)s
 
                     .reveal section {
-                      text-align: %(horizontal_center)s; 
+                      text-align: %(horizontal_center)s;
                     }
 
                     .reveal h2{
-                      text-align: %(title_center)s; 
+                      text-align: %(title_center)s;
                     }
                 </style>
                 %(custom_stylesheet)s
@@ -342,7 +342,7 @@ class Parser:
 
         if self.page_number:
             script_page_number = """
-		            <script>                 
+		            <script>
                         // Fires each time a new slide is activated
                         Reveal.addEventListener( 'slidechanged', function( event ) {
                             if(event.indexh > 0) {
@@ -356,7 +356,7 @@ class Parser:
                             }
                             else {
                                 document.getElementById('slide_number').innerHTML = '';
-                            }  
+                            }
                         } );
                     </script>"""
         else:
@@ -416,7 +416,7 @@ class Parser:
       	188: 'left', // go to the next slide when the ENTER key is pressed
       	},
         dependencies: [
-          { src: '%(rstslide_root)s/resources/reveal-plugins/reveal.js-menu/menu.js', async: true },  
+          { src: '%(rstslide_root)s/resources/reveal-plugins/reveal.js-menu/menu.js', async: true },
           { src: '%(rstslide_root)s/resources/reveal-plugins/toc-progress/toc-progress.js',
                 async: true,
                 callback: function()
@@ -427,12 +427,12 @@ class Parser:
           }
           ]
         });
-        
+
 		        </script>"""
 
-        footer += """            
+        footer += """
             %(script_page_number)s
-		    
+
 	        %(footer)s
 	        </body>
         </html>"""

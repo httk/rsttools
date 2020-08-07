@@ -5,14 +5,14 @@ Usage:
 .. column:: left
 
     * item
-    
+
     * item
-    
+
 .. column:: right
 
     * item
-    
-    * item 
+
+    * item
 
 Also available: column:: main and column:: side
 """
@@ -35,7 +35,7 @@ class MainColumnNode(nodes.Part, nodes.Element):
 
 
 class SideColumnNode(nodes.Part, nodes.Element):
-    pass 
+    pass
 
 
 def visit_left_column(self, node):
@@ -116,15 +116,15 @@ class Column(Directive):
         if self.arguments[0] in ['main', 'Main']:
             self.node_class = MainColumnNode
         if self.arguments[0] in ['side', 'Side']:
-            self.node_class = SideColumnNode            
+            self.node_class = SideColumnNode
         # Create the admonition node, to be populated by `nested_parse`.
         column_node = self.node_class(rawsource=text)
         # Parse the directive contents.
         self.state.nested_parse(self.content, self.content_offset,
                                 column_node)
-        return [column_node]    
+        return [column_node]
 
 
 from docutils.parsers.rst import directives
-directives.register_directive('column', Column)         
+directives.register_directive('column', Column)
 

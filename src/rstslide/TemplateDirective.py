@@ -31,7 +31,7 @@ class Template(Directive):
 
     required_arguments = 1
     optional_arguments = 0
-    final_argument_whitespace = False    
+    final_argument_whitespace = False
     has_content = False
 
     option_spec = {'prefix': directives.unchanged, 'suffix': directives.unchanged}
@@ -43,7 +43,7 @@ class Template(Directive):
         except ValueError:
             raise self.error(
                 'Missing template name for directive: "%s".'
-                % (self.name))            
+                % (self.name))
         messages = []
         base_role = roles.raw_role
         converted_role = convert_directive_function(base_role)

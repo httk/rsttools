@@ -82,7 +82,7 @@ def xkcd_line(x, y, xlim=None, ylim=None,
     # interpolate curve at sampled points
     k = min(3, len(x) - 1)
     res = interpolate.splprep([x_scaled, y_scaled], s=0, k=k)
-    x_int, y_int = interpolate.splev(u, res[0]) 
+    x_int, y_int = interpolate.splev(u, res[0])
 
     # we'll perturb perpendicular to the drawn line
     dx = x_int[2:] - x_int[:-2]
@@ -256,7 +256,7 @@ def XKCDify(ax, mag=1.0,
 
     # adjust the axes
     ax.set_xticks([])
-    ax.set_yticks([])      
+    ax.set_yticks([])
 
     if expand_axes:
         ax.figure.set_facecolor(bgcolor)
