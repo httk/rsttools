@@ -81,12 +81,10 @@ release:
 		echo "Present release: $$(git describe --always)"; \
 		echo "Enter new tag:"; \
 		read tag; \
-		echo "$$tag" | awk "{printf(\"__version__ = '%s'\\n\",\$0)}" > src/rstslide/_version.py
-		git add src/rstslide/_version.py
-		git commit -m "Release $$tag"
+		echo "$$tag" | awk '{printf("__version__ = '"'%s'"'\n",$$0)}' > src/rstslide/_version.py; \
+		git add src/rstslide/_version.py; \
+		git commit -m "Release $$tag"; \
 		git tag -s "$$tag" -m "Release $$tag"; \
 		git push -u origin "$$tag"; \
 	)
 
-version:
-	git describe --always --dirty | sed 's/^v\(.*\)/\1/' | sed 's/-/.dev/' | sed 's/-/+/' | sed 's/-dirty/.d/' | awk "{printf(\"__version__ = '%s'\\n\",\$0)}"  > src/rstslide/_version.py
