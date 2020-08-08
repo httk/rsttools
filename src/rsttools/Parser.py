@@ -103,14 +103,17 @@ class Parser:
 
         self.debug = debug
 
-        # Path to rstslide
-        self.rstslide_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+        # Path to rsttools directory
+        self.rsttools_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+        # Path to rstslide resource directory
+        self.rstslide_root = os.path.join(self.rsttools_root, 'rstslide')
 
         # Path to reveal
-        self.reveal_root = os.path.join(self.rstslide_root, 'resources', 'reveal.js', 'dist')
+        self.reveal_root = os.path.join(self.rsttools_root, 'external', 'reveal.js', 'dist')
 
         # Path to MathJax
-        self.mathjax_path = os.path.join(self.rstslide_root, 'resources', 'mini-mathjax', 'build', 'MathJax.js')
+        self.mathjax_path = os.path.join(self.rsttools_root, 'external', 'mini-mathjax', 'build', 'MathJax.js')
 
         self.settings = {}
 
@@ -478,8 +481,8 @@ class Parser:
       	107: function() {Reveal.right(); Reveal.slide(Reveal.getIndices()['h'],0,0);}, // plus
       	},
         dependencies: [
-          { src: '%(rstslide_root)s/resources/reveal-plugins/reveal.js-menu/menu.js', async: true },
-          { src: '%(rstslide_root)s/resources/reveal-plugins/toc-progress/toc-progress.js',
+          { src: '%(rsttools_root)s/external/reveal-plugins/reveal.js-menu/menu.js', async: true },
+          { src: '%(rsttools_root)s/external/reveal-plugins/toc-progress/toc-progress.js',
                 async: true,
                 callback: function()
                 {
@@ -504,6 +507,7 @@ class Parser:
                            'mathjax_path': self.mathjax_path,
                            'reveal_root': self.reveal_root,
                            'rstslide_root': self.rstslide_root,
+                           'rsttools_root': self.rsttools_root,
                            'script_page_number': script_page_number,
                            'vertical_center': 'true' if self.settings['vertical_center'] else 'false',
                            'controls': 'true' if self.settings['controls'] else 'false'}

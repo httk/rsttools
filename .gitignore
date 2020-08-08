@@ -134,8 +134,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-/plugins
-/rstslide/resources
+/external
 /rstslide/themes/*
 !/rstslide/themes/default
 /build

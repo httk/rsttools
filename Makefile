@@ -83,8 +83,8 @@ release:
 		echo "Present release: $$(git describe --always)"; \
 		echo "Enter new tag:"; \
 		read tag; \
-		echo "$$tag" | awk '{printf("__version__ = '"'%s'"'\n",$$0)}' > src/rstslide/_version.py; \
-		git add src/rstslide/_version.py; \
+		echo "$$tag" | awk '{printf("__version__ = '"'%s'"'\n",$$0)}' > rstslide/src/rstslide/_version.py; \
+		git add rstslide/src/rstslide/_version.py; \
 		git commit -m "Release $$tag"; \
 		git tag -s "$$tag" -m "Release $$tag"; \
 		git push -u origin "$$tag"; \

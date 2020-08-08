@@ -5,7 +5,7 @@ from .Parser import Parser
 from ._version import __version__ as version
 
 
-class Cli:
+class Rstslide:
 
     @staticmethod
     def run():
