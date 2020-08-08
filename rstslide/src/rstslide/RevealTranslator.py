@@ -275,8 +275,9 @@ class RevealTranslator(HTMLTranslator):
         self.compact_p = None
         self.compact_simple = self.is_compactable(node)
 
-        if 'fragment' in node['classes']:
-            node['classes'].remove('fragment')
+        if 'fragment' in node['classes'] or 'incremental' in node['classes']:
+            if 'fragment' in node['classes']: node['classes'].remove('fragment')
+            if 'incremental' in node['classes']: node['classes'].remove('incremental')
             node['classes'].append('fragmented_list')
 
         if self.compact_simple and not old_compact_simple:
@@ -307,7 +308,7 @@ class RevealTranslator(HTMLTranslator):
         self.context.append((self.compact_simple, self.compact_p))
         self.compact_p = None
         self.compact_simple = self.is_compactable(node)
-        if 'fragment' in node['classes']:
+        if 'fragment' in node['classes'] or 'incremental' in node['classes']:
             node['classes'].remove('fragment')
             node['classes'].append('fragmented_list')
         if self.compact_simple and not old_compact_simple:
@@ -357,6 +358,11 @@ class RevealTranslator(HTMLTranslator):
         if languages:
             # attribute name is 'lang' in XHTML 1.0 but 'xml:lang' in 1.1
             atts[self.lang_attribute] = languages[0]
+
+        # This is a bit hackish, but necessary to preserve compatibility with rst2s5
+        if 'incremental' in classes:
+            classes.append('fragment')
+
         if classes:
             atts['class'] = ' '.join(classes)
         assert 'id' not in atts

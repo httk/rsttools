@@ -4,7 +4,8 @@ try:
 except BaseException:
     pass
 
-import os, sys, codecs, shutil, subprocess
+import os, sys, codecs, shutil, subprocess, pprint
+
 import docutils, docutils.core
 
 # Pyhton2 compatibility
@@ -31,7 +32,7 @@ from .TemplateDirective import *
 class Parser:
     """Class converting a stand-alone reST file into a Reveal.js-powered HTML5 file, using the provided options."""
 
-    def __init__(self, input_file, output_file=''):
+    def __init__(self, input_file, output_file='', debug=None):
         """ Constructor of the Parser class.
 
         ``create_slides()`` must then be called to actually produce the presentation.
@@ -41,6 +42,8 @@ class Parser:
             * input_file : name of the reST file to be processed (obligatory).
 
             * output_file: name of the HTML file to be generated (default: same as input_file, but with a .html extension).
+
+            * debug: set to true to produce debug output on stdout
 
         The input rst file allows the following settings in the first field list:
 
@@ -95,9 +98,10 @@ class Parser:
 
         """
 
-        # Input/Output files
         self.input_file = input_file
         self.output_file = output_file
+
+        self.debug = debug
 
         # Path to rstslide
         self.rstslide_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -138,10 +142,20 @@ class Parser:
         # Initalization html for reveal.js
         self.settings['init_html'] = ''
 
+        # Placeholders for document info
+        #for docinfo in ['title', 'subtitle', 'author', 'authors', 'contact', 'copyright', 'date', 'organization', 'status', 'version', 'revision', 'abstract', 'dedication', 'email']:
+        #    self.settings[docinfo] = '\ |'+docinfo+'|\ '
+
     def create_slides(self):
         """Creates the HTML5 presentation based on the arguments given to the constructor."""
 
         self._setup()
+
+        with codecs.open(self.input_file, 'r', 'utf8') as infile:
+            source = infile.read()
+
+        self.doctree = docutils.core.publish_doctree(source)
+        self.settings = self._parse_docinfo(self.doctree, self.settings)
 
         # Create the writer and retrieve the parts
         self.html_writer = HTMLWriter()
@@ -150,35 +164,30 @@ class Parser:
         #    self.parts = docutils.core.publish_parts(source=infile.read(), writer=self.html_writer)
         self.parts = self.publish_parts_from_doctree(self.doctree, writer=self.html_writer)
 
+        self.settings['title'] = self.parts['title']
+        self.settings['subtitle'] = self.parts['subtitle']
+
+        if 'theme' in self.settings:
+            if os.path.exists(os.path.join('themes', self.settings['theme'])):
+                self.settings['theme_path'] = os.path.join('themes', self.settings['theme'])
+
+            elif os.path.exists(os.path.join(self.rstslide_root, 'themes', self.settings['theme'])):
+                self.settings['theme_path'] = os.path.join(self.rstslide_root, 'themes', self.settings['theme'])
+            if 'theme_path' in self.settings:
+                with codecs.open(os.path.join(self.settings['theme_path'], 'theme.rst'), 'r', 'utf8') as infile:
+                    source = infile.read()
+                source = self._dict_to_rst_replacements(self.settings) + source
+                doctree = docutils.core.publish_doctree(source)
+                self.settings = self._parse_docinfo(doctree, self.settings)
+                del self.settings['theme_path']
+            else:
+                #print(os.path.join(self.rstslide_root, 'themes', self.settings['theme'],'theme.rst'))
+                print("WARNING: theme "+self.settings['theme']+" does not exist")
+
         # Produce the html file
         self._produce_output()
 
     def _setup(self):
-
-        with codecs.open(self.input_file, 'r', 'utf8') as infile:
-            source = infile.read()
-
-        self.doctree = docutils.core.publish_doctree(source)
-        self.settings = self._parse_docinfo(self.doctree, self.settings)
-
-        if 'theme' in self.settings:
-            if os.path.exists(os.path.join('themes', self.settings['theme'])):
-                template = {'theme_path': os.path.join('themes', self.settings['theme'])}
-                with codecs.open(os.path.join('themes', self.settings['theme'], 'theme.rst'), 'r', 'utf8') as infile:
-                    source = infile.read()
-                doctree = docutils.core.publish_doctree(source)
-                self.settings = self._parse_docinfo(doctree, self.settings, template)
-
-            elif os.path.exists(os.path.join(self.rstslide_root, 'themes', self.settings['theme'])):
-                template = {'theme_path': os.path.join(self.rstslide_root, 'themes', self.settings['theme'])}
-                with codecs.open(os.path.join(self.rstslide_root, 'themes', self.settings['theme'], 'theme.rst'), 'r', 'utf8') as infile:
-                    source = infile.read()
-                doctree = docutils.core.publish_doctree(source)
-                self.settings = self._parse_docinfo(doctree, self.settings, template)
-
-            else:
-                print(os.path.join(self.rstslide_root, 'themes', self.settings['theme'],'theme.rst'))
-                print("WARNING: theme "+self.settings['theme']+" does not exist")
 
         curr_dir = os.path.dirname(os.path.realpath(self.output_file))
         cwd = os.getcwd()
@@ -203,6 +212,10 @@ class Parser:
             os.chdir(curr_dir)
             self.css_embedd += codecs.decode(subprocess.check_output(['pygmentize', '-S', self.settings['pygments_style'], "-f", "html", "-O", "bg=light"]), 'utf-8')
             os.chdir(cwd)
+
+        if self.debug:
+            sys.stdout.write("Configuration:\n")
+            pprint.pprint(self.settings)
 
     def _produce_output(self):
 
@@ -328,6 +341,8 @@ class Parser:
             for css_file in self.settings['css_files']:
                 custom_stylesheets += '<link rel="stylesheet" href="%(css_file)s" />\n' % {'css_file' : css_file}
 
+        css_embedd = self.css_embedd + ("\n".join(self.settings['css_embedd']))
+
         header = """<!doctype html>
         <html lang="en">
 	        <head>
@@ -340,7 +355,6 @@ class Parser:
 		        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 		        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no">
 		        <link rel="stylesheet" href="%(reveal_root)s/reveal.css">
-		        %(pygments)s
 		        <link rel="stylesheet" href="%(reveal_root)s/theme/%(reveal_theme)s.css" id="theme">
 		        <link rel="stylesheet" href="%(rstslide_root)s/css/rstslide.css">
                         <script type="text/x-mathjax-config">
@@ -376,11 +390,10 @@ class Parser:
                'reveal_theme': self.settings['reveal_theme'],
                'reveal_root': self.reveal_root,
                'rstslide_root': self.rstslide_root,
-               'pygments': '<link rel="stylesheet" href="pygments.css">' if self.is_pygments else '',
                'mathjax_path': self.mathjax_path,
                'horizontal_center': 'center' if self.settings['horizontal_center'] else 'left',
                'title_center': 'center' if self.settings['title_center'] else 'left',
-               'css_embedd': self.css_embedd + "\n".join(self.settings['css_embedd']),
+               'css_embedd': css_embedd,
                'custom_stylesheets': custom_stylesheets }
 
         return header
@@ -420,7 +433,7 @@ class Parser:
 			        Reveal.initialize({
 				        controls: %(controls)s,
 				        progress: false,
-				        history: true,
+				        hash: true,
 				        overview: true,
 				        keyboard: true,
 				        loop: false,
@@ -455,12 +468,14 @@ class Parser:
                                           loadIcons: true,
                                         },
       	keyboard: {
-        37: 'prev', // go to the next slide when the ENTER key is pressed
-      	39: 'next', // go to the next slide when the ENTER key is pressed
-      	33: 'prev', // go to the next slide when the ENTER key is pressed
-      	34: 'next', // go to the next slide when the ENTER key is pressed
-	190: 'right', // go to the next slide when the ENTER key is pressed
-      	188: 'left', // go to the next slide when the ENTER key is pressed
+        37: 'prev', // right
+      	39: 'next', // left
+      	33: 'prev', // page up
+      	34: 'next', // page down
+      	38: 'prev', // page up
+      	40: 'next', // page down
+      	109: function() {Reveal.left(); Reveal.slide(Reveal.getIndices()['h'],0,0);}, // minus
+      	107: function() {Reveal.right(); Reveal.slide(Reveal.getIndices()['h'],0,0);}, // plus
       	},
         dependencies: [
           { src: '%(rstslide_root)s/resources/reveal-plugins/reveal.js-menu/menu.js', async: true },
@@ -495,13 +510,24 @@ class Parser:
 
         return footer
 
-    def _parse_docinfo(self, doctree, d=None, template=None):
+    def _parse_docinfo(self, doctree, d=None):
+
+        def getText(nodelist):
+            # Iterate all Nodes aggregate TEXT_NODE
+            rc = []
+            for node in nodelist:
+                if node.nodeType == node.TEXT_NODE:
+                    rc.append(node.data)
+                else:
+                    # Recursive
+                    rc.append(getText(node.childNodes))
+            result = ''.join(rc)
+            #for repl in template:
+            #    result = result.replace('|'+repl+'|',template[repl])
+            return result
 
         if d is None:
             d = {}
-
-        if template == None:
-            template = {}
 
         #print(doctree)
 
@@ -523,30 +549,48 @@ class Parser:
                     if field_name_str.endswith("-list"):
                         field_name = field_name_str[:-len("-list")]
                         if field_body.firstChild.tagName == 'bullet_list':
-                            d[field_name] = [x.firstChild.firstChild.nodeValue % template for c in field_body.childNodes for x in c.childNodes]
+                            d[field_name] = [getText(x.childNodes) for x in field_body.childNodes] #[x.firstChild.firstChild.nodeValue % template for c in field_body.childNodes for x in c.childNodes]
                         else:
-                            d[field_name] = [c.firstChild.toxml() % template for c in field_body.childNodes]
+                            d[field_name] = [getText(field_body.childNodes)] #[getText(c.firstChild) % template for c in field_body.childNodes]
                     elif field_name_str.endswith("-list-add"):
                         field_name = field_name_str[:-len("-list-add")]
                         if not field_name in d:
                             d[field_name] = []
                         if field_body.firstChild.tagName == 'bullet_list':
-                            d[field_name] += [x.firstChild.firstChild.nodeValue % template for c in field_body.childNodes for x in c.childNodes]
+                            d[field_name] += [getText(c.childNodes) for x in c.childNodes] #[x.firstChild.firstChild.nodeValue % template for c in field_body.childNodes for x in c.childNodes]
                         else:
-                            d[field_name] += [c.firstChild.toxml() % template for c in field_body.childNodes]
+                            d[field_name] += [getText(field_body.childNodes)] #[getText(c.firstChild) % template for c in field_body.childNodes]
                     else:
-                        d[field_name_str] = " ".join(c.firstChild.toxml() for c in field_body.childNodes) % template
+                        d[field_name_str] = getText(field_body.childNodes)#" ".join(getText(c.firstChild) for c in field_body.childNodes) % template
 
                 else:
-                    d[tag] = field.firstChild.nodeValue % template
+                    d[tag] = getText(field.childNodes) # % template
 
         topics = docdom.getElementsByTagName('topic')
         for topic in topics:
             classes = topic.getAttribute("classes").lower()
             if classes in [ 'abstract', 'dedication' ]:
-                d[classes] = " ".join(c.firstChild.toxml() for c in topic.childNodes)
+                d[classes] = getText(topic.childNodes) #" ".join(getText(c.firstChild) for c in topic.childNodes)
 
         return d
+
+    def _dict_to_rst_replacements(self,d):
+        text = ''
+        for key in d:
+            try:
+                out = ""+d[key]
+            except TypeError:
+                try:
+                    out = "".join(d[key])
+                except TypeError:
+                    out = ""
+
+            if out != '':
+                out = out.replace('\n','\n  ')
+                text += '.. |'+key+'| replace:: '+out+'\n\n'
+            else:
+                text += '.. |'+key+'| replace:: \ \n\n'
+        return text
 
     def publish_parts_from_doctree(self, document, destination_path=None,
                                    writer=None, writer_name='pseudoxml',

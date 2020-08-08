@@ -1,3 +1,6 @@
+.. include:: <s5defs.txt>
+.. include:: <isonum.txt>
+
 ========
 rstslide
 ========
@@ -66,11 +69,19 @@ ReStructuredText HTML slide generator
              - many
              - things
 
-Background
-==========
+:css_embedd-list-add:
+      #toc-progress-footer-main
+      {
+      background-image: url("logo.svg");  
+      }
 
-Background
-----------
+
+       
+Overview
+========
+
+Overview
+--------
 
 ReStructuredText HTML slide generator
 -------------------------------------
@@ -174,6 +185,8 @@ Structure of a ReST document
 
 The choice of the marker characters is free. The line must be at least as long as the text.
 
+.. class:: tight
+
 * The first level header defines the title of the presentation::
 
     =========================
@@ -201,14 +214,15 @@ The choice of the marker characters is free. The line must be at least as long a
 Field lists
 -----------
 
-It is possible to define *field lists* at the beginning of the document to generate the metadata used for the generation of the first slide and of the footer::
+It is possible to define *field lists* at the beginning of the document to generate the metadata used for the generation of the first slide::
 
-    #########################
+    =========================
     Title of the presentation
-    #########################
+    =========================
 
+    --------
     Subtitle
-    ++++++++
+    --------
 
     :author: Me
     :date: now
@@ -217,6 +231,38 @@ It is possible to define *field lists* at the beginning of the document to gener
 
 It is possible to add other fields than these four, but the template for the first slide will need to be adapted.
 
+Special characters
+------------------
+
+You can copy+paste any unicode symbols into your presentation, and it should render as expected.
+
+If you want to type symbols in ascii, rst provides include files for such subsituations.
+Start the file with directives like these::
+  
+  .. include:: <isonum.txt>
+  .. include:: <isoamsa.txt>
+
+and you can make symbols like these: 180\ |deg| |rarr| |half| a circle ::
+
+  and you can make symbols like these: 180\ |deg| |rarr| |half| a circle
+
+You can find the list of files and corresponding symbols at:
+
+  https://docutils.sourceforge.io/docs/ref/rst/definitions.html
+
+Slides helper file
+------------------
+
+.. default-role:: incremental
+
+One of the include files provided adds a few definitions useful for slides::
+
+  .. include:: <s5defs.txt>
+
+With this one loaded, it changes the behavior of backticks. They `now` `generate` `fragments`::
+
+  They `now` `generate` `fragments`
+  
 Directives
 ==========
 
@@ -229,6 +275,8 @@ Directives processed by rstslide
 * For a richer content than these basic markups, you'll need to use the docutils **directives**.
 
 * Some of the standard directives are processed by rstslide:
+
+  .. class:: tight
 
     * math
     * topic, sidebar
@@ -246,6 +294,8 @@ Directives processed by rstslide
 
 * **rstslide** additionally implements several custom directives particularly suited for scientific presentations:
 
+  .. class:: tight
+  
     * video
     * matplotlib
     * columns
@@ -597,24 +647,125 @@ Videos
 Incremental display
 -------------------
 
-You can incrementally display the content of your slide by using the ``fragment`` class:
+You can incrementally display the content of your slide by using the ``incremental`` class::
 
-.. class:: fragment
-
-    ::
-
-        .. class:: fragment
+        .. class:: incremental
 
             * Items will be displayed in the order of their declaration.
 
             * It applies until the end of the slides.
 
+.. class:: incremental
+
     * Items will be displayed in the order of their declaration.
 
     * It applies until the end of the current slide.
 
+    It does not have to be a list.
+
+    This is a second paragraph.
+    
+    
+Incremental display
+-------------------
+
+It is possible to make things appear out of order with a bit of markup::
+
+  .. class:: incremental
+	   :attributes: {'data-fragment-index':'3'}
+
+  This will appear last.
+
+  .. class:: incremental
+	   :attributes: {'data-fragment-index':'1'}
+	   
+  This will appear first.
+   
+  .. class:: incremental
+	   :attributes: {'data-fragment-index':'2'}
+
+  This will appear second.   
+			
+This gives the behavior:
+
+.. class:: incremental
+	   :attributes: {'data-fragment-index':'3'}
+
+This will appear last.
+
+.. class:: incremental
+	   :attributes: {'data-fragment-index':'1'}
+	   
+This will appear first.
+   
+.. class:: incremental
+	   :attributes: {'data-fragment-index':'2'}
+	   
+This will appear second.   
 
 
+
+Word-wise fragments
+-------------------
+
+If you set ``incremental`` to be the default text role::
+  
+  .. default-role:: incremental
+  
+It is very easy to do word-wise fragments like this::
+
+  They `now` `generate` `fragments.`
+
+This gives the following behavior: They `now` `generate` `fragments.`
+
+Note, this is done automatically in the s5defs include file::
+
+  .. include:: <s5defs.txt>
+
+
+.. class:: 
+   :slide-attributes: {'data-state':'no-toc-progress'}
+
+Removing toc bar
+----------------
+
+If you want to remove the table-of-contents bar from a slide, you can do so by adding a class markup right *before* the section header::
+  
+  .. class:: 
+     :slide-attributes: {'data-state':'no-toc-progress'}
+
+  Removing navigation bar
+  -----------------------
+
+If you do not want the slide section header to show, you do this::
+
+  .. class:: 
+     :attributes: {'style':'display: none'}
+
+  Removing navigation bar
+  -----------------------
+
+These can be combined.
+
+
+.. class:: center
+     :slide-attributes: {'data-background-video':'http://techslides.com/demos/sample-videos/small.ogv', 'data-background-video-muted':None, 'data-background-video-loop': 'loop', 'data-state':'no-toc-progress'}
+
+Play background video
+---------------------
+
+If you want a video to play in the background of your video, that is possible::
+
+  .. class:: 
+     :slide-attributes: {'data-background-video':'battlebeneathwall-trim.mp4',
+			'data-background-video-muted':None,
+			data-background-video-loop: 'loop',
+			'data-state':'no-toc-progress'}
+
+  Play background video
+  ---------------------
+
+  
 Matplotlib
 ----------
 

@@ -31,6 +31,7 @@ class Cli:
         argparser.add_argument("-o", "--output_file", type=str, help="The name of the HTML file to produce (by default the same basename as the input file with a .html suffix.")
         argparser.add_argument("-u", "--update_file", type=str, help="The name of a previously generated HTML file for updating only the headers part.")
         argparser.add_argument('-v', '--version', action='version', version='rstslide ' + version)
+        argparser.add_argument('-d', '--debug', action='store_true', help="Write debug output on stdout")
 
         resource_mgmt_choices = {
             'central': "Use centralized resources from where rstslide is installed",
@@ -52,6 +53,6 @@ class Cli:
             output_file = filename.split('.')[-2]+'.html'
 
         # Create the RST parser and create the slides
-        parser = Parser(input_file=filename, output_file=output_file)
+        parser = Parser(input_file=filename, output_file=output_file, debug=args.debug)
 
         parser.create_slides()

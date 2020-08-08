@@ -69,6 +69,7 @@ class Class(Directive):
     option_spec = {'attributes': directives.unchanged, 'slide-attributes': directives.unchanged}
 
     def run(self):
+
         if len(self.arguments) > 0:
             try:
                 class_value = directives.class_option(self.arguments[0])
@@ -109,6 +110,7 @@ class Class(Directive):
             for node in container:
                 if class_value is not None:
                     node['classes'].extend(class_value)
+
                 if attributes is not None:
                     if 'attributes' in node:
                         node['attributes'].update(attributes)
@@ -142,6 +144,7 @@ class Class(Directive):
                     slide_attributes = None
             else:
                 slide_attributes = None
+
             pending = nodes.pending(
                 ClassAttribute2,
                 {'class': class_value, 'directive': self.name, 'attributes': attributes, 'slide-attributes': slide_attributes},
