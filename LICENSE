@@ -1,7 +1,8 @@
 MIT License
 
-(Note: the files in fonts are licensed under a different license,
-please see the file LICENSE file in that folder.)
+The files in this repository is licensed under the following license,
+apart from included fonts and dependencies, whose licenses are indicated by
+separate LICENSE files in respective folders.
 
 rstslide was formerly rst2reveal, Copyright (c) 2018 Julien Vitay
 modifications Copyright (c) 2018-2020 Rickard Armiento

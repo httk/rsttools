@@ -53,6 +53,6 @@ class Rstslide:
             output_file = filename.split('.')[-2]+'.html'
 
         # Create the RST parser and create the slides
-        parser = Parser(input_file=filename, output_file=output_file, debug=args.debug)
+        parser = Parser(input_file=filename, output_file=output_file, resources=args.resources, debug=args.debug)
 
         parser.create_slides()

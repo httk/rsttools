@@ -1,6 +1,15 @@
 none:
 	echo "No default make target."
 
+mathjax:
+	test "!" -e external/mathjax && mkdir -p external/mathjax && cd external/mathjax && npm install mathjax@3
+
+reveal:
+	test "!" -e external/reveal.js && cd external && git clone https://github.com/hakimel/reveal.js.git && cd reveal.js && npm install
+
+reveal_light:
+	test "!" -e external/reveal.js && mkdir -p external && cd external && curl -L https://github.com/hakimel/reveal.js/archive/master.zip -o master.zip && unzip master.zip && rm -f master.zip && mv reveal.js-master reveal.js
+
 rstslide-light:
 	echo "Not implementated yet"
 

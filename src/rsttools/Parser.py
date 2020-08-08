@@ -32,7 +32,7 @@ from .TemplateDirective import *
 class Parser:
     """Class converting a stand-alone reST file into a Reveal.js-powered HTML5 file, using the provided options."""
 
-    def __init__(self, input_file, output_file='', debug=None):
+    def __init__(self, input_file, output_file='', resources=None, debug=None):
         """ Constructor of the Parser class.
 
         ``create_slides()`` must then be called to actually produce the presentation.
@@ -42,6 +42,13 @@ class Parser:
             * input_file : name of the reST file to be processed (obligatory).
 
             * output_file: name of the HTML file to be generated (default: same as input_file, but with a .html extension).
+
+            * resources: 'central', 'local', or 'inline': how external resources should be handled:
+
+              - central (default): "Use centralized resources from where rstslide is installed
+              - local: Copy needed resources to a directory <outfile>-resources
+              - inline: Embedd all resources into a single file HTML document
+              - online: Use links to online resources when possible (internet needed to show presentation)
 
             * debug: set to true to produce debug output on stdout
 
@@ -101,6 +108,16 @@ class Parser:
         self.input_file = input_file
         self.output_file = output_file
 
+        self.curr_dir = os.path.dirname(os.path.realpath(self.output_file))
+        self.output_name = os.path.splitext(os.path.basename(output_file))[0]
+        self.resource_dir_abspath = None
+        self.resource_dir_relpath = None
+
+        if resources:
+            self.resources = resources
+        else:
+            self.resources = 'central'
+
         self.debug = debug
 
         # Path to rsttools directory
@@ -111,21 +128,27 @@ class Parser:
 
         # Path to reveal
         self.reveal_root = os.path.join(self.rsttools_root, 'external', 'reveal.js', 'dist')
+        self.reveal_plugins_root = os.path.join(self.rsttools_root, 'reveal-plugins')
 
         # Path to MathJax
-        self.mathjax_path = os.path.join(self.rsttools_root, 'external', 'mini-mathjax', 'build', 'MathJax.js')
+        self.mathjax_root = os.path.join(self.rsttools_root, 'external', 'mathjax', 'node_modules', 'mathjax','es5')
 
         self.settings = {}
 
         # Css to embed in the document
-        self.css_embedd = ''
         self.settings['css_embedd'] = []
 
         # Extra css files to add
         self.settings['css_files'] = []
 
+        # Javascript code to embed in the document
+        self.settings['js_embedd'] = []
+
+        # Extra js files to add
+        self.settings['js_files'] = []
+
         # Style
-        self.settings['reveal_theme'] = 'simple'
+        self.settings['reveal_theme'] = 'white'
         self.settings['transition'] = 'fade'
         self.settings['pygments_style'] = 'default'
         self.settings['stylesheet'] = ''
@@ -144,10 +167,6 @@ class Parser:
 
         # Initalization html for reveal.js
         self.settings['init_html'] = ''
-
-        # Placeholders for document info
-        #for docinfo in ['title', 'subtitle', 'author', 'authors', 'contact', 'copyright', 'date', 'organization', 'status', 'version', 'revision', 'abstract', 'dedication', 'email']:
-        #    self.settings[docinfo] = '\ |'+docinfo+'|\ '
 
     def create_slides(self):
         """Creates the HTML5 presentation based on the arguments given to the constructor."""
@@ -192,15 +211,22 @@ class Parser:
 
     def _setup(self):
 
-        curr_dir = os.path.dirname(os.path.realpath(self.output_file))
         cwd = os.getcwd()
-        #if os.path.exists(os.path.join(curr_dir, 'rstslide')):
-        #    shutil.rmtree(os.path.join(curr_dir, 'rstslide'))
-        #os.makedirs(os.path.join(curr_dir, 'rstslide'))
+
+        if self.resources == 'local':
+            if os.path.exists(os.path.join(self.curr_dir, self.output_name + '_rstslide')):
+                shutil.rmtree(os.path.join(self.curr_dir, self.output_name + '_rstslide'))
+            os.makedirs(os.path.join(self.curr_dir, self.output_name + '_rstslide'))
+            self.resource_dir_abspath = os.path.join(self.curr_dir, self.output_name + '_rstslide')
+            self.resource_dir_relpath = self.output_name + '_rstslide'
 
         #source_file = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','..','css','rstslide.css'))
-        #shutil.copyfile(source_file, os.path.join(curr_dir,'rstslide.css'))
+        #shutil.copyfile(source_file, os.path.join(self.curr_dir,'rstslide.css'))
 
+        if self.resources == 'local':
+            shutil.copytree(self.reveal_root,os.path.join(self.resource_dir_abspath,'reveal'))
+            shutil.copytree(self.mathjax_root,os.path.join(self.resource_dir_abspath,'mathjax'))
+        
         # Generate CSS for pygments
         self.is_pygments = False
         if not self.settings['pygments_style'] == '':
@@ -212,8 +238,13 @@ class Parser:
                 print('Warning: Pygments is not installed, the code will not be highlighted.')
                 print('You should install it with `pip install pygments`')
                 return
-            os.chdir(curr_dir)
-            self.css_embedd += codecs.decode(subprocess.check_output(['pygmentize', '-S', self.settings['pygments_style'], "-f", "html", "-O", "bg=light"]), 'utf-8')
+            os.chdir(self.curr_dir)
+            if self.resources == 'inline' or self.resources == 'central':
+                self.settings['css_embedd'] += [codecs.decode(subprocess.check_output(['pygmentize', '-S', self.settings['pygments_style'], "-f", "html", "-O", "bg=light"]), 'utf-8')]
+            else: # self.resources == 'local':
+                with codecs.open(os.path.join(self.resource_dir_abspath,'pygments.css'), 'w', 'utf8') as outfile:
+                    subprocess.call(['pygmentize', '-S', self.settings['pygments_style'], "-f", "html", "-O", "bg=light"], stdout=outfile)
+                self.settings['css_files'] += [os.path.join(self.resource_dir_relpath,'pygments.css')]
             os.chdir(cwd)
 
         if self.debug:
@@ -305,7 +336,7 @@ class Parser:
 
         if self.settings['firstslide_template'] == "":
             self.settings['firstslide_template'] = """
-    <section class="titleslide">
+    <section class="titleslide" data-state="no-toc-progress">
     <h1>%(title)s</h1>
     <h3>%(subtitle)s</h3>
     <br>
@@ -339,12 +370,59 @@ class Parser:
             for author in self.settings['authors']:
                 extra_meta += '<meta author="%(author)s" />\n' % {'author' : author}
 
-        custom_stylesheets = ""
-        if 'css_files' in self.settings:
-            for css_file in self.settings['css_files']:
-                custom_stylesheets += '<link rel="stylesheet" href="%(css_file)s" />\n' % {'css_file' : css_file}
+        self.settings['js_files'] = [
+            os.path.join(self.mathjax_root, 'tex-svg.js'),
+            os.path.join(self.reveal_root, 'reveal.js'),
+        ] + self.settings['js_files']
 
-        css_embedd = self.css_embedd + ("\n".join(self.settings['css_embedd']))
+        js_embedd = ""
+        custom_js = ""
+        for js_file in self.settings['js_files']:
+            if self.resources == 'local':
+                abspath = os.path.join(self.resource_dir_abspath,os.path.basename(js_file))
+                if not os.path.exists(abspath):
+                    shutil.copyfile(js_file,abspath)
+                path = os.path.join(self.resource_dir_relpath,os.path.basename(js_file))
+            else:
+                path = js_file
+            if self.resources != 'inline':
+                custom_js += '<script src="%(path)s"></script>\n' % {'path' : path}
+            else:
+                with codecs.open(js_file, 'r', 'utf8') as infile:
+                    js_embedd += '\n<!-- inlining %(path)s --->\n\n' % {'path' : path}
+                    js_embedd += infile.read() + '\n\n'
+
+        js_embedd += "\n".join(self.settings['js_embedd'])
+
+        self.settings['css_files'] = [
+            os.path.join(self.reveal_root,'reveal.css'),
+            os.path.join(self.reveal_root,'theme',self.settings['reveal_theme'] + '.css'),
+	    os.path.join(self.rstslide_root,'css','rstslide.css')
+        ] + self.settings['css_files']
+
+        css_embedd = ""
+        custom_stylesheets = ""
+        for css_file in self.settings['css_files']:
+            if self.resources == 'local':
+                abspath = os.path.join(self.resource_dir_abspath,os.path.basename(css_file))
+                if not os.path.exists(abspath):
+                    shutil.copyfile(css_file,abspath)
+                path = os.path.join(self.resource_dir_relpath,os.path.basename(css_file))
+            else:
+                path = css_file
+            if self.resources != 'inline':
+                # Add the id='theme' attribute to the reveal theme in a bit of a hackish way
+                if os.path.join(self.reveal_root,'theme') in path:
+                    custom_stylesheets += '<link rel="stylesheet" href="%(path)s" id="theme" />\n' % {'path' : path}
+                else:
+                    custom_stylesheets += '<link rel="stylesheet" href="%(path)s" />\n' % {'path' : path}
+            else:
+                with codecs.open(css_file, 'r', 'utf8') as infile:
+                    css_embedd += '\n<!-- inlining %(path)s --->\n\n' % {'path' : path}
+
+                    css_embedd += infile.read()
+
+        css_embedd += "\n".join(self.settings['css_embedd'])
 
         header = """<!doctype html>
         <html lang="en">
@@ -354,12 +432,39 @@ class Parser:
 		        <meta name="description" content="%(title)s">
 		        %(meta)s
 		        %(extra_meta)s
-		        <meta name="apple-mobile-web-app-capable" content="yes" />
-		        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-		        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no">
-		        <link rel="stylesheet" href="%(reveal_root)s/reveal.css">
-		        <link rel="stylesheet" href="%(reveal_root)s/theme/%(reveal_theme)s.css" id="theme">
-		        <link rel="stylesheet" href="%(rstslide_root)s/css/rstslide.css">
+                        %(custom_js)s
+                        %(custom_stylesheets)s
+                <script>
+                   %(js_embedd)s
+                </script>
+                <style>
+                    %(css_embedd)s
+
+                    .reveal section {
+                      text-align: %(horizontal_center)s;
+                    }
+
+                    .reveal h2{
+                      text-align: %(title_center)s;
+                    }
+                </style>
+	        </head>
+        """ % {'title': self.title,
+               'meta': self.parts['meta'],
+               'extra_meta': extra_meta,
+               'reveal_theme': self.settings['reveal_theme'],
+               'reveal_root': self.reveal_root,
+               'rstslide_root': self.rstslide_root,
+               'horizontal_center': 'center' if self.settings['horizontal_center'] else 'left',
+               'title_center': 'center' if self.settings['title_center'] else 'left',
+               'css_embedd': css_embedd,
+               'js_embedd': js_embedd,
+               'custom_js': custom_js,
+               'custom_stylesheets': custom_stylesheets }
+
+        return header
+
+        """
                         <script type="text/x-mathjax-config">
                           MathJax.Hub.Config({
                             jax: ["input/TeX","output/SVG"],
@@ -373,63 +478,37 @@ class Parser:
                           });
                         </script>
 		        <script type="text/javascript" src="%(mathjax_path)s"></script>
-		        <!-- Extra styles -->
-                <style>
-                    %(css_embedd)s
+        """
 
-                    .reveal section {
-                      text-align: %(horizontal_center)s;
-                    }
-
-                    .reveal h2{
-                      text-align: %(title_center)s;
-                    }
-                </style>
-                %(custom_stylesheets)s
-	        </head>
-        """ % {'title': self.title,
-               'meta': self.parts['meta'],
-               'extra_meta': extra_meta,
-               'reveal_theme': self.settings['reveal_theme'],
-               'reveal_root': self.reveal_root,
-               'rstslide_root': self.rstslide_root,
-               'mathjax_path': self.mathjax_path,
-               'horizontal_center': 'center' if self.settings['horizontal_center'] else 'left',
-               'title_center': 'center' if self.settings['title_center'] else 'left',
-               'css_embedd': css_embedd,
-               'custom_stylesheets': custom_stylesheets }
-
-        return header
 
     def _generate_footer(self):
 
-        if self.settings['page_number']:
-            script_page_number = """
-		            <script>
-                        // Fires each time a new slide is activated
-                        Reveal.addEventListener( 'slidechanged', function( event ) {
-                            if(event.indexh > 0) {
-                                if(event.indexv > 0) {
-                                    val = event.indexh + ' - ' + event.indexv
-                                    document.getElementById('slide_number').innerHTML = val;
-                                }
-                                else{
-                                    document.getElementById('slide_number').innerHTML = event.indexh;
-                                }
-                            }
-                            else {
-                                document.getElementById('slide_number').innerHTML = '';
-                            }
-                        } );
-                    </script>"""
-        else:
-            script_page_number = ""
+        #if self.settings['page_number']:
+        #    script_page_number = """
+	#	            <script>
+        #                // Fires each time a new slide is activated
+        #                Reveal.addEventListener( 'slidechanged', function( event ) {
+        #                    if(event.indexh > 0) {
+        #                        if(event.indexv > 0) {
+        #                            val = event.indexh + ' - ' + event.indexv
+        #                            document.getElementById('slide_number').innerHTML = val;
+        #                        }
+        #                        else{
+        #                            document.getElementById('slide_number').innerHTML = event.indexh;
+        #                        }
+        #                    }
+        #                    else {
+        #                        document.getElementById('slide_number').innerHTML = '';
+        #                    }
+        #                } );
+        #            </script>"""
+        #else:
+        script_page_number = ""
 
         if self.settings['init_html']:
             footer = self.settings['init_html']
         else:
             footer = """
-		        <script src="%(reveal_root)s/reveal.js"></script>
 		        <script>
 			        // Full list of configuration options available here:
 			        // https://github.com/hakimel/reveal.js#configuration
@@ -481,12 +560,12 @@ class Parser:
       	107: function() {Reveal.right(); Reveal.slide(Reveal.getIndices()['h'],0,0);}, // plus
       	},
         dependencies: [
-          { src: '%(rsttools_root)s/external/reveal-plugins/reveal.js-menu/menu.js', async: true },
-          { src: '%(rsttools_root)s/external/reveal-plugins/toc-progress/toc-progress.js',
+          { src: '%(rsttools_root)s/reveal-plugins/reveal.js-menu/menu.js', async: true },
+          { src: '%(rsttools_root)s/reveal-plugins/toc-progress/toc-progress.js',
                 async: true,
                 callback: function()
                 {
-                    toc_progress.initialize(null,null,'{ background-color: white; color: var(--liublue0);}');
+                    toc_progress.initialize(null,null,'{ background-color: white; color: black;}');
                     toc_progress.create();
                 }
           }
@@ -504,7 +583,6 @@ class Parser:
 
         footer = footer % {'transition': self.settings['transition'],
                            'footer': self.footer_html,
-                           'mathjax_path': self.mathjax_path,
                            'reveal_root': self.reveal_root,
                            'rstslide_root': self.rstslide_root,
                            'rsttools_root': self.rsttools_root,
@@ -590,7 +668,7 @@ class Parser:
                     out = ""
 
             if out != '':
-                out = out.replace('\n','\n  ')
+                out = out.replace('\n','\n  ').replace('*','\*')
                 text += '.. |'+key+'| replace:: '+out+'\n\n'
             else:
                 text += '.. |'+key+'| replace:: \ \n\n'
