@@ -117,6 +117,7 @@ class Parser:
             self.resources = resources
         else:
             self.resources = 'central'
+        self.global_to_local_map = {}
 
         self.debug = debug
 
@@ -128,7 +129,7 @@ class Parser:
 
         # Path to reveal
         self.reveal_root = os.path.join(self.rsttools_root, 'external', 'reveal.js', 'dist')
-        self.reveal_plugins_root = os.path.join(self.rsttools_root, 'reveal-plugins')
+        self.reveal_plugins_root = os.path.join(self.rstslide_root, 'reveal-plugins')
 
         # Path to MathJax
         self.mathjax_root = os.path.join(self.rsttools_root, 'external', 'mathjax', 'node_modules', 'mathjax','es5')
@@ -225,8 +226,17 @@ class Parser:
 
         if self.resources == 'local':
             shutil.copytree(self.reveal_root,os.path.join(self.resource_dir_abspath,'reveal'))
+            self.global_to_local_map[self.reveal_root]='reveal'
+
             shutil.copytree(self.mathjax_root,os.path.join(self.resource_dir_abspath,'mathjax'))
-        
+            self.global_to_local_map[self.mathjax_root]='mathjax'
+
+            shutil.copytree(self.reveal_plugins_root,os.path.join(self.resource_dir_abspath,'reveal','plugins'))
+            self.global_to_local_map[self.reveal_plugins_root]=os.path.join('reveal','plugins')
+
+            shutil.copytree(os.path.join(self.rstslide_root,'css'),os.path.join(self.resource_dir_abspath,'css'))
+            self.global_to_local_map[os.path.join(self.rstslide_root,'css')]=os.path.join('css')
+
         # Generate CSS for pygments
         self.is_pygments = False
         if not self.settings['pygments_style'] == '':
@@ -242,9 +252,9 @@ class Parser:
             if self.resources == 'inline' or self.resources == 'central':
                 self.settings['css_embedd'] += [codecs.decode(subprocess.check_output(['pygmentize', '-S', self.settings['pygments_style'], "-f", "html", "-O", "bg=light"]), 'utf-8')]
             else: # self.resources == 'local':
-                with codecs.open(os.path.join(self.resource_dir_abspath,'pygments.css'), 'w', 'utf8') as outfile:
+                with codecs.open(os.path.join(self.resource_dir_abspath,'css','pygments.css'), 'w', 'utf8') as outfile:
                     subprocess.call(['pygmentize', '-S', self.settings['pygments_style'], "-f", "html", "-O", "bg=light"], stdout=outfile)
-                self.settings['css_files'] += [os.path.join(self.resource_dir_relpath,'pygments.css')]
+                self.settings['css_files'] += [os.path.join('css','pygments.css')]
             os.chdir(cwd)
 
         if self.debug:
@@ -359,6 +369,12 @@ class Parser:
         else:
             self.footer_html = ""
 
+    def _map_path(self, path):
+        for k in self.global_to_local_map:
+            if path.startswith(k):
+                return os.path.join(self.global_to_local_map[k],os.path.relpath(path,k))
+        return path
+
     def _generate_header(self):
 
         extra_meta = ""
@@ -379,10 +395,12 @@ class Parser:
         custom_js = ""
         for js_file in self.settings['js_files']:
             if self.resources == 'local':
-                abspath = os.path.join(self.resource_dir_abspath,os.path.basename(js_file))
+                relpath = self._map_path(js_file)
+                abspath = os.path.join(self.resource_dir_abspath,relpath)
                 if not os.path.exists(abspath):
-                    shutil.copyfile(js_file,abspath)
-                path = os.path.join(self.resource_dir_relpath,os.path.basename(js_file))
+                    raise Exception("File missing from resource directory: "+str(relpath))
+                    #shutil.copyfile(js_file,abspath)
+                path = os.path.join(self.resource_dir_relpath,relpath)
             else:
                 path = js_file
             if self.resources != 'inline':
@@ -404,10 +422,12 @@ class Parser:
         custom_stylesheets = ""
         for css_file in self.settings['css_files']:
             if self.resources == 'local':
-                abspath = os.path.join(self.resource_dir_abspath,os.path.basename(css_file))
+                relpath = self._map_path(css_file)
+                abspath = os.path.join(self.resource_dir_abspath,relpath)
                 if not os.path.exists(abspath):
-                    shutil.copyfile(css_file,abspath)
-                path = os.path.join(self.resource_dir_relpath,os.path.basename(css_file))
+                    raise Exception("File missing from resource directory: "+str(relpath))
+                    #shutil.copyfile(css_file,abspath)
+                path = os.path.join(self.resource_dir_relpath,relpath)
             else:
                 path = css_file
             if self.resources != 'inline':
@@ -505,6 +525,11 @@ class Parser:
         #else:
         script_page_number = ""
 
+        if self.resources == 'local':
+            reveal_plugin_path = os.path.join(self.resource_dir_relpath, 'reveal', 'plugins')
+        else:
+            reveal_plugin_path = self.reveal_plugins_root
+
         if self.settings['init_html']:
             footer = self.settings['init_html']
         else:
@@ -560,8 +585,8 @@ class Parser:
       	107: function() {Reveal.right(); Reveal.slide(Reveal.getIndices()['h'],0,0);}, // plus
       	},
         dependencies: [
-          { src: '%(rsttools_root)s/reveal-plugins/reveal.js-menu/menu.js', async: true },
-          { src: '%(rsttools_root)s/reveal-plugins/toc-progress/toc-progress.js',
+          { src: '%(reveal_plugin_path)s/reveal.js-menu/menu.js', async: true },
+          { src: '%(reveal_plugin_path)s/toc-progress/toc-progress.js',
                 async: true,
                 callback: function()
                 {
@@ -583,8 +608,7 @@ class Parser:
 
         footer = footer % {'transition': self.settings['transition'],
                            'footer': self.footer_html,
-                           'reveal_root': self.reveal_root,
-                           'rstslide_root': self.rstslide_root,
+                           'reveal_plugin_path': reveal_plugin_path,
                            'rsttools_root': self.rsttools_root,
                            'script_page_number': script_page_number,
                            'vertical_center': 'true' if self.settings['vertical_center'] else 'false',
