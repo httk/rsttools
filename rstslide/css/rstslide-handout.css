@@ -1,0 +1,183 @@
+/*********************************************
+ * COLUMNS
+ *********************************************/
+.column-50 {
+    width: 49%;
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
+}
+
+.column-33 {
+    width: 33%;
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
+}
+
+.column-66 {
+    width: 66%;
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
+}
+
+.column-25 {
+    width: 24%;
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
+}
+
+.column-main {
+    width: 61%;
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
+}
+
+.column-side {
+    width: 38%;
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
+}
+
+.column-left {
+    width: 49%;
+    float: left;
+}
+
+.column-right {
+    width: 50%;
+    float: right;
+}
+
+/*********************************************
+ * IMAGES
+ *********************************************/
+
+.align-center {
+    text-align: center;
+}
+.align-left {
+    text-align: left;
+}
+.align-right {
+    text-align: right;
+}
+
+.small {
+    font-size: 70%;
+}
+
+.xsmall {
+    font-size: 60%;
+    line-height: 60%;
+}
+
+.tiny {
+    font-size: 30%;
+}
+
+.center {
+    display: block;
+    text-align: center;
+}
+
+.black {
+    color: black;
+}
+
+.gray {
+    color: gray;
+}
+
+.silver {
+    color: silver;
+}
+
+.white {
+    color: white;
+}
+
+.maroon {
+    color: maroon;
+}
+
+.red {
+    color: red;
+}
+
+.magenta {
+    color: magenta;
+}
+
+.fuchsia {
+    color: fuchsia;
+}
+
+.pink {
+    color: pink;
+}
+
+.orange {
+    color: orange;
+}
+
+.yellow {
+    color: yellow;
+}
+
+.lime {
+    color: lime;
+}
+
+.green {
+    color: green;
+}
+
+.olive {
+    color: olive;
+}
+
+.teal {
+    color: teal;
+}
+
+.cyan {
+    color: cyan;
+}
+
+.aqua {
+    color: aqua;
+}
+
+.blue {
+    color: blue;
+}
+
+.navy {
+    color: navy;
+}
+
+.purple {
+    color: purple;
+}
+
+.huge {
+    font-size: 200%
+}
+
+.big {
+    font-size: 150%
+}
+
+.small {
+    font-size: 80%
+}
+
+.tiny {
+    font-size: 50%
+}
+

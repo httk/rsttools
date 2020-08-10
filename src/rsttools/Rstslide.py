@@ -6,7 +6,8 @@ try:
 except ImportError:
     import SimpleHTTPServer as httpserver, SocketServer as socketserver
 
-from .Parser import Parser
+from .SlidesParser import SlidesParser
+from .HandoutParser import HandoutParser
 from ._version import __version__ as version
 
 
@@ -35,7 +36,16 @@ class Rstslide:
         argparser.add_argument("input_file", help="The name of the reStructuredText file to parse.")
         argparser.add_argument("-o", "--output_file", type=str, help="The name of the HTML file to produce (by default the same basename as the input file with a .html suffix.")
         argparser.add_argument("-u", "--update_file", type=str, help="The name of a previously generated HTML file for updating only the headers part.")
-        argparser.add_argument("-p", "--pdf", action='store_true', help="Activate pdf rendering mode (run and follow instructions).")
+
+        argparser.add_argument("-t", "--theme", type=str, help="Set rstslide theme (overrides theme set in input file)")
+
+        mode = argparser.add_mutually_exclusive_group(required=False)
+        mode.add_argument("-S", "--slide", action='store_true', help="Normal slide mode (default).")
+        mode.add_argument("-P", "--pdf", action='store_true', help="Pdf rendering mode (run and follow instructions).")
+        mode.add_argument("-N", "--pdf-with-notes", action='store_true', help="Pdf rendering mode with notes (run and follow instructions).")
+        mode.add_argument("-H", "--handout", action='store_true', help="Handout rendering mode.")
+        mode.add_argument("-X", "--handout-alt", action='store_true', help="An alternative handout rendering mode that uses the default html5 docutils converter.")
+
         argparser.add_argument("-s", "--serve", action='store_true', help="Start webserver that serves the slides.")
         argparser.add_argument('-v', '--version', action='version', version='rstslide ' + version)
         argparser.add_argument('-d', '--debug', action='store_true', help="Write debug output on stdout")
@@ -59,8 +69,15 @@ class Rstslide:
         else:
             output_file = filename.split('.')[-2]+'.html'
 
-        # Create the RST parser and create the slides
-        parser = Parser(input_file=filename, output_file=output_file, resources=args.resources, debug=args.debug)
+        mode = 'slide'
+        notes = False
+        if args.pdf or args.pdf_with_notes:
+            mode = 'print'
+            notes = True
+        elif args.handout_alt:
+            mode = 'handout-alt'
+        elif args.handout:
+            mode = 'handout'
 
         if (args.pdf or args.serve) and args.resources is None:
             args.resources = 'local'
@@ -69,7 +86,13 @@ class Rstslide:
             print("Pdf printing or serving does not work with resource option 'central', exiting.")
             exit(1)
 
-        parser.create_slides()
+        # Create the RST parser and create the slides
+        if mode != 'handout-alt':
+            parser = SlidesParser(input_file=filename, output_file=output_file, theme=args.theme, resources=args.resources, mode=mode, notes=notes, debug=args.debug)
+            parser.create_slides()
+        else:
+            parser = HandoutParser(input_file=filename, output_file=output_file, theme=args.theme, resources=args.resources, mode=mode, notes=notes, debug=args.debug)
+            parser.create_handout()
 
         if args.pdf or args.serve:
             port = 8000

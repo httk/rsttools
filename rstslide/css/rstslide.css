@@ -1,3 +1,365 @@
+
+/* alignment of text and inline objects inside block objects*/
+.align-left   { text-align: left; }
+.align-right  { text-align: right; }
+.align-center { clear: both; text-align: center; }
+.align-top    { vertical-align: top; }
+.align-middle { vertical-align: middle; }
+.align-bottom { vertical-align: bottom; }
+
+/* titles */
+h1.title, p.subtitle {
+  text-align: center;
+}
+p.admonition-title,
+p.topic-title,
+p.sidebar-title,
+p.rubric,
+p.system-message-title {
+  font-weight: bold;
+}
+h1 + p.subtitle,
+h1 + p.section-subtitle {
+  font-size: 1.6em;
+}
+h2 + p.section-subtitle { font-size: 1.28em; }
+p.subtitle,
+p.section-subtitle,
+p.sidebar-subtitle {
+  font-weight: bold;
+  margin-top: -0.5em;
+}
+p.sidebar-title,
+p.rubric {
+  font-size: larger;
+}
+p.rubric { color: maroon; }
+a.toc-backref {
+  color: black;
+  text-decoration: none; }
+
+/* Warnings, Errors */
+div.caution p.admonition-title,
+div.attention p.admonition-title,
+div.danger p.admonition-title,
+div.error p.admonition-title,
+div.warning p.admonition-title,
+div.system-messages h1,
+div.error,
+span.problematic,
+p.system-message-title {
+  color: red;
+}
+
+/* inline literals */
+span.docutils.literal {
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+/* do not wraph at hyphens and similar: */
+.literal > span.pre { white-space: nowrap; }
+
+/* Lists */
+
+/* compact and simple lists: no margin between items */
+.simple  li, .compact li,
+.simple  ul, .compact ul,
+.simple  ol, .compact ol,
+.simple > li p, .compact > li p,
+dl.simple > dd, dl.compact > dd {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Table of Contents */
+div.topic.contents { margin: 0; }
+div.topic.contents ul {
+  list-style-type: none;
+  padding-left: 1.5em;
+}
+
+/* Enumerated Lists */
+ol.arabic     { list-style: decimal }
+ol.loweralpha { list-style: lower-alpha }
+ol.upperalpha { list-style: upper-alpha }
+ol.lowerroman { list-style: lower-roman }
+ol.upperroman { list-style: upper-roman }
+
+dt span.classifier { font-style: italic }
+dt span.classifier:before {
+  font-style: normal;
+  margin: 0.5em;
+  content: ":";
+}
+
+/* Field Lists and drivatives */
+/* bold field name, content starts on the same line */
+dl.field-list > dt,
+dl.option-list > dt,
+dl.docinfo > dt,
+dl.footnote > dt,
+dl.citation > dt {
+  font-weight: bold;
+  clear: left;
+  float: left;
+  margin: 0;
+  padding: 0;
+  padding-right: 0.5em;
+}
+/* Offset for field content (corresponds to the --field-name-limit option) */
+dl.field-list > dd,
+dl.option-list > dd,
+dl.docinfo > dd {
+  margin-left:  9em; /* ca. 14 chars in the test examples */
+}
+/* start field-body on a new line after long field names */
+dl.field-list > dd > *:first-child,
+dl.option-list > dd > *:first-child
+{
+  display: inline-block;
+  width: 100%;
+  margin: 0;
+}
+/* field names followed by a colon */
+dl.field-list > dt:after,
+dl.docinfo > dt:after {
+  content: ":";
+}
+
+/* Bibliographic Fields (docinfo) */
+pre.address { font: inherit; }
+dd.authors > p { margin: 0; }
+
+/* Option Lists */
+dl.option-list { margin-left: 40px; }
+dl.option-list > dt { font-weight: normal; }
+span.option { white-space: nowrap; }
+
+/* Footnotes and Citations  */
+dl.footnote.superscript > dd {margin-left: 1em; }
+dl.footnote.brackets > dd {margin-left: 2em; }
+dl > dt.label { font-weight: normal; }
+a.footnote-reference.brackets:before,
+dt.label > span.brackets:before { content: "["; }
+a.footnote-reference.brackets:after,
+dt.label > span.brackets:after { content: "]"; }
+a.footnote-reference.superscript,
+dl.footnote.superscript > dt.label {
+  vertical-align: super;
+  font-size: smaller;
+}
+dt.label > span.fn-backref { margin-left: 0.2em; }
+dt.label > span.fn-backref > a { font-style: italic; }
+
+/* Line Blocks */
+div.line-block { display: block; }
+div.line-block div.line-block {
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 40px;
+}
+
+/* Figures, Images, and Tables */
+.figure.align-left,
+img.align-left,
+object.align-left,
+table.align-left {
+  margin-right: auto;
+}
+.figure.align-center,
+img.align-center,
+object.align-center {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+table.align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+.figure.align-right,
+img.align-right,
+object.align-right,
+table.align-right {
+  margin-left: auto;
+}
+/* reset inner alignment in figures and tables */
+/* div.align-left, div.align-center, div.align-right, */
+table.align-left, table.align-center, table.align-right
+{ text-align: inherit }
+
+/* Admonitions and System Messages */
+div.admonition,
+div.system-message,
+div.sidebar{
+  margin: 40px;
+  border: medium outset;
+  padding-right: 1em;
+  padding-left: 1em;
+}
+
+/* Sidebar */
+div.sidebar {
+  width: 30%;
+  max-width: 26em;
+  float: right;
+  clear: right;
+}
+
+/* Text Blocks */
+blockquote,
+div.topic,
+pre.literal-block,
+pre.doctest-block,
+pre.math,
+pre.code {
+  margin-left: 1.5em;
+  margin-right: 1.5em
+}
+pre.code .ln { color: gray; } /* line numbers */
+
+/* Tables */
+table { border-collapse: collapse; }
+td, th {
+  border-style: solid;
+  border-color: silver;
+  padding: 0 1ex;
+  border-width: thin;
+}
+td > p:first-child, th > p:first-child { margin-top: 0; }
+td > p, th > p { margin-bottom: 0; }
+
+table > caption {
+  text-align: left;
+  margin-bottom: 0.25em
+}
+
+table.borderless td, table.borderless th {
+  border: 0;
+  padding: 0;
+  padding-right: 0.5em /* separate table cells */
+}
+
+/* Line Blocks */
+div.line-block {
+    line-height: 120%;
+}
+div.line-block div.line-block {
+    line-height: 120%;
+}
+
+/*********************************************
+ * COLUMNS
+ *********************************************/
+
+.column-50 {
+    width: 49%;
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
+    vertical-align: top;
+}
+
+.column-33 {
+    width: 33%;
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
+    vertical-align: top;
+}
+
+.column-66 {
+    width: 66%;
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
+    vertical-align: top;
+}
+
+.column-25 {
+    width: 24%;
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
+    vertical-align: top;
+}
+
+.column-50 {
+    width: 49%;
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
+    vertical-align: top;
+}
+
+.column-33 {
+    width: 33%;
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
+    vertical-align: top;
+}
+
+.column-66 {
+    width: 66%;
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
+    vertical-align: top;
+}
+
+.column-25 {
+    width: 24%;
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
+    vertical-align: top;
+}
+
+.column-62 {
+    width: 61%;
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
+    vertical-align: top;
+}
+
+.column-38 {
+    width: 38%;
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
+    vertical-align: top;
+}
+
+.column-main {
+    width: 61%;
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
+    vertical-align: top;
+}
+
+.column-side {
+    width: 38%;
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
+    vertical-align: top;
+}
+
+.column-left {
+    width: 49%;
+    float: left;
+    vertical-align: top;
+}
+
+.column-right {
+    width: 50%;
+    float: right;
+    vertical-align: top;
+}
+
 /*********************************************
  * SLIDES
  *********************************************/
@@ -6,52 +368,17 @@
 	padding: 0px 0px;
 }
 
-/*********************************************
- * TWO COLUMNS
- *********************************************/
-.columns{
-    width: 100%;
-  }
-.columns div.left{
-    width: 47%;
-    float: left;
-}
-.columns div.right{
-    width: 47%;
-    float: right;
-}
-
-/*********************************************
- * IMAGES
- *********************************************/
-
-.align-center {
-    text-align: center;
-}
-.align-left {
-    text-align: left;
-}
-.align-right {
-    text-align: right;
-}
-
 .reveal img.align-right {
-    display: inline;
-    float: right;
     border: none;
     box-shadow: none;
 }
 
 .reveal img.align-left {
-    display: inline;
-    float: left;
     border: none;
     box-shadow: none;
 }
 
 .reveal img.align-center {
-    display: inline;
-    float: center;
     border: none;
     box-shadow: none;
 }
@@ -80,24 +407,62 @@
  * LISTS
  *********************************************/
 .reveal ul {
-    margin-top: 0.5ex;
-    margin-bottom: 0.5ex;
+    margin-top: 0.75ex;
+    margin-bottom: 0.75ex;
 }
 .reveal ol {
-    margin-top: 0.5ex;
-    margin-bottom: 0.5ex;
+    margin-top: 0.75ex;
+    margin-bottom: 0.75ex;
 }
 .reveal li {
-    margin-top: 0ex;
-    margin-bottom: 1.5ex;
+    margin-top: 0.75ex;
+    margin-bottom: 1.0ex;
     padding-top: 0ex;
     padding-bottom: 0ex;
+    line-height: 120%;
 }
+.reveal li li {
+    margin-top: 0.75ex;
+    margin-bottom: 0.75ex;
+    padding-top: 0ex;
+    padding-bottom: 0ex;
+    line-height: 120%;
+}
+
 .reveal .tight li {
+    margin-top: 0.5ex;
+    margin-bottom: 0.5ex;
+    padding-top: 0ex;
+    padding-bottom: 0ex;
+    line-height: 100%;
+}
+
+.reveal .tight li li {
     margin-top: 0ex;
     margin-bottom: 0ex;
     padding-top: 0ex;
     padding-bottom: 0ex;
+    line-height: 110%;
+}
+
+.reveal .extratight li {
+    margin-top: 0ex;
+    margin-bottom: 0ex;
+    padding-top: 0ex;
+    padding-bottom: 0ex;
+    line-height: 100%;
+}
+
+.reveal .extratight li li {
+    margin-top: 0ex;
+    margin-bottom: 0ex;
+    padding-top: 0ex;
+    padding-bottom: 0ex;
+    line-height: 100%;
+}
+
+.reveal em {
+    color: #22A;
 }
 
 
@@ -353,6 +718,18 @@ footer {
 /*********************************************
  * ADMONITIONS
  *********************************************/
+div.caution p.admonition-title,
+div.attention p.admonition-title,
+div.danger p.admonition-title,
+div.error p.admonition-title,
+div.warning p.admonition-title,
+div.system-messages h1,
+div.error,
+span.problematic,
+p.system-message-title {
+  color: red;
+}
+
 .reveal .note,
 .reveal .caution,
 .reveal .warning,
@@ -611,6 +988,7 @@ div.progress[style="display: block;"] ~ #toc-progress-footer
 }
 
 .reveal p {
+    line-height: 120%;
     margin-top: 0ex;
     margin-bottom: 1ex;
 }
@@ -620,4 +998,114 @@ div.progress[style="display: block;"] ~ #toc-progress-footer
     margin-bottom: 2ex;
     padding-top: 1ex;
     padding-bottom: 1ex;
+}
+.reveal .titleslide a {
+    color: inherit;
+}
+.reveal .titleslide a:hover {
+    color: inherit;
+}
+
+.reveal .black {
+    color: black;
+}
+
+.reveal .gray {
+    color: gray;
+}
+
+.reveal .silver {
+    color: silver;
+}
+
+.reveal .white {
+    color: white;
+}
+
+.reveal .maroon {
+    color: maroon;
+}
+
+.reveal .red {
+    color: red;
+}
+
+.reveal .magenta {
+    color: magenta;
+}
+
+.reveal .fuchsia {
+    color: fuchsia;
+}
+
+.reveal .pink {
+    color: pink;
+}
+
+.reveal .orange {
+    color: orange;
+}
+
+.reveal .yellow {
+    color: yellow;
+}
+
+.reveal .lime {
+    color: lime;
+}
+
+.reveal .green {
+    color: green;
+}
+
+.reveal .olive {
+    color: olive;
+}
+
+.reveal .teal {
+    color: teal;
+}
+
+.reveal .cyan {
+    color: cyan;
+}
+
+.reveal .aqua {
+    color: aqua;
+}
+
+.reveal .blue {
+    color: blue;
+}
+
+.reveal .navy {
+    color: navy;
+}
+
+.reveal .purple {
+    color: purple;
+}
+
+.reveal .huge {
+    font-size: 200%
+}
+
+.reveal .big {
+    font-size: 150%
+}
+
+.reveal .small {
+    font-size: 80%
+}
+
+.reveal .tiny {
+    font-size: 50%
+}
+
+td, th {
+  border-style: solid;
+  border-color: silver;
+  padding: 0 1ex;
+  border-width: thin;
+  line-height: 120%;
 }

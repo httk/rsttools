@@ -16,6 +16,7 @@ except ImportError:
 
 
 from .RevealTranslator import RevealTranslator, HTMLWriter
+from .DocutilsHelper import DocutilsHelper
 
 # Import custom directives
 from .TwoColumnsDirective import *
@@ -29,10 +30,10 @@ from .ClearDirective import *
 from .TemplateDirective import *
 
 
-class Parser:
+class SlidesParser:
     """Class converting a stand-alone reST file into a Reveal.js-powered HTML5 file, using the provided options."""
 
-    def __init__(self, input_file, output_file='', resources=None, debug=None):
+    def __init__(self, input_file, output_file='', theme=None, resources=None, mode=None, notes=None, debug=None):
         """ Constructor of the Parser class.
 
         ``create_slides()`` must then be called to actually produce the presentation.
@@ -43,12 +44,18 @@ class Parser:
 
             * output_file: name of the HTML file to be generated (default: same as input_file, but with a .html extension).
 
+            * theme: set rstslide theme (overrides theme set in input file)
+
             * resources: 'central', 'local', or 'inline': how external resources should be handled:
 
               - central (default): "Use centralized resources from where rstslide is installed
               - local: Copy needed resources to a directory <outfile>-resources
               - inline: Embedd all resources into a single file HTML document
               - online: Use links to online resources when possible (internet needed to show presentation)
+
+            * mode: 'slide' (default) or 'print'
+
+            * notes: True/False whether speaker notes should be rendered onto slides or not
 
             * debug: set to true to produce debug output on stdout
 
@@ -108,6 +115,8 @@ class Parser:
         self.input_file = input_file
         self.output_file = output_file
 
+        self.theme = theme
+
         self.curr_dir = os.path.dirname(os.path.realpath(self.output_file))
         self.output_name = os.path.splitext(os.path.basename(output_file))[0]
         self.resource_dir_abspath = None
@@ -118,6 +127,13 @@ class Parser:
         else:
             self.resources = 'central'
         self.global_to_local_map = {}
+
+        self.notes = notes
+
+        if mode:
+            self.mode = mode
+        else:
+            self.mode = 'normal'
 
         self.debug = debug
 
@@ -160,6 +176,11 @@ class Parser:
         self.settings['page_number'] = False
         self.settings['controls'] = False
 
+        self.settings['author'] = ''
+        self.settings['institution'] = ''
+        self.settings['date'] = ''
+        self.settings['email'] = ''
+
         # Template for the first slide
         self.settings['firstslide_template'] = ''
 
@@ -178,17 +199,20 @@ class Parser:
             source = infile.read()
 
         self.doctree = docutils.core.publish_doctree(source)
-        self.settings = self._parse_docinfo(self.doctree, self.settings)
+        self.settings = DocutilsHelper.parse_docinfo(self.doctree, self.settings)
 
         # Create the writer and retrieve the parts
         self.html_writer = HTMLWriter()
         self.html_writer.translator_class = RevealTranslator
         #with codecs.open(self.input_file, 'r', 'utf8') as infile:
         #    self.parts = docutils.core.publish_parts(source=infile.read(), writer=self.html_writer)
-        self.parts = self.publish_parts_from_doctree(self.doctree, writer=self.html_writer)
+        self.parts = DocutilsHelper.publish_parts_from_doctree(self.doctree, writer=self.html_writer)
 
         self.settings['title'] = self.parts['title']
         self.settings['subtitle'] = self.parts['subtitle']
+
+        if self.theme:
+            self.settings['theme'] = self.theme
 
         if 'theme' in self.settings:
             if os.path.exists(os.path.join('themes', self.settings['theme'])):
@@ -197,11 +221,15 @@ class Parser:
             elif os.path.exists(os.path.join(self.rstslide_root, 'themes', self.settings['theme'])):
                 self.settings['theme_path'] = os.path.join(self.rstslide_root, 'themes', self.settings['theme'])
             if 'theme_path' in self.settings:
-                with codecs.open(os.path.join(self.settings['theme_path'], 'theme.rst'), 'r', 'utf8') as infile:
+                if self.mode == 'handout' and os.path.exists(os.path.join(self.settings['theme_path'], 'theme-handout.rst')):
+                    theme_filename = 'theme-handout.rst'
+                else:
+                    theme_filename = 'theme.rst'
+                with codecs.open(os.path.join(self.settings['theme_path'], theme_filename), 'r', 'utf8') as infile:
                     source = infile.read()
-                source = self._dict_to_rst_replacements(self.settings) + source
+                source = DocutilsHelper.dict_to_rst_replacements(self.settings) + source
                 doctree = docutils.core.publish_doctree(source)
-                self.settings = self._parse_docinfo(doctree, self.settings)
+                self.settings = DocutilsHelper.parse_docinfo(doctree, self.settings)
                 del self.settings['theme_path']
             else:
                 #print(os.path.join(self.rstslide_root, 'themes', self.settings['theme'],'theme.rst'))
@@ -267,7 +295,7 @@ class Parser:
     def _produce_output(self):
 
         self.title = self.parts['title']
-        self._analyse_metainfo()
+        self._generate_titleslide()
 
         header = self._generate_header()
         body = self._generate_body()
@@ -294,58 +322,18 @@ class Parser:
 
         return body
 
-    def _analyse_metainfo(self):
-
-        def clean(text):
-
-            import re
-            if len(re.findall(r'<paragraph>', text)) > 0:
-                text = re.findall(r'<paragraph>(.+)</paragraph>', text)[0]
-            if len(re.findall(r'<author>', text)) > 0:
-                text = re.findall(r'<author>(.+)</author>', text)[0]
-            if len(re.findall(r'<date>', text)) > 0:
-                text = re.findall(r'<date>(.+)</date>', text)[0]
-            if len(re.findall(r'<reference', text)) > 0:
-                text = re.findall(r'<reference refuri="mailto:(.+)">', text)[0]
-            return text
-
-        self.meta_info = {'author': ''}
-
-        texts = self.parts['metadata'].split('\n')
-        for t in texts:
-            if not t == '':
-                name = t.split('=')[0]
-                content = t.replace(name+'=', '')
-                content = clean(content)
-                self.meta_info[name] = content
-
-        self._generate_titleslide()
-
     def _generate_titleslide(self):
 
         if self.parts['title'] != '':  # A title has been given
-            self.meta_info['title'] = self.parts['title']
-        elif not 'title' in self.meta_info.keys():
-            self.meta_info['title'] = ''
+            self.settings['title'] = self.parts['title']
 
         if self.parts['subtitle'] != '':  # defined with a underlined text instead of :subtitle:
-            self.meta_info['subtitle'] = self.parts['subtitle']
-        elif not 'subtitle' in self.meta_info.keys():
-            self.meta_info['subtitle'] = ''
-
-        if not 'email' in self.meta_info.keys():
-            self.meta_info['email'] = ''
-
-        if not 'institution' in self.meta_info.keys():
-            self.meta_info['institution'] = ''
-
-        if not 'date' in self.meta_info.keys():
-            self.meta_info['date'] = ''
+            self.settings['subtitle'] = self.parts['subtitle']
 
         # Separators
-        self.meta_info['is_institution'] = '-' if self.meta_info['institution'] != '' else ''
-        self.meta_info['is_author'] = '.' if self.meta_info['author'] != '' else ''
-        self.meta_info['is_subtitle'] = '.' if self.meta_info['subtitle'] != '' else ''
+        self.settings['is_institution'] = '-' if self.settings['institution'] != '' else ''
+        self.settings['is_author'] = '.' if self.settings['author'] != '' else ''
+        self.settings['is_subtitle'] = '.' if self.settings['subtitle'] != '' else ''
 
         if self.settings['firstslide_template'] == "":
             self.settings['firstslide_template'] = """
@@ -355,18 +343,19 @@ class Parser:
     <br>
     <p><a href="mailto:%(email)s">%(author)s</a> %(is_institution)s %(institution)s</p>
     <p><small>%(email)s</small></p>
+    <p><small>%(note)s</small></p>
     <p>%(date)s</p>
     </section>
 """
         else:
             self.settings['firstslide_template'] = unescape(self.settings['firstslide_template'])
 
-        self.titleslide = self.settings['firstslide_template'] % self.meta_info
+        self.titleslide = self.settings['firstslide_template'] % self.settings
         if self.settings['footer_template'] == "":
             self.settings['footer_template'] = """<b>%(title)s %(is_subtitle)s %(subtitle)s.</b> %(author)s%(is_institution)s %(institution)s. %(date)s"""
 
         if self.settings['write_footer']:
-            self.footer_html = """<footer id=\"footer\">""" + self.settings['footer_template'] % self.meta_info + """<b id=\"slide_number\" style=\"padding: 1em;\"></b></footer>"""
+            self.footer_html = """<footer id=\"footer\">""" + self.settings['footer_template'] % self.settings + """<b id=\"slide_number\" style=\"padding: 1em;\"></b></footer>"""
         elif self.settings['page_number']:
             self.footer_html = """<footer><b id=\"slide_number\"></b></footer>"""
         else:
@@ -389,12 +378,13 @@ class Parser:
             for author in self.settings['authors']:
                 extra_meta += '<meta author="%(author)s" />\n' % {'author' : author}
 
-        self.settings['js_files'] = [
-            os.path.join(self.mathjax_root, 'tex-svg.js'),
-            os.path.join(self.reveal_root, 'reveal.js'),
-            os.path.join(self.reveal_plugins_root, 'reveal.js-menu','menu.js'),
-            os.path.join(self.reveal_plugins_root, 'toc-progress','toc-progress.js')
-        ] + self.settings['js_files']
+        if self.mode != 'handout':
+            self.settings['js_files'] = [
+                os.path.join(self.reveal_root, 'reveal.js'),
+                os.path.join(self.reveal_plugins_root, 'reveal.js-menu','menu.js'),
+                os.path.join(self.reveal_plugins_root, 'toc-progress','toc-progress.js')
+            ] + self.settings['js_files']
+        self.settings['js_files'] = [ os.path.join(self.mathjax_root, 'tex-svg.js') ] + self.settings['js_files']
 
         js_embedd = ""
         custom_js = ""
@@ -417,15 +407,25 @@ class Parser:
 
         js_embedd += "\n".join(self.settings['js_embedd'])
 
-        self.settings['css_files'] = [
-            os.path.join(self.reveal_root,'reveal.css'),
-            #os.path.join(self.reveal_root,'theme',self.settings['reveal_theme'] + '.css'),
-	    os.path.join(self.rstslide_root,'css','rstslide.css')
-        ] + self.settings['css_files']
+        if self.mode != 'handout':
+            self.settings['css_files'] = [
+                os.path.join(self.reveal_root,'reveal.css'),
+                os.path.join(self.rstslide_root,'css','rstslide.css')
+            ] + self.settings['css_files']
+        else:
+            self.settings['css_files'] = [
+                os.path.join(self.rstslide_root,'css','rstslide-handout.css')
+            ] + self.settings['css_files']
 
         css_embedd = ""
+        if self.mode != 'handout': css_embedd += ".reveal .handout { display: none }\n"
+        if self.mode != 'print': css_embedd += ".reveal .print { display: none }\n"
+        if self.mode != 'slide': css_embedd += ".reveal .slide-display { display: none }\n"
+        if self.mode != 'outline': css_embedd += ".outline .slide-display { display: none }\n"
+
         custom_stylesheets = ""
         for css_file in self.settings['css_files']:
+            css_file = css_file.strip()
             if self.resources == 'local':
                 relpath = self._map_path(css_file)
                 abspath = os.path.join(self.resource_dir_abspath,relpath)
@@ -557,6 +557,7 @@ class Parser:
 				        transition: '%(transition)s',
                                         transitionSpeed: 'fast',
                                         slideNumber: '',
+                                        showNotes: %(notes)s,
                                         menu : {
                                           side: 'right',
                                           width: 'normal',
@@ -607,6 +608,7 @@ class Parser:
 
         footer = footer % {'transition': self.settings['transition'],
                            'footer': self.footer_html,
+                           'notes': 'true' if self.notes else 'false',
                            'reveal_plugin_path': reveal_plugin_path,
                            'rsttools_root': self.rsttools_root,
                            'script_page_number': script_page_number,
@@ -615,104 +617,7 @@ class Parser:
 
         return footer
 
-    def _parse_docinfo(self, doctree, d=None):
 
-        def getText(nodelist):
-            # Iterate all Nodes aggregate TEXT_NODE
-            rc = []
-            for node in nodelist:
-                if node.nodeType == node.TEXT_NODE:
-                    rc.append(node.data)
-                else:
-                    # Recursive
-                    rc.append(getText(node.childNodes))
-            result = ''.join(rc)
-            #for repl in template:
-            #    result = result.replace('|'+repl+'|',template[repl])
-            return result
-
-        if d is None:
-            d = {}
-
-        #print(doctree)
-
-        docdom = doctree.asdom()
-
-        # Get all field lists in the document.
-        docinfos = docdom.getElementsByTagName('docinfo')
-
-        for docinfo in docinfos:
-            for field in docinfo.childNodes:
-                tag = field.tagName
-                if tag == "authors":
-                    authors = field.getElementsByTagName('author')
-                    d["authors"] = [x.firstChild.nodeValue for x in authors]
-                elif tag == "field":
-                    field_name = field.getElementsByTagName('field_name')[0]
-                    field_name_str = field_name.firstChild.nodeValue.lower()
-                    field_body = field.getElementsByTagName('field_body')[0]
-                    if field_name_str.endswith("-list"):
-                        field_name = field_name_str[:-len("-list")]
-                        if field_body.firstChild.tagName == 'bullet_list':
-                            d[field_name] = [getText(x.childNodes) for x in field_body.childNodes] #[x.firstChild.firstChild.nodeValue % template for c in field_body.childNodes for x in c.childNodes]
-                        else:
-                            d[field_name] = [getText(field_body.childNodes)] #[getText(c.firstChild) % template for c in field_body.childNodes]
-                    elif field_name_str.endswith("-list-add"):
-                        field_name = field_name_str[:-len("-list-add")]
-                        if not field_name in d:
-                            d[field_name] = []
-                        if field_body.firstChild.tagName == 'bullet_list':
-                            d[field_name] += [getText(c.childNodes) for x in c.childNodes] #[x.firstChild.firstChild.nodeValue % template for c in field_body.childNodes for x in c.childNodes]
-                        else:
-                            d[field_name] += [getText(field_body.childNodes)] #[getText(c.firstChild) % template for c in field_body.childNodes]
-                    else:
-                        d[field_name_str] = getText(field_body.childNodes)#" ".join(getText(c.firstChild) for c in field_body.childNodes) % template
-
-                else:
-                    d[tag] = getText(field.childNodes) # % template
-
-        topics = docdom.getElementsByTagName('topic')
-        for topic in topics:
-            classes = topic.getAttribute("classes").lower()
-            if classes in [ 'abstract', 'dedication' ]:
-                d[classes] = getText(topic.childNodes) #" ".join(getText(c.firstChild) for c in topic.childNodes)
-
-        return d
-
-    def _dict_to_rst_replacements(self,d):
-        text = ''
-        for key in d:
-            try:
-                out = ""+d[key]
-            except TypeError:
-                try:
-                    out = "".join(d[key])
-                except TypeError:
-                    out = ""
-
-            if out != '':
-                out = out.replace('\n','\n  ').replace('*','\*')
-                text += '.. |'+key+'| replace:: '+out+'\n\n'
-            else:
-                text += '.. |'+key+'| replace:: \ \n\n'
-        return text
-
-    def publish_parts_from_doctree(self, document, destination_path=None,
-                                   writer=None, writer_name='pseudoxml',
-                                   settings=None, settings_spec=None,
-                                   settings_overrides=None, config_section=None,
-                                   enable_exit_status=False):
-        reader = docutils.readers.doctree.Reader(parser_name='null')
-        pub = docutils.core.Publisher(reader, None, writer,
-                        source=docutils.io.DocTreeInput(document),
-                        destination_class=docutils.io.StringOutput, settings=settings)
-        if not writer and writer_name:
-            pub.set_writer(writer_name)
-        pub.process_programmatic_settings(
-            settings_spec, settings_overrides, config_section)
-        pub.set_destination(None, destination_path)
-        pub.publish(enable_exit_status=enable_exit_status)
-        return pub.writer.parts
 
 if __name__ == '__main__':
     # Create the object

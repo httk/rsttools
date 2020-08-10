@@ -1,0 +1,1136 @@
+<!doctype html>
+        <html lang="en">
+	        <head>
+		        <meta charset="utf-8">
+		        <title>rstslide</title>
+		        <meta name="description" content="rstslide">
+		        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.15.2: http://docutils.sourceforge.net/" />
+
+		        <meta description="AbstractThis document attempts
+to be a fairly complete
+guide to everything that
+can be done in rstslide" />
+<meta author="Rickard Armiento" />
+<meta author="Example Author 1
+Example Author 2
+Example Author 3" />
+
+                        <script src="/home/rar/Dropbox/Work/Talks/rstslide/external/mathjax/node_modules/mathjax/es5/tex-svg.js"></script>
+<script src="/home/rar/Dropbox/Work/Talks/rstslide/external/reveal.js/dist/reveal.js"></script>
+<script src="/home/rar/Dropbox/Work/Talks/rstslide/rstslide/reveal-plugins/reveal.js-menu/menu.js"></script>
+<script src="/home/rar/Dropbox/Work/Talks/rstslide/rstslide/reveal-plugins/toc-progress/toc-progress.js"></script>
+
+                        <link rel="stylesheet" href="/home/rar/Dropbox/Work/Talks/rstslide/external/reveal.js/dist/reveal.css" />
+<link rel="stylesheet" href="/home/rar/Dropbox/Work/Talks/rstslide/rstslide/css/rstslide.css" />
+
+                <script>
+                   
+                </script>
+                <style>
+                    .reveal .handout { display: none }
+.reveal .print { display: none }
+.outline .slide-display { display: none }
+.hll { background-color: #ffffcc }
+.c { color: #408080; font-style: italic } /* Comment */
+.err { border: 1px solid #FF0000 } /* Error */
+.k { color: #008000; font-weight: bold } /* Keyword */
+.o { color: #666666 } /* Operator */
+.ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+.cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.cp { color: #BC7A00 } /* Comment.Preproc */
+.cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+.c1 { color: #408080; font-style: italic } /* Comment.Single */
+.cs { color: #408080; font-style: italic } /* Comment.Special */
+.gd { color: #A00000 } /* Generic.Deleted */
+.ge { font-style: italic } /* Generic.Emph */
+.gr { color: #FF0000 } /* Generic.Error */
+.gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.gi { color: #00A000 } /* Generic.Inserted */
+.go { color: #888888 } /* Generic.Output */
+.gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.gs { font-weight: bold } /* Generic.Strong */
+.gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.gt { color: #0044DD } /* Generic.Traceback */
+.kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.kp { color: #008000 } /* Keyword.Pseudo */
+.kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.kt { color: #B00040 } /* Keyword.Type */
+.m { color: #666666 } /* Literal.Number */
+.s { color: #BA2121 } /* Literal.String */
+.na { color: #7D9029 } /* Name.Attribute */
+.nb { color: #008000 } /* Name.Builtin */
+.nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.no { color: #880000 } /* Name.Constant */
+.nd { color: #AA22FF } /* Name.Decorator */
+.ni { color: #999999; font-weight: bold } /* Name.Entity */
+.ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.nf { color: #0000FF } /* Name.Function */
+.nl { color: #A0A000 } /* Name.Label */
+.nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.nt { color: #008000; font-weight: bold } /* Name.Tag */
+.nv { color: #19177C } /* Name.Variable */
+.ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.w { color: #bbbbbb } /* Text.Whitespace */
+.mb { color: #666666 } /* Literal.Number.Bin */
+.mf { color: #666666 } /* Literal.Number.Float */
+.mh { color: #666666 } /* Literal.Number.Hex */
+.mi { color: #666666 } /* Literal.Number.Integer */
+.mo { color: #666666 } /* Literal.Number.Oct */
+.sa { color: #BA2121 } /* Literal.String.Affix */
+.sb { color: #BA2121 } /* Literal.String.Backtick */
+.sc { color: #BA2121 } /* Literal.String.Char */
+.dl { color: #BA2121 } /* Literal.String.Delimiter */
+.sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.s2 { color: #BA2121 } /* Literal.String.Double */
+.se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.sh { color: #BA2121 } /* Literal.String.Heredoc */
+.si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.sx { color: #008000 } /* Literal.String.Other */
+.sr { color: #BB6688 } /* Literal.String.Regex */
+.s1 { color: #BA2121 } /* Literal.String.Single */
+.ss { color: #19177C } /* Literal.String.Symbol */
+.bp { color: #008000 } /* Name.Builtin.Pseudo */
+.fm { color: #0000FF } /* Name.Function.Magic */
+.vc { color: #19177C } /* Name.Variable.Class */
+.vg { color: #19177C } /* Name.Variable.Global */
+.vi { color: #19177C } /* Name.Variable.Instance */
+.vm { color: #19177C } /* Name.Variable.Magic */
+.il { color: #666666 } /* Literal.Number.Integer.Long */
+
+#toc-progress-footer-main
+{
+background-image: url("logo.svg");
+}
+
+                    .reveal section {
+                      text-align: left;
+                    }
+
+                    .reveal h2{
+                      text-align: left;
+                    }
+                </style>
+	        </head>
+        
+	        <body>
+                        <div class="static-content"></div>
+		        <div class="reveal">
+			        <div class="slides">
+
+    <section class="titleslide" data-state="no-toc-progress">
+    <h1>rstslide</h1>
+    <h3>Demonstration</h3>
+    <br>
+    <p><a href="mailto:">Rickard Armiento</a>  </p>
+    <p><small></small></p>
+    <p><small>(rstslide was forked from rst2reveal by Julien Vitay
+and this document is based on the 'reStructuredText Demonstration' document)</small></p>
+    <p>August 2020</p>
+    </section>
+
+<!-- These include lines add some features
+which are explained on the slides titled 'includes' -->
+<!-- Definitions of interpreted text roles (classes) for S5/HTML data. -->
+<!-- This data file has been placed in the public domain. -->
+<!-- Colours
+======= -->
+<!-- Text Sizes
+========== -->
+<!-- Display in Slides (Presentation Mode) Only
+========================================== -->
+<!-- Display in Outline Mode Only
+============================ -->
+<!-- Display in Print Only
+===================== -->
+<!-- Display in Handout Mode Only
+============================ -->
+<!-- Incremental Display
+=================== -->
+<!-- This data file has been placed in the public domain. -->
+<!-- Derived from the Unicode character mappings available from
+<http://www.w3.org/2003/entities/xml/>.
+Processed by unicode2rstsubs.py, part of Docutils:
+<http://docutils.sourceforge.net>. -->
+<!-- Below follows the docinfo segment
+
+There are four types of docinfo fields, each grouped by double newline below.
+
+1. Those with defined bibliographic meaning in rst.
+
+2. The abstract and dedication are defined in rst to be lifted out of the docinfo,
+   and are meant to be typeset somehow in the document.
+
+3. Non-rst fields that have defined meaning in rstslide.
+   This is how you set configuration options.
+
+4. Non-rst fields with no meaning in rstslide.
+   These are ignored.
+
+Note: one cannot put comments inside the docinfo block.
+Only the first field list counts as part of the docinfo, and
+a comment ends it. -->
+<!-- The final entry above adds a logo to the footer bar. -->
+<!-- It is nice with a table of contents for the handouts, but
+not for slides. -->
+<div class="contents handout topic" id="table-of-contents">
+            <p class="topic-title first">Table of Contents            </p>
+            <ul class="simple">
+                <li><a class="reference internal" href="#structural-elements" id="id21">Structural Elements</a>            <ul>
+                <li><a class="reference internal" href="#section-title" id="id22">Section Title</a></li>
+                <li><a class="reference internal" href="#transitions" id="id23">Transitions</a></li>
+            </ul>
+</li>
+                <li><a class="reference internal" href="#body-elements" id="id24">Body Elements</a>            <ul>
+                <li><a class="reference internal" href="#inline-markup" id="id25">Inline markup</a></li>
+                <li><a class="reference internal" href="#footnotes" id="id26">Footnotes</a></li>
+                <li><a class="reference internal" href="#targets" id="id27">Targets</a></li>
+                <li><a class="reference internal" href="#text-roles" id="id28">Text roles</a></li>
+                <li><a class="reference internal" href="#bullet-lists" id="id29">Bullet Lists</a></li>
+                <li><a class="reference internal" href="#enumerated-lists" id="id30">Enumerated Lists</a></li>
+                <li><a class="reference internal" href="#definition-lists" id="id31">Definition Lists</a></li>
+                <li><a class="reference internal" href="#field-lists" id="id32">Field Lists</a></li>
+                <li><a class="reference internal" href="#option-lists" id="id33">Option Lists</a></li>
+                <li><a class="reference internal" href="#literal-blocks" id="id34">Literal Blocks</a></li>
+                <li><a class="reference internal" href="#line-blocks" id="id35">Line Blocks</a></li>
+                <li><a class="reference internal" href="#block-quotes" id="id36">Block Quotes</a></li>
+                <li><a class="reference internal" href="#doctest-blocks" id="id37">Doctest Blocks</a></li>
+                <li><a class="reference internal" href="#full-tables" id="id38">Full tables</a></li>
+                <li><a class="reference internal" href="#simplified-tables" id="id39">Simplified tables</a></li>
+            </ul>
+</li>
+                <li><a class="reference internal" href="#directives" id="id40">Directives</a>            <ul>
+                <li><a class="reference internal" href="#id15" id="id41">Directives</a></li>
+                <li><a class="reference internal" href="#images" id="id42">Images</a></li>
+                <li><a class="reference internal" href="#admonitions" id="id43">Admonitions</a></li>
+                <li><a class="reference internal" href="#id16" id="id44">Admonitions</a></li>
+                <li><a class="reference internal" href="#topics-sidebars-and-rubrics" id="id45">Topics, Sidebars, and Rubrics</a></li>
+                <li><a class="reference internal" href="#target-footnotes" id="id46">Target Footnotes</a></li>
+                <li><a class="reference internal" href="#replacement-text" id="id47">Replacement Text</a></li>
+                <li><a class="reference internal" href="#compound-paragraph" id="id48">Compound Paragraph</a></li>
+                <li><a class="reference internal" href="#substitution-definitions" id="id49">Substitution Definitions</a></li>
+                <li><a class="reference internal" href="#comments" id="id50">Comments</a></li>
+            </ul>
+</li>
+            </ul>
+</div>
+<section>
+        <h2 style="display:none">Structural Elements</h2>
+    <section check="me" id="section-title">
+        <h2>Section Title</h2>
+<p>That's it, the text just above this line.</p>
+<pre class="literal-block">
+Section Title
+-------------
+
+That's it, the text just above this line.
+</pre>
+    </section>
+    <section check="me" id="transitions">
+        <h2>Transitions</h2>
+<p>Here's a transition:</p>
+<hr class="docutils" />
+<p>It divides the section.</p>
+<pre class="literal-block">
+Here's a transition:
+
+---------
+
+It divides the section.
+</pre>
+    </section>
+</section>
+
+<section>
+        <h2 style="display:none">Body Elements</h2>
+    <section check="me" id="inline-markup">
+        <h2>Inline markup</h2>
+<p>Paragraphs contain text and may contain inline markup: <em>emphasis</em>,
+<strong>strong emphasis</strong>, <tt class="docutils literal">inline literals</tt>, standalone hyperlinks
+(<a class="reference external" href="http://www.python.org">http://www.python.org</a>), external hyperlinks (<a class="reference external" href="http://www.python.org/">Python</a> <a class="footnote-reference" href="#id17" id="id18">[5]</a>), internal
+cross-references (<a class="reference internal" href="#example">example</a>), external hyperlinks with embedded URIs
+s(<a class="reference external" href="http://www.python.org">Python web site</a>), footnote references
+(manually numbered <a class="footnote-reference" href="#id6" id="id1">[1]</a>, anonymous auto-numbered <a class="footnote-reference" href="#id9" id="id2">[3]</a>, labeled
+auto-numbered <a class="footnote-reference" href="#label" id="id3">[2]</a>, or symbolic <a class="footnote-reference" href="#id10" id="id4">[*]</a>), citation references
+(<a class="citation-reference" href="#cit2002" id="id5">[CIT2002]</a>), substitution references (            <img alt="EXAMPLE" class="align-middle" src="logo-black.svg" style="width: 5em;" />), and <span class="target" id="inline-hyperlink-targets">inline
+hyperlink targets</span> (see <a class="reference internal" href="#targets">Targets</a> below for a reference back to here).</p>
+<p>Character-level inline markup is also possible in <em>re</em><tt class="docutils literal">Structured</tt><em>Text</em>.</p>
+<pre class="literal-block">
+Paragraphs contain text and may contain inline markup: *emphasis*,
+**strong emphasis**, ``inline literals``, standalone hyperlinks
+(http://www.python.org), external hyperlinks (Python_), internal
+cross-references (example_), external hyperlinks with embedded URIs
+(`Python web site &lt;http://www.python.org&gt;`__), footnote references
+(manually numbered [1]_, anonymous auto-numbered [#]_, labeled
+auto-numbered [#label]_, or symbolic [*]_), citation references
+([CIT2002]_), substitution references (|example|), and _`inline
+hyperlink targets` (see Targets_ below for a reference back to here).
+
+Character-level inline markup is also possible in *re*\ ``Structured``\ *Text*.
+
+.. |EXAMPLE| image:: logo-black.svg
+                     :width: 5em
+                     :align: middle
+</pre>
+    </section>
+    <section check="me" id="footnotes">
+        <h2>Footnotes</h2>
+<table class="tiny docutils footnote" frame="void" id="id6" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id7">2</a>)</em> <p>A footnote contains body elements, consistently indented by at
+least 3 spaces.</p>
+<p class="last">This is the footnote's second paragraph.</p>
+</td></tr>
+</tbody>
+</table>
+<table class="tiny docutils footnote" frame="void" id="label" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[2]</td><td><em>(<a class="fn-backref" href="#id3">1</a>, <a class="fn-backref" href="#id8">2</a>)</em> Footnotes may be numbered, either manually (as in <a class="footnote-reference" href="#id6" id="id7">[1]</a>) or
+automatically using a &quot;#&quot;-prefixed label.  This footnote has a
+label so it can be referred to from multiple places, both as a
+footnote reference (<a class="footnote-reference" href="#label" id="id8">[2]</a>) and as a hyperlink reference
+(<a class="reference internal" href="#label">label</a>).</td></tr>
+</tbody>
+</table>
+<table class="tiny docutils footnote" frame="void" id="id9" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[3]</a></td><td>This footnote is numbered automatically and anonymously using a
+label of &quot;#&quot; only.</td></tr>
+</tbody>
+</table>
+<table class="tiny docutils footnote" frame="void" id="id10" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[*]</a></td><td>Footnotes may also use symbols, specified with a &quot;*&quot; label.
+Here's a reference to the next footnote: <a class="footnote-reference" href="#id12" id="id11">[†]</a>.</td></tr>
+</tbody>
+</table>
+<table class="tiny docutils footnote" frame="void" id="id12" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id11">[†]</a></td><td>This footnote shows the next symbol in the sequence.</td></tr>
+</tbody>
+</table>
+<table class="tiny docutils footnote" frame="void" id="id13" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[4]</td><td>Here's an unreferenced footnote.</td></tr>
+</tbody>
+</table>
+<table class="tiny docutils citation" frame="void" id="cit2002" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5">[CIT2002]</a></td><td>Citations are text-labeled footnotes. They may be
+rendered separately and differently from footnotes.</td></tr>
+</tbody>
+</table>
+<p class="tiny">Here's a reference to the above, [CIT2002].</p>
+<pre class="tiny literal-block">
+.. [1] A footnote contains body elements, consistently indented by at
+   least 3 spaces.
+
+   This is the footnote's second paragraph.
+
+.. [#label] Footnotes may be numbered, either manually (as in [1]_) or
+   automatically using a &quot;#&quot;-prefixed label.  This footnote has a
+   label so it can be referred to from multiple places, both as a
+   footnote reference ([#label]_) and as a hyperlink reference
+   (label_).
+
+.. [#] This footnote is numbered automatically and anonymously using a
+   label of &quot;#&quot; only.
+
+.. [*] Footnotes may also use symbols, specified with a &quot;*&quot; label.
+   Here's a reference to the next footnote: [*]_.
+
+.. [*] This footnote shows the next symbol in the sequence.
+
+.. [4] Here's an unreferenced footnote, with a reference to a
+   nonexistent footnote: [5]_.
+
+.. [CIT2002] Citations are text-labeled footnotes. They may be
+   rendered separately and differently from footnotes.
+
+Here's a reference to the above, [CIT2002].
+</pre>
+    </section>
+    <section check="me" id="targets">
+        <h2>Targets</h2>
+<p id="example">This paragraph is pointed to by the explicit &quot;example&quot; target. A
+reference can be found under <a class="reference internal" href="#inline-markup">Inline Markup</a>, above. <a class="reference internal" href="#inline-hyperlink-targets">Inline
+hyperlink targets</a> are also possible.</p>
+<p>Section headers are implicit targets, referred to by name. See
+<a class="reference internal" href="#targets">Targets</a>, which is a subsection of <a class="reference internal" href="#body-elements">Body Elements</a>.</p>
+<p>Explicit external targets are interpolated into references such as
+&quot;<a class="reference external" href="http://www.python.org/">Python</a> <a class="footnote-reference" href="#id17" id="id19">[5]</a>&quot;.</p>
+<p>Targets may be indirect and anonymous.  Thus <a class="reference internal" href="#targets">this phrase</a> may also
+refer to the <a class="reference internal" href="#targets">Targets</a> section.</p>
+    </section>
+    <section check="me" id="text-roles">
+        <h2>Text roles</h2>
+<p>Here are some explicit interpreted text roles: a PEP reference (<a class="reference external" href="http://www.python.org/dev/peps/pep-0287">PEP 287</a>); an
+RFC reference (<a class="reference external" href="http://tools.ietf.org/html/rfc2822.html">RFC 2822</a>); a <sub>subscript</sub>; a <sup>superscript</sup>;
+and explicit roles for <em>standard</em> <strong>inline</strong>
+<tt class="docutils literal">markup</tt>.</p>
+<p>Let's test wrapping and whitespace significance in inline literals:
+<tt class="docutils literal">This is an example of <span class="pre">--inline-literal</span> <span class="pre">--text,</span> <span class="pre">--including</span> <span class="pre">some--</span>
+<span class="pre">strangely--hyphenated-words.</span>&nbsp; <span class="pre">Adjust-the-width-of-your-browser-window</span>
+to see how the text is wrapped.&nbsp; <span class="pre">--</span> <span class="pre">----</span> <span class="pre">--------</span>&nbsp; Now note&nbsp;&nbsp;&nbsp; the
+spacing&nbsp;&nbsp;&nbsp; between the&nbsp;&nbsp;&nbsp; words of&nbsp;&nbsp;&nbsp; this sentence&nbsp;&nbsp;&nbsp; (words
+should&nbsp;&nbsp;&nbsp; be grouped&nbsp;&nbsp;&nbsp; in pairs).</tt></p>
+<pre class="literal-block">
+Here are some explicit interpreted text roles: a PEP reference (:PEP:`287`); an
+RFC reference (:RFC:`2822`); a :sub:`subscript`; a :sup:`superscript`;
+and explicit roles for :emphasis:`standard` :strong:`inline`
+:literal:`markup`.
+
+Let's test wrapping and whitespace significance in inline literals:
+``This is an example of --inline-literal --text, --including some--
+strangely--hyphenated-words.  Adjust-the-width-of-your-browser-window
+to see how the text is wrapped.  -- ---- --------  Now note    the
+spacing    between the    words of    this sentence    (words
+should    be grouped).``
+</pre>
+    </section>
+    <section check="me" id="bullet-lists">
+        <h2>Bullet Lists</h2>
+<div class="class column-50 docutils container">
+            <ul>
+                <li><p class="first">A bullet list</p>
+            <ul class="simple">
+                <li>Nested bullet list.</li>
+                <li>Nested item 2.</li>
+            </ul>
+</li>
+                <li><p class="first">Item 2.</p>
+<p>Paragraph 2 of item 2.</p>
+            <ul class="simple">
+                <li>Nested bullet list.</li>
+                <li>Nested item 2.            <ul>
+                <li>Third level.</li>
+                <li>Item 2.</li>
+            </ul>
+</li>
+                <li>Nested item 3.</li>
+            </ul>
+</li>
+            </ul>
+</div>
+<div class="class column-50 docutils container">
+<pre class="literal-block">
+- A bullet list
+
+  + Nested bullet list.
+  + Nested item 2.
+
+- Item 2.
+
+  Paragraph 2 of item 2.
+
+  * Nested bullet list.
+  * Nested item 2.
+
+    - Third level.
+    - Item 2.
+
+  * Nested item 3.
+</pre>
+</div>
+    </section>
+    <section check="me" id="enumerated-lists">
+        <h2>Enumerated Lists</h2>
+<div class="class column-50 docutils container">
+            <ol class="arabic">
+                <li><p class="first">Arabic numerals.</p>
+            <ol class="loweralpha simple">
+                <li>lower alpha)            <ol class="lowerroman">
+                <li>(lower roman)            <ol class="upperalpha">
+                <li>upper alpha.            <ol class="upperroman">
+                <li>upper roman)</li>
+            </ol>
+</li>
+            </ol>
+</li>
+            </ol>
+</li>
+            </ol>
+</li>
+                <li><p class="first">Lists that don't start at 1:</p>
+            <ol class="arabic simple" start="3">
+                <li>Three</li>
+                <li>Four</li>
+            </ol>
+            <ol class="upperalpha simple" start="3">
+                <li>C</li>
+                <li>D</li>
+            </ol>
+            <ol class="lowerroman simple" start="3">
+                <li>iii</li>
+                <li>iv</li>
+            </ol>
+</li>
+                <li><p class="first">List items may also be auto-enumerated.</p>
+</li>
+            </ol>
+</div>
+<div class="class column-50 docutils container">
+<pre class="literal-block">
+1. Arabic numerals.
+
+   a) lower alpha)
+
+      (i) (lower roman)
+
+          A. upper alpha.
+
+             I) upper roman)
+
+2. Lists that don't start at 1:
+
+   3. Three
+
+   4. Four
+
+   C. C
+
+   D. D
+
+   iii. iii
+
+   iv. iv
+
+#. List items may also be auto-enumerated.
+</pre>
+</div>
+    </section>
+    <section check="me" id="definition-lists">
+        <h2>Definition Lists</h2>
+<div class="class column-50 docutils container">
+<dl class="docutils">
+<dt>Term</dt>
+<dd>Definition</dd>
+<dt>Term <span class="classifier-delimiter">:</span> <span class="classifier">classifier</span></dt>
+<dd><p class="first">Definition paragraph 1.</p>
+<p class="last">Definition paragraph 2.</p>
+</dd>
+<dt>Term</dt>
+<dd>Definition</dd>
+</dl>
+</div>
+<div class="class column-50 docutils container">
+<pre class="literal-block">
+Term
+    Definition
+Term : classifier
+    Definition paragraph 1.
+
+    Definition paragraph 2.
+Term
+    Definition
+</pre>
+</div>
+    </section>
+    <section check="me" id="field-lists">
+        <h2>Field Lists</h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<th class="field-name">what:</th><p>Field lists map field names to field bodies, like database
+records.  They are often part of an extension syntax.  They are
+an unambiguous variant of RFC 2822 fields.</p>
+<th class="field-name">how arg1 arg2:</th><p>The field marker is a colon, the field name, and a colon.</p>
+<p>The field body may contain one or more body elements, indented
+relative to the field marker.</p>
+</tbody>
+</table>
+    </section>
+    <section check="me" id="option-lists">
+        <h2>Option Lists</h2>
+<p class="tiny">For listing command-line options:</p>
+<table class="tiny docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-a</span></kbd></td>
+<td>command-line option &quot;a&quot;</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-b <var>file</var></span></kbd></td>
+<td>options can have arguments
+and long descriptions</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--long</span></kbd></td>
+<td>options can be long also</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--input=<var>file</var></span></kbd></td>
+<td>long options can also have
+arguments</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--very-long-option</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td><p class="first">The description can also start on the next line.</p>
+<p class="last">The description may contain multiple body elements,
+regardless of where it starts.</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-x</span>, <span class="option">-y</span>, <span class="option">-z</span></kbd></td>
+<td>Multiple options are an &quot;option group&quot;.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-v</span>, <span class="option">--verbose</span></kbd></td>
+<td>Commonly-seen: short &amp; long options.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-1 <var>file</var></span>, <span class="option">--one=<var>file</var></span>, <span class="option">--two <var>file</var></span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Multiple options with arguments.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">/V</span></kbd></td>
+<td>DOS/VMS-style options too</td></tr>
+</tbody>
+</table>
+<p class="tiny">There must be at least two spaces between the option and the
+description.</p>
+<pre class="tiny literal-block">
+-a            command-line option &quot;a&quot;
+-b file       options can have arguments
+              and long descriptions
+--long        options can be long also
+--input=file  long options can also have
+              arguments
+
+--very-long-option
+              The description can also start on the next line.
+
+              The description may contain multiple body elements,
+              regardless of where it starts.
+
+-x, -y, -z    Multiple options are an &quot;option group&quot;.
+-v, --verbose  Commonly-seen: short &amp; long options.
+-1 file, --one=file, --two file
+              Multiple options with arguments.
+/V            DOS/VMS-style options too
+</pre>
+    </section>
+    <section check="me" id="literal-blocks">
+        <h2>Literal Blocks</h2>
+<p>Literal blocks are indicated with a double-colon (&quot;::&quot;) at the end of
+the preceding paragraph (over there <tt class="docutils literal"><span class="pre">--&gt;</span></tt>).  They can be indented:</p>
+<pre class="literal-block">
+if literal_block:
+    text = 'is left as-is'
+    spaces_and_linebreaks = 'are preserved'
+    markup_processing = None
+</pre>
+<p>Or they can be quoted without indentation:</p>
+<pre class="literal-block">
+&gt;&gt; Great idea!
+&gt;
+&gt; Why didn't I think of that?
+</pre>
+<hr class="docutils" />
+<pre class="literal-block">
+Literal blocks are indicated with a double-colon (&quot;::&quot;) at the end of
+the preceding paragraph (over there ``--&gt;``).  They can be indented::
+
+    if literal_block:
+        text = 'is left as-is'
+        spaces_and_linebreaks = 'are preserved'
+        markup_processing = None
+
+Or they can be quoted without indentation::
+
+&gt;&gt; Great idea!
+&gt;
+&gt; Why didn't I think of that?
+</pre>
+    </section>
+    <section check="me" id="line-blocks">
+        <h2>Line Blocks</h2>
+<div class="line-block">
+<div class="line">This is a line block.  It ends with a blank line.</div>
+<div class="line-block">
+<div class="line">Each new line begins with a vertical bar (&quot;|&quot;).</div>
+<div class="line">Line breaks and initial indents are preserved.</div>
+</div>
+<div class="line">Continuation lines are wrapped portions of long lines;
+they begin with a space in place of the vertical bar.</div>
+<div class="line-block">
+<div class="line">The left edge of a continuation line need not be aligned with
+the left edge of the text above it.</div>
+</div>
+</div>
+<div class="line-block">
+<div class="line">This is a second line block.</div>
+<div class="line"><br /></div>
+<div class="line">Blank lines are permitted internally, but they must begin with a &quot;|&quot;.</div>
+</div>
+<hr class="docutils" />
+<pre class="literal-block">
+| This is a line block.  It ends with a blank line.
+|     Each new line begins with a vertical bar (&quot;|&quot;).
+|     Line breaks and initial indents are preserved.
+| Continuation lines are wrapped portions of long lines;
+  they begin with a space in place of the vertical bar.
+|     The left edge of a continuation line need not be aligned with
+  the left edge of the text above it.
+
+| This is a second line block.
+|
+| Blank lines are permitted internally, but they must begin with a &quot;|&quot;.
+</pre>
+    </section>
+    <section check="me" id="block-quotes">
+        <h2>Block Quotes</h2>
+<p>Block quotes consist of indented body elements:</p>
+            <blockquote>
+<p>My theory by A. Elk.  Brackets Miss, brackets.  This theory goes
+as follows and begins now.  All brontosauruses are thin at one
+end, much much thicker in the middle and then thin again at the
+far end.  That is my theory, it is mine, and belongs to me and I
+own it, and what it is too.</p>
+<p class="attribution">&mdash;Anne Elk (Miss)</p>
+            </blockquote>
+<pre class="literal-block">
+Block quotes consist of indented body elements:
+
+    My theory by A. Elk.  Brackets Miss, brackets.  This theory goes
+    as follows and begins now.  All brontosauruses are thin at one
+    end, much much thicker in the middle and then thin again at the
+    far end.  That is my theory, it is mine, and belongs to me and I
+    own it, and what it is too.
+
+    -- Anne Elk (Miss)
+</pre>
+    </section>
+    <section check="me" id="doctest-blocks">
+        <h2>Doctest Blocks</h2>
+<pre class="doctest-block">
+&gt;&gt;&gt; print 'Python-specific usage examples; begun with &quot;&gt;&gt;&gt;&quot;'
+Python-specific usage examples; begun with &quot;&gt;&gt;&gt;&quot;
+&gt;&gt;&gt; print '(cut and pasted from interactive Python sessions)'
+(cut and pasted from interactive Python sessions)
+</pre>
+<hr class="docutils" />
+<pre class="literal-block">
+&gt;&gt;&gt; print 'Python-specific usage examples; begun with &quot;&gt;&gt;&gt;&quot;'
+Python-specific usage examples; begun with &quot;&gt;&gt;&gt;&quot;
+&gt;&gt;&gt; print '(cut and pasted from interactive Python sessions)'
+(cut and pasted from interactive Python sessions)
+</pre>
+    </section>
+    <section check="me" id="full-tables">
+        <h2>Full tables</h2>
+<p>Here's a grid table followed by a simple table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="43%" />
+<col width="21%" />
+<col width="18%" />
+<col width="18%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Header row, column 1
+(header rows optional)</th>
+<th class="head">Header 2</th>
+<th class="head">Header 3</th>
+<th class="head">Header 4</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>body row 1, column 1</td>
+<td>column 2</td>
+<td>column 3</td>
+<td>column 4</td>
+</tr>
+<tr><td>body row 2</td>
+<td colspan="3">Cells may span columns.</td>
+</tr>
+<tr><td>body row 3</td>
+<td rowspan="2">Cells may
+span rows.</td>
+<td colspan="2" rowspan="2">            <ul class="first last simple">
+                <li>Table cells</li>
+                <li>contain</li>
+                <li>body elements.</li>
+            </ul>
+</td>
+</tr>
+<tr><td>body row 4</td>
+</tr>
+<tr><td>body row 5</td>
+<td colspan="2">Cells may also be
+empty: <tt class="docutils literal"><span class="pre">--&gt;</span></tt></td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<pre class="literal-block">
++------------------------+------------+----------+----------+
+| Header row, column 1   | Header 2   | Header 3 | Header 4 |
+| (header rows optional) |            |          |          |
++========================+============+==========+==========+
+| body row 1, column 1   | column 2   | column 3 | column 4 |
++------------------------+------------+----------+----------+
+| body row 2             | Cells may span columns.          |
++------------------------+------------+---------------------+
+| body row 3             | Cells may  | - Table cells       |
++------------------------+ span rows. | - contain           |
+| body row 4             |            | - body elements.    |
++------------------------+------------+----------+----------+
+| body row 5             | Cells may also be     |          |
+|                        | empty: ``--&gt;``        |          |
++------------------------+-----------------------+----------+
+</pre>
+    </section>
+    <section check="me" id="simplified-tables">
+        <h2>Simplified tables</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="31%" />
+<col width="31%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head" colspan="2">Inputs</th>
+<th class="head">Output</th>
+</tr>
+<tr><th class="head">A</th>
+<th class="head">B</th>
+<th class="head">A or B</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr><td>True</td>
+<td>False</td>
+<td>True</td>
+</tr>
+<tr><td>False</td>
+<td>True</td>
+<td>True</td>
+</tr>
+<tr><td>True</td>
+<td>True</td>
+<td>True</td>
+</tr>
+</tbody>
+</table>
+<pre class="literal-block">
+=====  =====  ======
+   Inputs     Output
+------------  ------
+  A      B    A or B
+=====  =====  ======
+False  False  False
+True   False  True
+False  True   True
+True   True   True
+=====  =====  ======
+</pre>
+    </section>
+</section>
+
+<section>
+        <h2 style="display:none">Directives</h2>
+    <section check="me" id="id15">
+        <h2>Directives</h2>
+<p>These are just a sample of the many reStructuredText Directives.  For
+others, please see
+<a class="reference external" href="http://docutils.sourceforge.net/docs/ref/rst/directives.html">http://docutils.sourceforge.net/docs/ref/rst/directives.html</a>.</p>
+    </section>
+    <section check="me" id="images">
+        <h2>Images</h2>
+<p class="tiny">An image directive (also clickable -- a hyperlink reference):</p>
+<a class="tiny reference external image-reference" href="http://example.com">            <div class="align-center">
+            <img alt="logo-black.svg" src="logo-black.svg" style="width: 25%;" />            </div>
+</a>
+<p class="tiny">A figure directive:</p>
+<div class="tiny figure">
+            <div class="align-center">
+            <img alt="reStructuredText, the markup syntax" src="logo-black.svg" style="width: 25%;" />
+            </div>
+<p class="caption">A figure is an image with a caption and/or a legend:</p>
+<div class="legend">
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>re</td>
+<td>Revised, revisited, based on 're' module.</td>
+</tr>
+<tr><td>Structured</td>
+<td>Structure-enhanced text, structuredtext.</td>
+</tr>
+<tr><td>Text</td>
+<td>Well it is, isn't it?</td>
+</tr>
+</tbody>
+</table>
+<p>This paragraph is also part of the legend.</p>
+</div>
+</div>
+<pre class="tiny literal-block">
+An image directive (also clickable -- a hyperlink reference):
+
+.. image:: logo-black.svg
+   :width: 25%
+   :target: http://example.com
+
+A figure directive:
+
+.. figure:: logo-black.svg
+   :alt: reStructuredText, the markup syntax
+   :width: 25%
+
+   A figure is an image with a caption and/or a legend:
+
+   +------------+-----------------------------------------------+
+   | re         | Revised, revisited, based on 're' module.     |
+   +------------+-----------------------------------------------+
+   | Structured | Structure-enhanced text, structuredtext.      |
+   +------------+-----------------------------------------------+
+   | Text       | Well it is, isn't it?                         |
+   +------------+-----------------------------------------------+
+
+   This paragraph is also part of the legend.
+</pre>
+    </section>
+    <section check="me" id="admonitions">
+        <h2>Admonitions</h2>
+<div class="class column-50 tiny docutils container">
+<div class="admonition attention">
+            <p class="first admonition-title">Attention!            </p>
+<p class="last">Directives at large.</p>
+</div>
+<div class="admonition caution">
+            <p class="first admonition-title">Caution!            </p>
+<p class="last">Don't take any wooden nickels.</p>
+</div>
+<div class="admonition danger">
+            <p class="first admonition-title">!DANGER!            </p>
+<p class="last">Mad scientist at work!</p>
+</div>
+<div class="admonition error">
+            <p class="first admonition-title">Error            </p>
+<p class="last">Does not compute.</p>
+</div>
+<div class="admonition hint">
+            <p class="first admonition-title">Hint            </p>
+<p class="last">It's bigger than a bread box.</p>
+</div>
+</div>
+<div class="class column-50 tiny docutils container">
+<div class="admonition important">
+            <p class="first admonition-title">Important            </p>
+            <ul class="last simple">
+                <li>Wash behind your ears.</li>
+                <li>Clean up your room.</li>
+                <li>Call your mother.</li>
+                <li>Back up your data.</li>
+            </ul>
+</div>
+<div class="admonition note">
+            <p class="first admonition-title">Note            </p>
+<p class="last">This is a note.</p>
+</div>
+<div class="admonition tip">
+            <p class="first admonition-title">Tip            </p>
+<p class="last">15% if the service is good.</p>
+</div>
+<div class="admonition warning">
+            <p class="first admonition-title">Warning            </p>
+<p class="last">Strong prose may provoke extreme mental exertion.
+Reader discretion is strongly advised.</p>
+</div>
+<div class="admonition admonition-and-by-the-way">
+            <p class="first admonition-title">And, by the way...            </p>
+<p class="last">You can make up your own admonition too.</p>
+</div>
+</div>
+    </section>
+    <section check="me" id="id16">
+        <h2>Admonitions</h2>
+<pre class="literal-block">
+.. Attention:: Directives at large.
+
+.. Caution::
+
+   Don't take any wooden nickels.
+
+.. DANGER:: Mad scientist at work!
+
+.. Error:: Does not compute.
+
+.. Hint:: It's bigger than a bread box.
+
+.. Important::
+   - Wash behind your ears.
+   - Clean up your room.
+   - Call your mother.
+   - Back up your data.
+
+.. Note:: This is a note.
+
+.. Tip:: 15% if the service is good.
+
+.. WARNING:: Strong prose may provoke extreme mental exertion.
+   Reader discretion is strongly advised.
+
+.. admonition:: And, by the way...
+
+   You can make up your own admonition too.
+</pre>
+    </section>
+    <section check="me" id="topics-sidebars-and-rubrics">
+        <h2>Topics, Sidebars, and Rubrics</h2>
+<div class="sidebar">
+            <p class="first sidebar-title">Optional Sidebar Title            </p>
+<p class="sidebar-subtitle">Optional Subtitle</p>
+<p>This is a sidebar.  It is for text outside the flow of the main
+text.</p>
+<p class="rubric">This is a rubric inside a sidebar</p>
+<p class="last">Sidebars often appears beside the main text with a border and
+background color.</p>
+</div>
+<div class="topic">
+            <p class="topic-title first">Topic Title            </p>
+<p>This is a topic.</p>
+</div>
+<p class="rubric">This is a rubric</p>
+    </section>
+    <section check="me" id="target-footnotes">
+        <h2>Target Footnotes</h2>
+<table class="docutils footnote" frame="void" id="id17" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[5]</td><td><em>(<a class="fn-backref" href="#id18">1</a>, <a class="fn-backref" href="#id19">2</a>, <a class="fn-backref" href="#id20">3</a>)</em> <a class="reference external" href="http://www.python.org/">http://www.python.org/</a></td></tr>
+</tbody>
+</table>
+    </section>
+    <section check="me" id="replacement-text">
+        <h2>Replacement Text</h2>
+<p>I recommend you try <a class="reference external" href="http://www.python.org/">Python, <em>the</em> best language around</a> <a class="footnote-reference" href="#id17" id="id20">[5]</a>.</p>
+    </section>
+    <section check="me" id="compound-paragraph">
+        <h2>Compound Paragraph</h2>
+<div class="compound">
+<p class="compound-first">This paragraph contains a literal block:</p>
+<pre class="compound-middle literal-block">
+Connecting... OK
+Transmitting data... OK
+Disconnecting... OK
+</pre>
+<p class="compound-last">and thus consists of a simple paragraph, a literal block, and
+another simple paragraph.  Nonetheless it is semantically <em>one</em>
+paragraph.</p>
+</div>
+<p>This construct is called a <em>compound paragraph</em> and can be produced
+with the &quot;compound&quot; directive.</p>
+    </section>
+    <section check="me" id="substitution-definitions">
+        <h2>Substitution Definitions</h2>
+<p>An inline image (            <img alt="EXAMPLE" class="align-middle" src="logo-black.svg" style="width: 5em;" />) example:</p>
+<pre class="literal-block">
+An inline image (|example|) example:
+
+.. |EXAMPLE| image:: images/biohazard.png
+
+(Substitution definitions are not visible in the HTML source.)
+</pre>
+    </section>
+    <section check="me" id="comments">
+        <h2>Comments</h2>
+<p>Here's one:</p>
+<!-- Comments begin with two dots and a space. Anything may
+follow, except for the syntax of footnotes, hyperlink
+targets, directives, or substitution definitions. -->
+<hr class="docutils" />
+<pre class="literal-block">
+Here's one:
+
+.. Comments begin with two dots and a space. Anything may
+   follow, except for the syntax of footnotes, hyperlink
+   targets, directives, or substitution definitions.
+</pre>
+    </section>
+</section>
+
+
+			        </div>
+		        </div>
+        
+		        <script>
+			        // Full list of configuration options available here:
+			        // https://github.com/hakimel/reveal.js#configuration
+			        Reveal.initialize({
+				        controls: false,
+				        progress: false,
+				        hash: true,
+				        overview: true,
+				        keyboard: true,
+				        loop: false,
+				        touch: true,
+				        rtl: false,
+				        center: false,
+				        mouseWheel: false,
+				        fragments: true,
+				        rollingLinks: false,
+				        transition: 'fade',
+                                        transitionSpeed: 'fast',
+                                        slideNumber: '',
+                                        showNotes: false,
+                                        menu : {
+                                          side: 'right',
+                                          width: 'normal',
+                                          numbers: false,
+                                          titleSelector: 'h1, h2, h3, h4, h5, h6',
+                                          useTextContentForMissingTitles: false,
+                                          hideMissingTitles: false,
+                                          markers: true,
+                                          custom: false,
+                                          themes: false,
+                                          themesPath: 'css/theme/',
+                                          transitions: false,
+                                          openButton: true,
+                                          openSlideNumber: false,
+                                          keyboard: true,
+                                          sticky: false,
+                                          autoOpen: true,
+                                          delayInit: false,
+                                          openOnInit: false,
+                                          loadIcons: true,
+                                        },
+                                       tocprogress: {
+                                         reducescroll: null,
+                                         background: null,
+                                         highligh_main: '{ background-color: white; color: black;}'
+                                       },
+      	keyboard: {
+        37: 'prev', // right
+      	39: 'next', // left
+      	33: 'prev', // page up
+      	34: 'next', // page down
+      	38: 'prev', // page up
+      	40: 'next', // page down
+      	109: function() {Reveal.left(); Reveal.slide(Reveal.getIndices()['h'],0,0);}, // minus
+      	107: function() {Reveal.right(); Reveal.slide(Reveal.getIndices()['h'],0,0);}, // plus
+      	},
+        plugins: [ RevealMenu, TocProgress ],
+        });
+
+		        </script>
+            
+
+	        
+	        </body>
+        </html>

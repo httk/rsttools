@@ -261,9 +261,11 @@ class RevealTranslator(HTMLTranslator):
             self.body.append(self.starttag(node, 'object', suffix, **atts) +
                              node.get('alt', uri) + '</object>' + suffix)
         else:
-            self.body.append(' '*12 + '<div class=\"'+align+'\">\n')
+            if align in [ 'align-left', 'align-right', 'align-center' ]:
+                self.body.append(' '*12 + '<div class=\"'+align+'\">\n')
             self.body.append(' '*12 + self.emptytag(node, 'img', suffix, **atts))
-            self.body.append(' '*12 + '</div>\n')
+            if align in [ 'align-left', 'align-right', 'align-center' ]:
+                self.body.append(' '*12 + '</div>\n')
 
     def depart_image(self, node):
         self.body.append(self.context.pop())
@@ -331,7 +333,7 @@ class RevealTranslator(HTMLTranslator):
         self.body.append('</li>\n')
 
     def visit_sidebar(self, node):
-        if 'classes' in node:
+        if 'classes' in node and len(node['classes'])>0:
             if node['classes'][0] in ['left', 'right']:
                 self.inline_lists = True
         HTMLTranslator.visit_sidebar(self, node)
