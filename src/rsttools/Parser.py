@@ -149,7 +149,7 @@ class Parser:
         self.settings['js_files'] = []
 
         # Style
-        self.settings['reveal_theme'] = 'white'
+        #self.settings['reveal_theme'] = 'white'
         self.settings['transition'] = 'fade'
         self.settings['pygments_style'] = 'default'
         self.settings['stylesheet'] = ''
@@ -214,9 +214,12 @@ class Parser:
 
         cwd = os.getcwd()
 
+        # Even if we are not doing local resources, we anyway remove the resource directory
+        # to prevent unused resource directories to be left in the directory.
+        if os.path.exists(os.path.join(self.curr_dir, self.output_name + '_rstslide')):
+            shutil.rmtree(os.path.join(self.curr_dir, self.output_name + '_rstslide'))
+
         if self.resources == 'local':
-            if os.path.exists(os.path.join(self.curr_dir, self.output_name + '_rstslide')):
-                shutil.rmtree(os.path.join(self.curr_dir, self.output_name + '_rstslide'))
             os.makedirs(os.path.join(self.curr_dir, self.output_name + '_rstslide'))
             self.resource_dir_abspath = os.path.join(self.curr_dir, self.output_name + '_rstslide')
             self.resource_dir_relpath = self.output_name + '_rstslide'
@@ -389,6 +392,8 @@ class Parser:
         self.settings['js_files'] = [
             os.path.join(self.mathjax_root, 'tex-svg.js'),
             os.path.join(self.reveal_root, 'reveal.js'),
+            os.path.join(self.reveal_plugins_root, 'reveal.js-menu','menu.js'),
+            os.path.join(self.reveal_plugins_root, 'toc-progress','toc-progress.js')
         ] + self.settings['js_files']
 
         js_embedd = ""
@@ -414,7 +419,7 @@ class Parser:
 
         self.settings['css_files'] = [
             os.path.join(self.reveal_root,'reveal.css'),
-            os.path.join(self.reveal_root,'theme',self.settings['reveal_theme'] + '.css'),
+            #os.path.join(self.reveal_root,'theme',self.settings['reveal_theme'] + '.css'),
 	    os.path.join(self.rstslide_root,'css','rstslide.css')
         ] + self.settings['css_files']
 
@@ -472,7 +477,6 @@ class Parser:
         """ % {'title': self.title,
                'meta': self.parts['meta'],
                'extra_meta': extra_meta,
-               'reveal_theme': self.settings['reveal_theme'],
                'reveal_root': self.reveal_root,
                'rstslide_root': self.rstslide_root,
                'horizontal_center': 'center' if self.settings['horizontal_center'] else 'left',
@@ -574,6 +578,11 @@ class Parser:
                                           openOnInit: false,
                                           loadIcons: true,
                                         },
+                                       tocprogress: {
+                                         reducescroll: null,
+                                         background: null,
+                                         highligh_main: '{ background-color: white; color: black;}'
+                                       },
       	keyboard: {
         37: 'prev', // right
       	39: 'next', // left
@@ -584,17 +593,7 @@ class Parser:
       	109: function() {Reveal.left(); Reveal.slide(Reveal.getIndices()['h'],0,0);}, // minus
       	107: function() {Reveal.right(); Reveal.slide(Reveal.getIndices()['h'],0,0);}, // plus
       	},
-        dependencies: [
-          { src: '%(reveal_plugin_path)s/reveal.js-menu/menu.js', async: true },
-          { src: '%(reveal_plugin_path)s/toc-progress/toc-progress.js',
-                async: true,
-                callback: function()
-                {
-                    toc_progress.initialize(null,null,'{ background-color: white; color: black;}');
-                    toc_progress.create();
-                }
-          }
-          ]
+        plugins: [ RevealMenu, TocProgress ],
         });
 
 		        </script>"""

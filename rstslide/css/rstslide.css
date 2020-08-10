@@ -445,10 +445,11 @@ div .slide-menu-button {
     text-align: right;
 }
 
-.reveal .slide-menu-button {
+.reveal div.slide-menu-button {
     right: 0.5em;
     left: unset;
-    bottom: 0.5em;
+    top: unset;
+    bottom: 0.1em;
     opacity: 0.1;
 }
 
