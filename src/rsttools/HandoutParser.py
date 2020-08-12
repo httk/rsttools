@@ -19,14 +19,9 @@ from .RevealTranslator import RevealTranslator, HTMLWriter
 from .DocutilsHelper import DocutilsHelper
 
 # Import custom directives
-from .TwoColumnsDirective import *
 from .PygmentsDirective import *
 from .VideoDirective import *
-from .PlotDirective import *
-from .SmallRole import *
-from .VspaceRole import *
 from .ClassDirective import *
-from .ClearDirective import *
 from .TemplateDirective import *
 
 

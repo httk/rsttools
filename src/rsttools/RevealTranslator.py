@@ -49,6 +49,10 @@ class RevealTranslator(HTMLTranslator):
     def visit_header(self, node):
         self.context.append(len(self.body))
 
+    def visit_meta(self, node):
+        print("HELLO")
+        HTMLTranslator.visit_meta(self, node)
+
     def depart_header(self, node):
         start = self.context.pop()
         header = [self.starttag(node, 'section')]

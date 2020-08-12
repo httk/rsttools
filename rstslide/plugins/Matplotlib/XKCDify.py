@@ -231,7 +231,7 @@ def XKCDify(ax, mag=1.0,
                 color=forecolor, lw=2)
 
     # Change all the fonts to humor-sans.
-    prop = fm.FontProperties(fname=os.path.join(script_path, '..', '..', 'rstslide', 'fonts', 'Humor-Sans.ttf'), size=16)
+    prop = fm.FontProperties(fname=os.path.join(script_path, 'fonts', 'Humor-Sans.ttf'), size=16)
     for text in ax.texts:
         text.set_fontproperties(prop)
 

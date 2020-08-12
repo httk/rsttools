@@ -1,82 +1,32 @@
-.. include:: <s5defs.txt>
-.. include:: <isonum.txt>
-
 ========
 rstslide
 ========
 
--------------------------------------
-ReStructuredText HTML slide generator
--------------------------------------
+------------------------------------------
+Beautiful slides based on ReStructuredText
+------------------------------------------
 
-.. Below follows the docinfo segment
+.. meta:: rstslide
 
-   There are four types of docinfo fields, each grouped by double newline below.
+   :theme: default
 
-   1. Those with defined bibliographic meaning in rst.
-
-   2. The abstract and dedication are defined in rst to be lifted out of the docinfo,
-      and are meant to be typeset somehow in the document.
-
-   3. Non-rst fields that have defined meaning in rstslide.
-      This is how you set configuration options.
-
-   4. Non-rst fields with no meaning in rstslide.
-      These are ignored.
-
-   Note: one cannot put comments inside the docinfo block.
-   Only the first field list counts as part of the docinfo, and
-   a comment ends it.
-
-:author: Rickard Armiento (forked from Julien Vitay)
-:authors:
-    Tony J. (Tibs) Ibbs,
-    David Goodger,
-    (and sundry other good-natured folks)
-:address: Example Avenue 42
-          4711 Example city
-          Example Country
-:contact: Telephone: 1234
-          Fax: 1816
-          Email: test@example.com
-:copyright: 2012-2020 Multiple authors
-:date: August 2020
-:organization: Example ltd.
-:status: Work In Progress
-:version: 1.0 of 2001/08/08
-:revision: 18
-
-
-:abstract: This is the abstract
-           of this presentation.
-           It should be but a short
-           little text.
-:dedication: To my better judgement.
-
-
-:email: test@example.com
-:theme: default
-
-:test: This is a
-   multiline value.
-   yep it is.
-:Filename: $RCSfile$
-:Parameter i: integer
-:test-nolist: this, contains, many, things
-:test-list: this, contains, many, things
-:test2-list: - this
-             - contains
-             - many
-             - things
-
-:css_embedd-list-add:
+   :css_embedd-list-add:
       #toc-progress-footer-main
       {
-      background-image: url("logo.svg");  
+      background-image: url("logo.svg");
       }
 
+   :plugins-list-add: Matplotlib
 
-       
+
+
+.. include:: <s5defs.txt>
+.. include:: <isonum.txt>
+
+:author: Rickard Armiento (forked from Julien Vitay)
+:date: August 2020
+
+
 Overview
 ========
 
@@ -238,7 +188,7 @@ You can copy+paste any unicode symbols into your presentation, and it should ren
 
 If you want to type symbols in ascii, rst provides include files for such subsituations.
 Start the file with directives like these::
-  
+
   .. include:: <isonum.txt>
   .. include:: <isoamsa.txt>
 
@@ -262,7 +212,7 @@ One of the include files provided adds a few definitions useful for slides::
 With this one loaded, it changes the behavior of backticks. They `now` `generate` `fragments`::
 
   They `now` `generate` `fragments`
-  
+
 Directives
 ==========
 
@@ -295,7 +245,7 @@ Directives processed by rstslide
 * **rstslide** additionally implements several custom directives particularly suited for scientific presentations:
 
   .. class:: tight
-  
+
     * video
     * matplotlib
     * columns
@@ -664,8 +614,8 @@ You can incrementally display the content of your slide by using the ``increment
     It does not have to be a list.
 
     This is a second paragraph.
-    
-    
+
+
 Incremental display
 -------------------
 
@@ -678,14 +628,14 @@ It is possible to make things appear out of order with a bit of markup::
 
   .. class:: incremental
 	   :attributes: {'data-fragment-index':'1'}
-	   
+
   This will appear first.
-   
+
   .. class:: incremental
 	   :attributes: {'data-fragment-index':'2'}
 
-  This will appear second.   
-			
+  This will appear second.
+
 This gives the behavior:
 
 .. class:: incremental
@@ -695,13 +645,13 @@ This will appear last.
 
 .. class:: incremental
 	   :attributes: {'data-fragment-index':'1'}
-	   
+
 This will appear first.
-   
+
 .. class:: incremental
 	   :attributes: {'data-fragment-index':'2'}
-	   
-This will appear second.   
+
+This will appear second.
 
 
 
@@ -709,9 +659,9 @@ Word-wise fragments
 -------------------
 
 If you set ``incremental`` to be the default text role::
-  
+
   .. default-role:: incremental
-  
+
 It is very easy to do word-wise fragments like this::
 
   They `now` `generate` `fragments.`
@@ -723,15 +673,15 @@ Note, this is done automatically in the s5defs include file::
   .. include:: <s5defs.txt>
 
 
-.. class:: 
+.. class::
    :slide-attributes: {'data-state':'no-toc-progress'}
 
 Removing toc bar
 ----------------
 
 If you want to remove the table-of-contents bar from a slide, you can do so by adding a class markup right *before* the section header::
-  
-  .. class:: 
+
+  .. class::
      :slide-attributes: {'data-state':'no-toc-progress'}
 
   Removing navigation bar
@@ -739,7 +689,7 @@ If you want to remove the table-of-contents bar from a slide, you can do so by a
 
 If you do not want the slide section header to show, you do this::
 
-  .. class:: 
+  .. class::
      :attributes: {'style':'display: none'}
 
   Removing navigation bar
@@ -756,7 +706,7 @@ Play background video
 
 If you want a video to play in the background of your video, that is possible::
 
-  .. class:: 
+  .. class::
      :slide-attributes: {'data-background-video':'battlebeneathwall-trim.mp4',
 			'data-background-video-muted':None,
 			data-background-video-loop: 'loop',
@@ -765,7 +715,7 @@ If you want a video to play in the background of your video, that is possible::
   Play background video
   ---------------------
 
-  
+
 Matplotlib
 ----------
 
@@ -873,7 +823,8 @@ Matplotlib
 Two columns
 -----------
 
-.. column:: left
+.. container::
+     :class: column-50
 
     .. matplotlib::
         :align: center
@@ -899,21 +850,24 @@ Two columns
     * Some text describing the plot.
 
 
-.. column:: right
-
+.. container::
+     :class: column-50
 
     * You can also use a two-columns environment (of the same size), if the default floating behaviour around images, videos, etc. does not suit your needs.
 
-    * You simply need to call twice the ``column`` directive, once with the "left" argument, and once with "right" (in that order, otherwise it fails)::
+    * You simply need to call twice the ``column`` directive, once with the "left" argument, and once with "right" (in that order, otherwise it fails)
 
+    ::
 
-        .. column:: left
+      .. container::
+           :class: column-50
 
-            * Content in the left column
+        * Content in the left column
 
-        .. column:: right
+      .. container::
+           :class: column-50
 
-            * Content in the right column
+        * Content in the right column
 
 
 Configuring
@@ -968,4 +922,3 @@ and modify the CSS properties that you need.
     rstslide presentation.rst --stylesheet custom.css
 
 * You can also use both a basic theme and a slight modification in your own CSS file.
-

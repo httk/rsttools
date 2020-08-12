@@ -19,16 +19,11 @@ from .RevealTranslator import RevealTranslator, HTMLWriter
 from .DocutilsHelper import DocutilsHelper
 
 # Import custom directives
-from .TwoColumnsDirective import *
 from .PygmentsDirective import *
 from .VideoDirective import *
-from .PlotDirective import *
-from .SmallRole import *
-from .VspaceRole import *
 from .ClassDirective import *
-from .ClearDirective import *
+from .MetaDirective import *
 from .TemplateDirective import *
-
 
 class SlidesParser:
     """Class converting a stand-alone reST file into a Reveal.js-powered HTML5 file, using the provided options."""
@@ -147,6 +142,15 @@ class SlidesParser:
         self.reveal_root = os.path.join(self.rsttools_root, 'external', 'reveal.js', 'dist')
         self.reveal_plugins_root = os.path.join(self.rstslide_root, 'reveal-plugins')
 
+        # Add include dirs for plugins
+        self.plugins_root = os.path.join(self.rstslide_root, 'plugins')
+        self.local_plugins_root = os.path.join(self.curr_dir, 'plugins')
+        sys.path.append(self.plugins_root)
+        if os.path.exists(os.path.join(self.local_plugins_root,'plugins')):
+            sys.path.append(os.path.join(self.local_plugins_root,'plugins'))
+        else:
+            self.local_plugins_root = None
+
         # Path to MathJax
         self.mathjax_root = os.path.join(self.rsttools_root, 'external', 'mathjax', 'node_modules', 'mathjax','es5')
 
@@ -175,11 +179,13 @@ class SlidesParser:
         self.settings['write_footer'] = False
         self.settings['page_number'] = False
         self.settings['controls'] = False
+        self.settings['plugins'] = []
 
         self.settings['author'] = ''
         self.settings['institution'] = ''
         self.settings['date'] = ''
         self.settings['email'] = ''
+        self.settings['note'] = ''
 
         # Template for the first slide
         self.settings['firstslide_template'] = ''
@@ -198,14 +204,26 @@ class SlidesParser:
         with codecs.open(self.input_file, 'r', 'utf8') as infile:
             source = infile.read()
 
-        self.doctree = docutils.core.publish_doctree(source)
+        self.doctree = DocutilsHelper.publish_doctree(source,settings_overrides={'report_level':4})
         self.settings = DocutilsHelper.parse_docinfo(self.doctree, self.settings)
+
+        for plugin in self.settings['plugins']:
+            if os.path.exists(os.path.join(self.plugins_root,plugin)):
+                exec('import '+plugin)
+            elif self.local_plugins_root and os.path.exists(os.path.join(self.local_plugins_root,plugin)):
+                exec('import '+plugin)
+            else:
+                print("WARNING: did not find plugin",plugin)
+
 
         # Create the writer and retrieve the parts
         self.html_writer = HTMLWriter()
         self.html_writer.translator_class = RevealTranslator
         #with codecs.open(self.input_file, 'r', 'utf8') as infile:
-        #    self.parts = docutils.core.publish_parts(source=infile.read(), writer=self.html_writer)
+        #self.parts = DocutilsHelper.publish_parts_from_doctree(self.doctree, writer=self.html_writer)
+        # We need to redo the full parsing, since we have now loaded plugins
+        self.doctree = docutils.core.publish_doctree(source)
+        #self.parts = docutils.core.publish_parts(source=source, writer=self.html_writer)
         self.parts = DocutilsHelper.publish_parts_from_doctree(self.doctree, writer=self.html_writer)
 
         self.settings['title'] = self.parts['title']

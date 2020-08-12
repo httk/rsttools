@@ -5,9 +5,9 @@
 		        <title>rstslide</title>
 		        <meta name="description" content="rstslide">
 		        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.15.2: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
 
-		        <meta description="AbstractThis document attempts
+		        <meta description="Abstract This document attempts
 to be a fairly complete
 guide to everything that
 can be done in rstslide" />
@@ -100,10 +100,7 @@ Example Author 3" />
 .vm { color: #19177C } /* Name.Variable.Magic */
 .il { color: #666666 } /* Literal.Number.Integer.Long */
 
-#toc-progress-footer-main
-{
-background-image: url("logo.svg");
-}
+#toc-progress-footer-main { background-image: url("logo.svg"); }
 
                     .reveal section {
                       text-align: left;
@@ -122,15 +119,28 @@ background-image: url("logo.svg");
 
     <section class="titleslide" data-state="no-toc-progress">
     <h1>rstslide</h1>
-    <h3>Demonstration</h3>
+    <h3>Markup Reference</h3>
     <br>
     <p><a href="mailto:">Rickard Armiento</a>  </p>
     <p><small></small></p>
-    <p><small>(rstslide was forked from rst2reveal by Julien Vitay
-and this document is based on the 'reStructuredText Demonstration' document)</small></p>
+    <p><small>rstslide is built on a fork of rst2reveal by Julien Vitay. rstslide translates reST text files into a HTML presentations using reveal.js by Hakim El Hattab. This document is based on the 'reStructuredText Demonstration' document)</small></p>
     <p>August 2020</p>
     </section>
 
+<!-- The above two section titles are the title and subtitle of the document. -->
+<!-- Below follows the docinfo segment
+
+There are two types of docinfo fields: those with defined bibliographic meaning in rst,
+and generic fields. Examples of these two groups are given below.
+
+Note: one cannot put comments inside the docinfo block.
+Only the first field list counts as part of the docinfo, and
+a comment ends it. -->
+<!-- This is the configuration options to rstslide.
+Note that the argument to the meta directive is an extension of rst,
+so this meta section will not, for the moment, compile in other rst parsers.
+
+The :css_embedd-list-add: entry adds a logo to the footer bar. -->
 <!-- These include lines add some features
 which are explained on the slides titled 'includes' -->
 <!-- Definitions of interpreted text roles (classes) for S5/HTML data. -->
@@ -154,133 +164,168 @@ which are explained on the slides titled 'includes' -->
 <http://www.w3.org/2003/entities/xml/>.
 Processed by unicode2rstsubs.py, part of Docutils:
 <http://docutils.sourceforge.net>. -->
-<!-- Below follows the docinfo segment
-
-There are four types of docinfo fields, each grouped by double newline below.
-
-1. Those with defined bibliographic meaning in rst.
-
-2. The abstract and dedication are defined in rst to be lifted out of the docinfo,
-   and are meant to be typeset somehow in the document.
-
-3. Non-rst fields that have defined meaning in rstslide.
-   This is how you set configuration options.
-
-4. Non-rst fields with no meaning in rstslide.
-   These are ignored.
-
-Note: one cannot put comments inside the docinfo block.
-Only the first field list counts as part of the docinfo, and
-a comment ends it. -->
-<!-- The final entry above adds a logo to the footer bar. -->
-<!-- It is nice with a table of contents for the handouts, but
-not for slides. -->
+<!-- This inserts html meta fields in the output document -->
+<!-- It is nice with a table of contents when making handouts, but
+leave it out on the slides. The class directive applies to the
+next element, i.e., the tables of contents. -->
 <div class="contents handout topic" id="table-of-contents">
             <p class="topic-title first">Table of Contents            </p>
             <ul class="simple">
-                <li><a class="reference internal" href="#structural-elements" id="id21">Structural Elements</a>            <ul>
-                <li><a class="reference internal" href="#section-title" id="id22">Section Title</a></li>
-                <li><a class="reference internal" href="#transitions" id="id23">Transitions</a></li>
-            </ul>
-</li>
-                <li><a class="reference internal" href="#body-elements" id="id24">Body Elements</a>            <ul>
-                <li><a class="reference internal" href="#inline-markup" id="id25">Inline markup</a></li>
-                <li><a class="reference internal" href="#footnotes" id="id26">Footnotes</a></li>
-                <li><a class="reference internal" href="#targets" id="id27">Targets</a></li>
-                <li><a class="reference internal" href="#text-roles" id="id28">Text roles</a></li>
-                <li><a class="reference internal" href="#bullet-lists" id="id29">Bullet Lists</a></li>
-                <li><a class="reference internal" href="#enumerated-lists" id="id30">Enumerated Lists</a></li>
-                <li><a class="reference internal" href="#definition-lists" id="id31">Definition Lists</a></li>
-                <li><a class="reference internal" href="#field-lists" id="id32">Field Lists</a></li>
-                <li><a class="reference internal" href="#option-lists" id="id33">Option Lists</a></li>
-                <li><a class="reference internal" href="#literal-blocks" id="id34">Literal Blocks</a></li>
-                <li><a class="reference internal" href="#line-blocks" id="id35">Line Blocks</a></li>
-                <li><a class="reference internal" href="#block-quotes" id="id36">Block Quotes</a></li>
-                <li><a class="reference internal" href="#doctest-blocks" id="id37">Doctest Blocks</a></li>
-                <li><a class="reference internal" href="#full-tables" id="id38">Full tables</a></li>
-                <li><a class="reference internal" href="#simplified-tables" id="id39">Simplified tables</a></li>
-            </ul>
-</li>
-                <li><a class="reference internal" href="#directives" id="id40">Directives</a>            <ul>
-                <li><a class="reference internal" href="#id15" id="id41">Directives</a></li>
-                <li><a class="reference internal" href="#images" id="id42">Images</a></li>
-                <li><a class="reference internal" href="#admonitions" id="id43">Admonitions</a></li>
-                <li><a class="reference internal" href="#id16" id="id44">Admonitions</a></li>
-                <li><a class="reference internal" href="#topics-sidebars-and-rubrics" id="id45">Topics, Sidebars, and Rubrics</a></li>
-                <li><a class="reference internal" href="#target-footnotes" id="id46">Target Footnotes</a></li>
-                <li><a class="reference internal" href="#replacement-text" id="id47">Replacement Text</a></li>
-                <li><a class="reference internal" href="#compound-paragraph" id="id48">Compound Paragraph</a></li>
-                <li><a class="reference internal" href="#substitution-definitions" id="id49">Substitution Definitions</a></li>
-                <li><a class="reference internal" href="#comments" id="id50">Comments</a></li>
+                <li><a class="reference internal" href="#standard-rest-features" id="id19">Standard ReST Features</a>            <ul>
+                <li><a class="reference internal" href="#document-structure" id="id20">Document Structure</a></li>
+                <li><a class="reference internal" href="#transitions" id="id21">Transitions</a></li>
+                <li><a class="reference internal" href="#basic-inline-markup" id="id22">Basic Inline Markup</a></li>
+                <li><a class="reference internal" href="#internal-link-targets" id="id23">Internal link targets</a></li>
+                <li><a class="reference internal" href="#footnotes-and-citations" id="id24">Footnotes and citations</a></li>
+                <li><a class="reference internal" href="#text-roles" id="id25">Text roles</a></li>
+                <li><a class="reference internal" href="#bullet-lists" id="id26">Bullet Lists</a></li>
+                <li><a class="reference internal" href="#enumerated-lists" id="id27">Enumerated Lists</a></li>
+                <li><a class="reference internal" href="#definition-lists" id="id28">Definition Lists</a></li>
+                <li><a class="reference internal" href="#field-lists" id="id29">Field Lists</a></li>
+                <li><a class="reference internal" href="#option-lists" id="id30">Option Lists</a></li>
+                <li><a class="reference internal" href="#literal-blocks" id="id31">Literal Blocks</a></li>
+                <li><a class="reference internal" href="#line-blocks" id="id32">Line Blocks</a></li>
+                <li><a class="reference internal" href="#block-quotes" id="id33">Block Quotes</a></li>
+                <li><a class="reference internal" href="#doctest-blocks" id="id34">Doctest Blocks</a></li>
+                <li><a class="reference internal" href="#full-tables" id="id35">Full tables</a></li>
+                <li><a class="reference internal" href="#simplified-tables" id="id36">Simplified tables</a></li>
+                <li><a class="reference internal" href="#directives" id="id37">Directives</a></li>
+                <li><a class="reference internal" href="#images" id="id38">Images</a></li>
+                <li><a class="reference internal" href="#admonitions" id="id39">Admonitions</a></li>
+                <li><a class="reference internal" href="#id15" id="id40">Admonitions</a></li>
+                <li><a class="reference internal" href="#topics-sidebars-and-rubrics" id="id41">Topics, Sidebars, and Rubrics</a></li>
+                <li><a class="reference internal" href="#target-footnotes" id="id42">Target Footnotes</a></li>
+                <li><a class="reference internal" href="#replacement-text" id="id43">Replacement Text</a></li>
+                <li><a class="reference internal" href="#compound-paragraph" id="id44">Compound Paragraph</a></li>
+                <li><a class="reference internal" href="#substitution-definitions" id="id45">Substitution Definitions</a></li>
+                <li><a class="reference internal" href="#comments" id="id46">Comments</a></li>
             </ul>
 </li>
             </ul>
 </div>
+<!-- Below starts the actual contents of this presentation.
+Two level of headlines is expected. "Slide groups" and "slides".
+The slide group headers are shown in handouts, but for slides
+they are only only used for the table-of-contents bar.
+If you want some kind of empty "transition" slide, you have to add
+that slide as the first slide in the slide group. -->
 <section>
-        <h2 style="display:none">Structural Elements</h2>
-    <section check="me" id="section-title">
-        <h2>Section Title</h2>
-<p>That's it, the text just above this line.</p>
-<pre class="literal-block">
-Section Title
--------------
+        <h2 style="display:none">Standard ReST Features</h2>
+    <section check="me" id="document-structure">
+        <h2>Document Structure</h2>
+<p><em>rstslide</em> generates slides using reStructuredText markup. A reStructuredText document
+is built up by the document title, subtitle, and sub-headlines.</p>
+<p>In rstslide the 3:rd level headings are for slidegroups, and 4:th for individual slides</p>
+<pre class="small literal-block">
+=========================
+Title of the presentation
+=========================
 
-That's it, the text just above this line.
+--------
+Subtitle
+--------
+
+:author: Somebody
+:date: August 14, 2020
+
+Title of the first slide group
+==============================
+
+Title of the first slide
+------------------------
+
+* Content of the first slide
+
+* More content
+
+Title of the second slide
+-------------------------
+
+* Content of the second slide
+
+* More content
 </pre>
     </section>
     <section check="me" id="transitions">
         <h2>Transitions</h2>
 <p>Here's a transition:</p>
 <hr class="docutils" />
-<p>It divides the section.</p>
+<p>It divides the content with a line.</p>
 <pre class="literal-block">
 Here's a transition:
 
 ---------
 
-It divides the section.
+It divides the content with a line.
 </pre>
     </section>
-</section>
-
-<section>
-        <h2 style="display:none">Body Elements</h2>
-    <section check="me" id="inline-markup">
-        <h2>Inline markup</h2>
-<p>Paragraphs contain text and may contain inline markup: <em>emphasis</em>,
-<strong>strong emphasis</strong>, <tt class="docutils literal">inline literals</tt>, standalone hyperlinks
-(<a class="reference external" href="http://www.python.org">http://www.python.org</a>), external hyperlinks (<a class="reference external" href="http://www.python.org/">Python</a> <a class="footnote-reference" href="#id17" id="id18">[5]</a>), internal
-cross-references (<a class="reference internal" href="#example">example</a>), external hyperlinks with embedded URIs
-s(<a class="reference external" href="http://www.python.org">Python web site</a>), footnote references
-(manually numbered <a class="footnote-reference" href="#id6" id="id1">[1]</a>, anonymous auto-numbered <a class="footnote-reference" href="#id9" id="id2">[3]</a>, labeled
-auto-numbered <a class="footnote-reference" href="#label" id="id3">[2]</a>, or symbolic <a class="footnote-reference" href="#id10" id="id4">[*]</a>), citation references
-(<a class="citation-reference" href="#cit2002" id="id5">[CIT2002]</a>), substitution references (            <img alt="EXAMPLE" class="align-middle" src="logo-black.svg" style="width: 5em;" />), and <span class="target" id="inline-hyperlink-targets">inline
-hyperlink targets</span> (see <a class="reference internal" href="#targets">Targets</a> below for a reference back to here).</p>
-<p>Character-level inline markup is also possible in <em>re</em><tt class="docutils literal">Structured</tt><em>Text</em>.</p>
-<pre class="literal-block">
+    <section check="me" id="basic-inline-markup">
+        <h2>Basic Inline Markup</h2>
+<p>Most standard reST inline markup works as it should.</p>
+<p class="small">Paragraphs contain text and may contain inline markup: <em>emphasis</em>,
+<strong>strong emphasis</strong>, <tt class="docutils literal">inline literals</tt>.</p>
+<p class="small">Links are supported as standalone hyperlinks (<a class="reference external" href="http://www.python.org">http://www.python.org</a>),
+external hyperlinks with embedded URIs (<a class="reference external" href="http://www.python.org">Python web site</a>),
+and internal link targets to other slides should work as intended,
+e.g., this link to <a class="reference internal" href="#transitions">Transitions</a>.</p>
+<p class="small">Targets may be indirect and anonymous. Thus <a class="reference internal" href="#transitions">this phrase</a> also
+links to the <a class="reference internal" href="#transitions">Transitions</a> slide.</p>
+<p class="small">Character-level inline markup is also possible in <em>re</em><tt class="docutils literal">Structured</tt><em>Text</em>.</p>
+<p class="small">Substitution references are also possible (            <img alt="EXAMPLE" class="align-middle" src="logo-black.svg" style="width: 5em;" />).</p>
+<pre class="small literal-block">
 Paragraphs contain text and may contain inline markup: *emphasis*,
-**strong emphasis**, ``inline literals``, standalone hyperlinks
-(http://www.python.org), external hyperlinks (Python_), internal
-cross-references (example_), external hyperlinks with embedded URIs
-(`Python web site &lt;http://www.python.org&gt;`__), footnote references
-(manually numbered [1]_, anonymous auto-numbered [#]_, labeled
-auto-numbered [#label]_, or symbolic [*]_), citation references
-([CIT2002]_), substitution references (|example|), and _`inline
-hyperlink targets` (see Targets_ below for a reference back to here).
+**strong emphasis**, ``inline literals``.
+
+Links are supported as standalone hyperlinks (http://www.python.org),
+external hyperlinks with embedded URIs (`Python web site &lt;http://www.python.org&gt;`__),
+and internal link targets to other slides should work as intended,
+e.g., this link to `Transitions`_.
+
+Targets may be indirect and anonymous. Thus `this phrase`__ also
+links to the `Transitions`_ slide.
+
+__ Transitions_
 
 Character-level inline markup is also possible in *re*\ ``Structured``\ *Text*.
 
+Substitution references are also possible (|example|).
+
 .. |EXAMPLE| image:: logo-black.svg
-                     :width: 5em
-                     :align: middle
+                   :width: 5em
+                   :align: middle
 </pre>
     </section>
-    <section check="me" id="footnotes">
-        <h2>Footnotes</h2>
+    <section check="me" id="internal-link-targets">
+        <h2>Internal link targets</h2>
+<p>While the notation for most internal link targets works,
+the links to other things than slide titles do not work properly (yet).
+(The targets for many of these are defined on the next slide.)</p>
+            <ul class="small simple">
+                <li>External hyperlink footnotes (<a class="reference external" href="http://www.python.org/">Python</a> <a class="footnote-reference" href="#id16" id="id17">[5]</a>)</li>
+                <li>Internal cross-references (<a class="reference internal" href="#example">example</a>)</li>
+                <li>Footnote references (manually numbered <a class="footnote-reference" href="#id6" id="id2">[1]</a>, anonymous auto-numbered <a class="footnote-reference" href="#id9" id="id3">[3]</a>,
+labeled auto-numbered <a class="footnote-reference" href="#label" id="id4">[2]</a>, or symbolic <a class="footnote-reference" href="#id10" id="id5">[*]</a>)</li>
+                <li><span class="target" id="inline-hyperlink-targets">inline hyperlink targets</span> (see new slide for a reference back to here).</li>
+            </ul>
+<pre class="literal-block">
+- External hyperlink footnotes (Python_)
+
+- Internal cross-references (example_)
+
+- Footnote references (manually numbered [1]_, anonymous auto-numbered [#]_,
+  labeled auto-numbered [#label]_, or symbolic [*]_)
+
+- _`inline hyperlink targets` (see new slide for a reference back to here).
+</pre>
+    </section>
+    <section check="me" id="footnotes-and-citations">
+        <h2>Footnotes and citations</h2>
+<p>This slide contains the footnote and citation references used on the previous slide.</p>
+<p class="tiny"><a class="reference internal" href="#inline-hyperlink-targets">inline hyperlink targets</a> refers back to the target on the previous slide.</p>
 <table class="tiny docutils footnote" frame="void" id="id6" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id7">2</a>)</em> <p>A footnote contains body elements, consistently indented by at
+<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id7">2</a>)</em> <p>A footnote contains body elements, consistently indented by at
 least 3 spaces.</p>
 <p class="last">This is the footnote's second paragraph.</p>
 </td></tr>
@@ -289,7 +334,7 @@ least 3 spaces.</p>
 <table class="tiny docutils footnote" frame="void" id="label" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[2]</td><td><em>(<a class="fn-backref" href="#id3">1</a>, <a class="fn-backref" href="#id8">2</a>)</em> Footnotes may be numbered, either manually (as in <a class="footnote-reference" href="#id6" id="id7">[1]</a>) or
+<tr><td class="label">[2]</td><td><em>(<a class="fn-backref" href="#id4">1</a>, <a class="fn-backref" href="#id8">2</a>)</em> Footnotes may be numbered, either manually (as in <a class="footnote-reference" href="#id6" id="id7">[1]</a>) or
 automatically using a &quot;#&quot;-prefixed label.  This footnote has a
 label so it can be referred to from multiple places, both as a
 footnote reference (<a class="footnote-reference" href="#label" id="id8">[2]</a>) and as a hyperlink reference
@@ -299,14 +344,14 @@ footnote reference (<a class="footnote-reference" href="#label" id="id8">[2]</a>
 <table class="tiny docutils footnote" frame="void" id="id9" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[3]</a></td><td>This footnote is numbered automatically and anonymously using a
+<tr><td class="label"><a class="fn-backref" href="#id3">[3]</a></td><td>This footnote is numbered automatically and anonymously using a
 label of &quot;#&quot; only.</td></tr>
 </tbody>
 </table>
 <table class="tiny docutils footnote" frame="void" id="id10" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id4">[*]</a></td><td>Footnotes may also use symbols, specified with a &quot;*&quot; label.
+<tr><td class="label"><a class="fn-backref" href="#id5">[*]</a></td><td>Footnotes may also use symbols, specified with a &quot;*&quot; label.
 Here's a reference to the next footnote: <a class="footnote-reference" href="#id12" id="id11">[†]</a>.</td></tr>
 </tbody>
 </table>
@@ -325,12 +370,15 @@ Here's a reference to the next footnote: <a class="footnote-reference" href="#id
 <table class="tiny docutils citation" frame="void" id="cit2002" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id5">[CIT2002]</a></td><td>Citations are text-labeled footnotes. They may be
+<tr><td class="label"><a class="fn-backref" href="#id14">[CIT2002]</a></td><td>Citations are text-labeled footnotes. They may be
 rendered separately and differently from footnotes.</td></tr>
 </tbody>
 </table>
-<p class="tiny">Here's a reference to the above, [CIT2002].</p>
+<p class="tiny" id="example">This paragraph is pointed to by the explicit &quot;example&quot; target.</p>
+<p class="tiny">Here's a reference to the above, <a class="citation-reference" href="#cit2002" id="id14">[CIT2002]</a>.</p>
 <pre class="tiny literal-block">
+`Inline hyperlink targets`_ refers back to the target on the previous slide.
+
 .. [1] A footnote contains body elements, consistently indented by at
    least 3 spaces.
 
@@ -356,20 +404,16 @@ rendered separately and differently from footnotes.</td></tr>
 .. [CIT2002] Citations are text-labeled footnotes. They may be
    rendered separately and differently from footnotes.
 
-Here's a reference to the above, [CIT2002].
+.. _Python: http://www.python.org/
+
+.. _example:
+
+This paragraph is pointed to by the explicit &quot;example&quot; target.
+
+This is an explicit external targets:
+
+Here's a reference to the above, [CIT2002]_.
 </pre>
-    </section>
-    <section check="me" id="targets">
-        <h2>Targets</h2>
-<p id="example">This paragraph is pointed to by the explicit &quot;example&quot; target. A
-reference can be found under <a class="reference internal" href="#inline-markup">Inline Markup</a>, above. <a class="reference internal" href="#inline-hyperlink-targets">Inline
-hyperlink targets</a> are also possible.</p>
-<p>Section headers are implicit targets, referred to by name. See
-<a class="reference internal" href="#targets">Targets</a>, which is a subsection of <a class="reference internal" href="#body-elements">Body Elements</a>.</p>
-<p>Explicit external targets are interpolated into references such as
-&quot;<a class="reference external" href="http://www.python.org/">Python</a> <a class="footnote-reference" href="#id17" id="id19">[5]</a>&quot;.</p>
-<p>Targets may be indirect and anonymous.  Thus <a class="reference internal" href="#targets">this phrase</a> may also
-refer to the <a class="reference internal" href="#targets">Targets</a> section.</p>
     </section>
     <section check="me" id="text-roles">
         <h2>Text roles</h2>
@@ -709,6 +753,7 @@ Block quotes consist of indented body elements:
     </section>
     <section check="me" id="doctest-blocks">
         <h2>Doctest Blocks</h2>
+<p>Doctest blocks are typeset very similar to literal blocks.</p>
 <pre class="doctest-block">
 &gt;&gt;&gt; print 'Python-specific usage examples; begun with &quot;&gt;&gt;&gt;&quot;'
 Python-specific usage examples; begun with &quot;&gt;&gt;&gt;&quot;
@@ -725,8 +770,8 @@ Python-specific usage examples; begun with &quot;&gt;&gt;&gt;&quot;
     </section>
     <section check="me" id="full-tables">
         <h2>Full tables</h2>
-<p>Here's a grid table followed by a simple table:</p>
-<table border="1" class="docutils">
+<p>Here's a grid table:</p>
+<table border="1" class="small docutils">
 <colgroup>
 <col width="43%" />
 <col width="21%" />
@@ -789,7 +834,8 @@ empty: <tt class="docutils literal"><span class="pre">--&gt;</span></tt></td>
     </section>
     <section check="me" id="simplified-tables">
         <h2>Simplified tables</h2>
-<table border="1" class="docutils">
+<p>Here is a simple table:</p>
+<table border="1" class="small docutils">
 <colgroup>
 <col width="31%" />
 <col width="31%" />
@@ -836,14 +882,9 @@ True   True   True
 =====  =====  ======
 </pre>
     </section>
-</section>
-
-<section>
-        <h2 style="display:none">Directives</h2>
-    <section check="me" id="id15">
+    <section check="me" id="directives">
         <h2>Directives</h2>
-<p>These are just a sample of the many reStructuredText Directives.  For
-others, please see
+<p>For a full reference of all directives allowed in reStructuredText see
 <a class="reference external" href="http://docutils.sourceforge.net/docs/ref/rst/directives.html">http://docutils.sourceforge.net/docs/ref/rst/directives.html</a>.</p>
     </section>
     <section check="me" id="images">
@@ -879,7 +920,7 @@ others, please see
 <p>This paragraph is also part of the legend.</p>
 </div>
 </div>
-<pre class="tiny literal-block">
+<pre class="small literal-block">
 An image directive (also clickable -- a hyperlink reference):
 
 .. image:: logo-black.svg
@@ -958,7 +999,7 @@ Reader discretion is strongly advised.</p>
 </div>
 </div>
     </section>
-    <section check="me" id="id16">
+    <section check="me" id="id15">
         <h2>Admonitions</h2>
 <pre class="literal-block">
 .. Attention:: Directives at large.
@@ -996,30 +1037,65 @@ Reader discretion is strongly advised.</p>
 <div class="sidebar">
             <p class="first sidebar-title">Optional Sidebar Title            </p>
 <p class="sidebar-subtitle">Optional Subtitle</p>
-<p>This is a sidebar.  It is for text outside the flow of the main
-text.</p>
+<p>This is a sidebar.  It is for text outside
+the flow of the main text.</p>
 <p class="rubric">This is a rubric inside a sidebar</p>
-<p class="last">Sidebars often appears beside the main text with a border and
-background color.</p>
+<p class="last">Sidebars often appears beside the main text
+with a border and background color.</p>
 </div>
 <div class="topic">
             <p class="topic-title first">Topic Title            </p>
 <p>This is a topic.</p>
 </div>
 <p class="rubric">This is a rubric</p>
+<hr class="docutils" />
+<pre class="small literal-block">
+.. sidebar:: Optional Sidebar Title
+   :subtitle: Optional Subtitle
+
+   This is a sidebar.  It is for text outside
+   the flow of the main text.
+
+   .. rubric:: This is a rubric inside a sidebar
+
+   Sidebars often appears beside the main text
+   with a border and background color.
+
+.. topic:: Topic Title
+
+   This is a topic.
+
+.. rubric:: This is a rubric
+</pre>
     </section>
     <section check="me" id="target-footnotes">
         <h2>Target Footnotes</h2>
-<table class="docutils footnote" frame="void" id="id17" rules="none">
+<p>A specific directive <tt class="docutils literal"><span class="pre">target-notes</span></tt> is used to place the footnotes in the document.</p>
+<table class="docutils footnote" frame="void" id="id16" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[5]</td><td><em>(<a class="fn-backref" href="#id18">1</a>, <a class="fn-backref" href="#id19">2</a>, <a class="fn-backref" href="#id20">3</a>)</em> <a class="reference external" href="http://www.python.org/">http://www.python.org/</a></td></tr>
+<tr><td class="label">[5]</td><td><em>(<a class="fn-backref" href="#id17">1</a>, <a class="fn-backref" href="#id18">2</a>)</em> <a class="reference external" href="http://www.python.org/">http://www.python.org/</a></td></tr>
 </tbody>
 </table>
+<hr class="docutils" />
+<pre class="literal-block">
+.. target-notes::
+</pre>
     </section>
     <section check="me" id="replacement-text">
         <h2>Replacement Text</h2>
-<p>I recommend you try <a class="reference external" href="http://www.python.org/">Python, <em>the</em> best language around</a> <a class="footnote-reference" href="#id17" id="id20">[5]</a>.</p>
+<p>We use reStructuredText in this document.</p>
+<p>Note how replacement text can also be links: <a class="reference external" href="http://www.python.org/">Python, <em>the</em> best language around</a> <a class="footnote-reference" href="#id16" id="id18">[5]</a>.</p>
+<hr class="docutils" />
+<pre class="literal-block">
+We use |rest| in this document.
+
+Note how replacement text can also be links: |Python|_.
+
+.. |rest| replace:: reStructuredText
+
+.. |Python| replace:: Python, *the* best language around
+</pre>
     </section>
     <section check="me" id="compound-paragraph">
         <h2>Compound Paragraph</h2>
@@ -1036,27 +1112,41 @@ paragraph.</p>
 </div>
 <p>This construct is called a <em>compound paragraph</em> and can be produced
 with the &quot;compound&quot; directive.</p>
+<hr class="docutils" />
+<pre class="literal-block">
+.. compound::
+
+  This paragraph contains a literal block::
+
+      Connecting... OK
+      Transmitting data... OK
+      Disconnecting... OK
+
+  and thus consists of a simple paragraph, a literal block, and
+  another simple paragraph.  Nonetheless it is semantically *one*
+  paragraph.
+</pre>
     </section>
     <section check="me" id="substitution-definitions">
         <h2>Substitution Definitions</h2>
-<p>An inline image (            <img alt="EXAMPLE" class="align-middle" src="logo-black.svg" style="width: 5em;" />) example:</p>
+<p>An inline image (            <img alt="EXAMPLE" class="align-middle" src="logo-black.svg" style="width: 5em;" />) example.
+Substitution definitions are not visible in the HTML source.</p>
 <pre class="literal-block">
-An inline image (|example|) example:
+An inline image (|example|) example.
+Substitution definitions are not visible in the HTML source.
 
 .. |EXAMPLE| image:: images/biohazard.png
-
-(Substitution definitions are not visible in the HTML source.)
 </pre>
     </section>
     <section check="me" id="comments">
         <h2>Comments</h2>
-<p>Here's one:</p>
+<p>Comments are not visible on the slides. Here's a comment:</p>
 <!-- Comments begin with two dots and a space. Anything may
 follow, except for the syntax of footnotes, hyperlink
 targets, directives, or substitution definitions. -->
 <hr class="docutils" />
 <pre class="literal-block">
-Here's one:
+Comments are not visible on the slides. Here's a comment:
 
 .. Comments begin with two dots and a space. Anything may
    follow, except for the syntax of footnotes, hyperlink

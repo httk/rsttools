@@ -541,24 +541,20 @@ div.line-block div.line-block {
  *********************************************/
 
 .reveal img.align-right {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-left: 20px;
-    margin-right: 0px;
+    margin-top: 1ex;
+    margin-bottom: 1ex;
+    margin-left: 1ex;
 }
 
 .reveal img.align-left {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-left: 0px;
-    margin-right: 20px;
+    margin-top: 1ex;
+    margin-bottom: 1ex;
+    margin-right: 1ex;
 }
 
 .reveal img.align-center {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-left: 20px;
-    margin-right: 20px;
+    margin-top: 1ex;
+    margin-bottom: 1ex;
 }
 
 /*********************************************
@@ -572,12 +568,10 @@ div.line-block div.line-block {
     padding-bottom: 10px;
     padding-right: 0px;
     font-family: 'Courier New';
-    font-size: 18px;
 }
 .reveal tt {
     background: transparent;
     font-family: 'Courier New';
-    font-size: 26px;
 }
 .reveal table.highlighttable {
     width: 100%;
@@ -637,13 +631,6 @@ div.line-block div.line-block {
 .reveal .topic-title {
     font-weight: bold;
     color: #555;
-}
-
-/*********************************************
- * SMALL
- *********************************************/
-.reveal .small {
-    font-size: 70%;
 }
 
 /*********************************************
@@ -959,18 +946,6 @@ div.progress[style="display: block;"] ~ #toc-progress-footer
 .reveal .clear {
     clear: both;
 }
-.slides .small {
-    font-size: 70%;
-}
-
-.slides .xsmall {
-    font-size: 60%;
-    line-height: 60%;
-}
-
-.slides .tiny {
-    font-size: 30%;
-}
 
 .slides .center {
     display: block;
@@ -1095,11 +1070,24 @@ div.progress[style="display: block;"] ~ #toc-progress-footer
 }
 
 .reveal .small {
-    font-size: 80%
+    font-size: 70%
 }
 
 .reveal .tiny {
     font-size: 50%
+}
+
+/* Pre elements are automatically small */
+.reveal pre {
+    font-size: 70%
+}
+
+.reveal pre.small {
+    font-size: 50%
+}
+
+.reveal pre.tiny {
+    font-size: 25%
 }
 
 td, th {

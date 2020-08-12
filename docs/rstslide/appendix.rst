@@ -2,30 +2,18 @@
 rstslide
 ========
 
--------------
-Demonstration
--------------
+----------------
+Markup Reference
+----------------
 
-.. These include lines add some features
-   which are explained on the slides titled 'includes'
+..
+   The above two section titles are the title and subtitle of the document.
 
-.. include:: <s5defs.txt>
-.. include:: <isonum.txt>
+..
+   Below follows the docinfo segment
 
-.. Below follows the docinfo segment
-
-   There are four types of docinfo fields, each grouped by double newline below.
-
-   1. Those with defined bibliographic meaning in rst.
-
-   2. The abstract and dedication are defined in rst to be lifted out of the docinfo,
-      and are meant to be typeset somehow in the document.
-
-   3. Non-rst fields that have defined meaning in rstslide.
-      This is how you set configuration options.
-
-   4. Non-rst fields with no meaning in rstslide.
-      These are ignored.
+   There are two types of docinfo fields: those with defined bibliographic meaning in rst,
+   and generic fields. Examples of these two groups are given below.
 
    Note: one cannot put comments inside the docinfo block.
    Only the first field list counts as part of the docinfo, and
@@ -61,11 +49,10 @@ Demonstration
 
 :dedication: To my better judgement.
 
-
-:email:
-:theme: default
-:note: (rstslide was forked from rst2reveal by Julien Vitay
-       and this document is based on the 'reStructuredText Demonstration' document)
+:note:
+       | rstslide is built on a fork of rst2reveal by Julien Vitay.
+       | rstslide translates reST text files into a HTML presentations using reveal.js by Hakim El Hattab.
+       | This document is based on the 'reStructuredText Demonstration' document)
 
 :test: These fields can span
        over multiple lines
@@ -78,42 +65,100 @@ Demonstration
              - many
              - things
 
-:css_embedd-list-add:
+..
+   This is the configuration options to rstslide.
+   Note that the argument to the meta directive is an extension of rst,
+   so this meta section will not, for the moment, compile in other rst parsers.
+
+   The :css_embedd-list-add: entry adds a logo to the footer bar.
+
+.. meta:: rstslide
+
+  :theme: default
+
+  :css_embedd-list-add:
       #toc-progress-footer-main
       {
       background-image: url("logo.svg");
       }
 
-.. The final entry above adds a logo to the footer bar.
+..
+   These include lines add some features
+   which are explained on the slides titled 'includes'
+
+.. include:: <s5defs.txt>
+.. include:: <isonum.txt>
+
+..
+   This inserts html meta fields in the output document
 
 .. meta::
+
    :keywords: reStructuredText, demonstration, demo, parser
    :description lang=en: A demonstration of the reStructuredText
        markup language, containing examples of all basic
        constructs and many advanced constructs.
 
-.. It is nice with a table of contents for the handouts, but
-   not for slides.
+.. It is nice with a table of contents when making handouts, but
+   leave it out on the slides. The class directive applies to the
+   next element, i.e., the tables of contents.
 
 .. class:: handout
 
 .. contents:: Table of Contents
 
+..
+   Below starts the actual contents of this presentation.
+   Two level of headlines is expected. "Slide groups" and "slides".
+   The slide group headers are shown in handouts, but for slides
+   they are only only used for the table-of-contents bar.
+   If you want some kind of empty "transition" slide, you have to add
+   that slide as the first slide in the slide group.
 
-Structural Elements
-===================
 
-Section Title
--------------
+Standard ReST Features
+======================
 
-That's it, the text just above this line.
+Document Structure
+------------------
+
+*rstslide* generates slides using reStructuredText markup. A reStructuredText document
+is built up by the document title, subtitle, and sub-headlines.
+
+In rstslide the 3:rd level headings are for slidegroups, and 4:th for individual slides
+
+.. class:: small
 
 ::
 
-  Section Title
-  -------------
+    =========================
+    Title of the presentation
+    =========================
 
-  That's it, the text just above this line.
+    --------
+    Subtitle
+    --------
+
+    :author: Somebody
+    :date: August 14, 2020
+
+    Title of the first slide group
+    ==============================
+
+    Title of the first slide
+    ------------------------
+
+    * Content of the first slide
+
+    * More content
+
+    Title of the second slide
+    -------------------------
+
+    * Content of the second slide
+
+    * More content
+
 
 Transitions
 -----------
@@ -122,7 +167,7 @@ Here's a transition:
 
 ---------
 
-It divides the section.
+It divides the content with a line.
 
 ::
 
@@ -130,53 +175,100 @@ It divides the section.
 
   ---------
 
-  It divides the section.
+  It divides the content with a line.
 
-Body Elements
-=============
 
-Inline markup
--------------
+Basic Inline Markup
+-------------------
 
-Paragraphs contain text and may contain inline markup: *emphasis*,
-**strong emphasis**, ``inline literals``, standalone hyperlinks
-(http://www.python.org), external hyperlinks (Python_), internal
-cross-references (example_), external hyperlinks with embedded URIs
-s(`Python web site <http://www.python.org>`__), footnote references
-(manually numbered [1]_, anonymous auto-numbered [#]_, labeled
-auto-numbered [#label]_, or symbolic [*]_), citation references
-([CIT2002]_), substitution references (|example|), and _`inline
-hyperlink targets` (see Targets_ below for a reference back to here).
+Most standard reST inline markup works as it should.
 
-Character-level inline markup is also possible in *re*\ ``Structured``\ *Text*.
+.. class:: small
 
-.. |EXAMPLE| image:: logo-black.svg
+  Paragraphs contain text and may contain inline markup: *emphasis*,
+  **strong emphasis**, ``inline literals``.
+
+  Links are supported as standalone hyperlinks (http://www.python.org),
+  external hyperlinks with embedded URIs (`Python web site <http://www.python.org>`__),
+  and internal link targets to other slides should work as intended,
+  e.g., this link to `Transitions`_.
+
+  Targets may be indirect and anonymous. Thus `this phrase`__ also
+  links to the `Transitions`_ slide.
+
+  __ Transitions_
+
+  Character-level inline markup is also possible in *re*\ ``Structured``\ *Text*.
+
+  Substitution references are also possible (|example|).
+
+  .. |EXAMPLE| image:: logo-black.svg
 		     :width: 5em
 		     :align: middle
+
+.. class:: small
 
 ::
 
   Paragraphs contain text and may contain inline markup: *emphasis*,
-  **strong emphasis**, ``inline literals``, standalone hyperlinks
-  (http://www.python.org), external hyperlinks (Python_), internal
-  cross-references (example_), external hyperlinks with embedded URIs
-  (`Python web site <http://www.python.org>`__), footnote references
-  (manually numbered [1]_, anonymous auto-numbered [#]_, labeled
-  auto-numbered [#label]_, or symbolic [*]_), citation references
-  ([CIT2002]_), substitution references (|example|), and _`inline
-  hyperlink targets` (see Targets_ below for a reference back to here).
+  **strong emphasis**, ``inline literals``.
+
+  Links are supported as standalone hyperlinks (http://www.python.org),
+  external hyperlinks with embedded URIs (`Python web site <http://www.python.org>`__),
+  and internal link targets to other slides should work as intended,
+  e.g., this link to `Transitions`_.
+
+  Targets may be indirect and anonymous. Thus `this phrase`__ also
+  links to the `Transitions`_ slide.
+
+  __ Transitions_
 
   Character-level inline markup is also possible in *re*\ ``Structured``\ *Text*.
 
+  Substitution references are also possible (|example|).
+
   .. |EXAMPLE| image:: logo-black.svg
-  		       :width: 5em
-		       :align: middle
+		     :width: 5em
+		     :align: middle
+
+Internal link targets
+---------------------
+
+While the notation for most internal link targets works,
+the links to other things than slide titles do not work properly (yet).
+(The targets for many of these are defined on the next slide.)
+
+.. class:: small
+
+  - External hyperlink footnotes (Python_)
+
+  - Internal cross-references (example_)
+
+  - Footnote references (manually numbered [1]_, anonymous auto-numbered [#]_,
+    labeled auto-numbered [#label]_, or symbolic [*]_)
+
+  - _`inline hyperlink targets` (see new slide for a reference back to here).
+
+::
+
+  - External hyperlink footnotes (Python_)
+
+  - Internal cross-references (example_)
+
+  - Footnote references (manually numbered [1]_, anonymous auto-numbered [#]_,
+    labeled auto-numbered [#label]_, or symbolic [*]_)
+
+  - _`inline hyperlink targets` (see new slide for a reference back to here).
 
 
-Footnotes
----------
+Footnotes and citations
+-----------------------
+
+This slide contains the footnote and citation references used on the previous slide.
 
 .. class:: tiny
+
+  `inline hyperlink targets`_ refers back to the target on the previous slide.
 
   .. [1] A footnote contains body elements, consistently indented by at
      least 3 spaces.
@@ -202,11 +294,19 @@ Footnotes
   .. [CIT2002] Citations are text-labeled footnotes. They may be
      rendered separately and differently from footnotes.
 
-  Here's a reference to the above, [CIT2002].
+  .. _Python: http://www.python.org/
+
+  .. _example:
+
+  This paragraph is pointed to by the explicit "example" target.
+
+  Here's a reference to the above, [CIT2002]_.
 
 .. class:: tiny
 
 ::
+
+  `Inline hyperlink targets`_ refers back to the target on the previous slide.
 
   .. [1] A footnote contains body elements, consistently indented by at
      least 3 spaces.
@@ -233,30 +333,15 @@ Footnotes
   .. [CIT2002] Citations are text-labeled footnotes. They may be
      rendered separately and differently from footnotes.
 
-  Here's a reference to the above, [CIT2002].
+  .. _Python: http://www.python.org/
 
+  .. _example:
 
-Targets
--------
+  This paragraph is pointed to by the explicit "example" target.
 
-.. _example:
+  This is an explicit external targets:
 
-This paragraph is pointed to by the explicit "example" target. A
-reference can be found under `Inline Markup`_, above. `Inline
-hyperlink targets`_ are also possible.
-
-Section headers are implicit targets, referred to by name. See
-Targets_, which is a subsection of `Body Elements`_.
-
-Explicit external targets are interpolated into references such as
-"Python_".
-
-.. _Python: http://www.python.org/
-
-Targets may be indirect and anonymous.  Thus `this phrase`__ may also
-refer to the Targets_ section.
-
-__ Targets_
+  Here's a reference to the above, [CIT2002]_.
 
 
 
@@ -334,7 +419,7 @@ Bullet Lists
 
       * Nested item 3.
 
-      
+
 Enumerated Lists
 ----------------
 
@@ -495,7 +580,7 @@ Option Lists
   /V            DOS/VMS-style options too
 
 
-  
+
 Literal Blocks
 --------------
 
@@ -530,7 +615,7 @@ Or they can be quoted without indentation::
   >> Great idea!
   >
   > Why didn't I think of that?
-   
+
 Line Blocks
 -----------
 
@@ -549,7 +634,7 @@ Line Blocks
 -------
 
 ::
-   
+
   | This is a line block.  It ends with a blank line.
   |     Each new line begins with a vertical bar ("|").
   |     Line breaks and initial indents are preserved.
@@ -561,7 +646,7 @@ Line Blocks
   | This is a second line block.
   |
   | Blank lines are permitted internally, but they must begin with a "|".
-   
+
 Block Quotes
 ------------
 
@@ -591,6 +676,8 @@ Block quotes consist of indented body elements:
 Doctest Blocks
 --------------
 
+Doctest blocks are typeset very similar to literal blocks.
+
 >>> print 'Python-specific usage examples; begun with ">>>"'
 Python-specific usage examples; begun with ">>>"
 >>> print '(cut and pasted from interactive Python sessions)'
@@ -608,7 +695,9 @@ Python-specific usage examples; begun with ">>>"
 Full tables
 -----------
 
-Here's a grid table followed by a simple table:
+Here's a grid table:
+
+.. class:: small
 
 +------------------------+------------+----------+----------+
 | Header row, column 1   | Header 2   | Header 3 | Header 4 |
@@ -647,6 +736,10 @@ Here's a grid table followed by a simple table:
 Simplified tables
 -----------------
 
+Here is a simple table:
+
+.. class:: small
+
 =====  =====  ======
    Inputs     Output
 ------------  ------
@@ -672,13 +765,9 @@ True   True   True
   =====  =====  ======
 
 Directives
-==========
-
-Directives
 ----------
 
-These are just a sample of the many reStructuredText Directives.  For
-others, please see
+For a full reference of all directives allowed in reStructuredText see
 http://docutils.sourceforge.net/docs/ref/rst/directives.html.
 
 Images
@@ -710,7 +799,7 @@ Images
 
      This paragraph is also part of the legend.
 
-.. class:: tiny
+.. class:: small
 
 ::
 
@@ -818,13 +907,13 @@ Topics, Sidebars, and Rubrics
 .. sidebar:: Optional Sidebar Title
    :subtitle: Optional Subtitle
 
-   This is a sidebar.  It is for text outside the flow of the main
-   text.
+   This is a sidebar.  It is for text outside
+   the flow of the main text.
 
    .. rubric:: This is a rubric inside a sidebar
 
-   Sidebars often appears beside the main text with a border and
-   background color.
+   Sidebars often appears beside the main text
+   with a border and background color.
 
 .. topic:: Topic Title
 
@@ -832,17 +921,68 @@ Topics, Sidebars, and Rubrics
 
 .. rubric:: This is a rubric
 
+------
+
+.. class:: small
+
+::
+
+  .. sidebar:: Optional Sidebar Title
+     :subtitle: Optional Subtitle
+
+     This is a sidebar.  It is for text outside
+     the flow of the main text.
+
+     .. rubric:: This is a rubric inside a sidebar
+
+     Sidebars often appears beside the main text
+     with a border and background color.
+
+  .. topic:: Topic Title
+
+     This is a topic.
+
+  .. rubric:: This is a rubric
+
+
+
+
+
 Target Footnotes
 ----------------
 
+A specific directive ``target-notes`` is used to place the footnotes in the document.
+
 .. target-notes::
+
+-----------
+
+::
+
+   .. target-notes::
 
 Replacement Text
 ----------------
 
-I recommend you try |Python|_.
+We use |rest| in this document.
+
+Note how replacement text can also be links: |Python|_.
+
+.. |rest| replace:: reStructuredText
 
 .. |Python| replace:: Python, *the* best language around
+
+------
+
+::
+
+  We use |rest| in this document.
+
+  Note how replacement text can also be links: |Python|_.
+
+  .. |rest| replace:: reStructuredText
+
+  .. |Python| replace:: Python, *the* best language around
 
 Compound Paragraph
 ------------------
@@ -854,7 +994,7 @@ Compound Paragraph
        Connecting... OK
        Transmitting data... OK
        Disconnecting... OK
-      
+
    and thus consists of a simple paragraph, a literal block, and
    another simple paragraph.  Nonetheless it is semantically *one*
    paragraph.
@@ -862,23 +1002,43 @@ Compound Paragraph
 This construct is called a *compound paragraph* and can be produced
 with the "compound" directive.
 
-Substitution Definitions
-------------------------
-
-An inline image (|example|) example:
+--------
 
 ::
 
-  An inline image (|example|) example:
+  .. compound::
+
+    This paragraph contains a literal block::
+
+        Connecting... OK
+        Transmitting data... OK
+        Disconnecting... OK
+
+    and thus consists of a simple paragraph, a literal block, and
+    another simple paragraph.  Nonetheless it is semantically *one*
+    paragraph.
+
+
+
+Substitution Definitions
+------------------------
+
+An inline image (|example|) example.
+Substitution definitions are not visible in the HTML source.
+
+::
+
+  An inline image (|example|) example.
+  Substitution definitions are not visible in the HTML source.
 
   .. |EXAMPLE| image:: images/biohazard.png
 
-  (Substitution definitions are not visible in the HTML source.)
+
 
 Comments
 --------
 
-Here's one:
+Comments are not visible on the slides. Here's a comment:
 
 .. Comments begin with two dots and a space. Anything may
    follow, except for the syntax of footnotes, hyperlink
@@ -888,9 +1048,8 @@ Here's one:
 
 ::
 
-  Here's one:
+  Comments are not visible on the slides. Here's a comment:
 
   .. Comments begin with two dots and a space. Anything may
      follow, except for the syntax of footnotes, hyperlink
      targets, directives, or substitution definitions.
-

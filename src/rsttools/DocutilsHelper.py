@@ -1,11 +1,12 @@
 import docutils, docutils.core
+from docutils.writers.null import Writer as NullWriter
 
 class DocutilsHelper:
 
     @staticmethod
     def parse_docinfo(doctree, d=None):
 
-        #print("\n########## doctree\n\n",doctree)
+        #print("\n########doctree\n\n",doctree)
 
         def getText(nodelist):
             # Iterate all Nodes aggregate TEXT_NODE
@@ -16,15 +17,13 @@ class DocutilsHelper:
                 else:
                     # Recursive
                     rc.append(getText(node.childNodes))
-            result = (''.join(rc)).replace("\0 ",'').replace("\0",'')
+            result = (' '.join(rc)).replace("\0 ",'').replace("\0",'')
             #for repl in template:
             #    result = result.replace('|'+repl+'|',template[repl])
             return result
 
         if d is None:
             d = {}
-
-        #print(doctree)
 
         docdom = doctree.asdom()
 
@@ -67,6 +66,25 @@ class DocutilsHelper:
             if classes in [ 'abstract', 'dedication' ]:
                 d[classes] = getText(topic.childNodes) #" ".join(getText(c.firstChild) for c in topic.childNodes)
 
+        metas = docdom.getElementsByTagName('meta')
+        for meta in metas:
+            name = meta.getAttribute("name").lower()
+            content = meta.getAttribute("content").strip()
+            if name.endswith("-list"):
+                name = name[:-len("-list")]
+                d[name] = content.split(";;")
+            elif name.endswith("-list-add"):
+                name = name[:-len("-list-add")]
+                if name in d:
+                    d[name] += content.split(";;")
+                else:
+                    d[name] = content.split(";;")
+            else:
+                d[name] = content
+
+        #import pprint
+        #pprint.pprint(d)
+
         return d
 
     @staticmethod
@@ -105,4 +123,40 @@ class DocutilsHelper:
         pub.set_destination(None, destination_path)
         pub.publish(enable_exit_status=enable_exit_status)
         return pub.writer.parts
+
+    def publish_doctree(source, source_path=None,
+                        source_class=docutils.io.StringInput,
+                        reader=None, reader_name='standalone',
+                        parser=None, parser_name='restructuredtext',
+                        settings=None, settings_spec=None,
+                        settings_overrides=None, config_section=None,
+                        enable_exit_status=False):
+        """
+        Set up & run a `Publisher` for programmatic use with string I/O.
+        Return the document tree.
+
+        For encoded string input, be sure to set the 'input_encoding' setting to
+        the desired encoding.  Set it to 'unicode' for unencoded Unicode string
+        input.  Here's one way::
+
+            publish_doctree(..., settings_overrides={'input_encoding': 'unicode'})
+
+        Parameters: see `publish_programmatically`.
+        """
+        pub = docutils.core.Publisher(reader=reader, parser=parser, writer=RstslideDoctreeWriter(),
+                        settings=settings,
+                        source_class=source_class,
+                        destination_class=docutils.io.NullOutput)
+        pub.set_components(reader_name, parser_name, 'null')
+        pub.process_programmatic_settings(
+            settings_spec, settings_overrides, config_section)
+        pub.set_source(source, source_path)
+        pub.set_destination(None, None)
+        output = pub.publish(enable_exit_status=enable_exit_status)
+        return pub.document
+
+class RstslideDoctreeWriter(NullWriter):
+
+    supported = ('rstslide')
+
 
