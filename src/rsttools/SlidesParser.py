@@ -21,6 +21,7 @@ from .DocutilsHelper import DocutilsHelper
 # Import custom directives
 from .PygmentsDirective import *
 from .VideoDirective import *
+import VideoDirective
 from .ClassDirective import *
 from .MetaDirective import *
 from .TemplateDirective import *
@@ -204,6 +205,8 @@ class SlidesParser:
         with codecs.open(self.input_file, 'r', 'utf8') as infile:
             source = infile.read()
 
+        # TODO: Fix this ugly workaround for communicating settings to the Video directive
+        VideoDirective.video_directive_resources = 'central'
         self.doctree = DocutilsHelper.publish_doctree(source,settings_overrides={'report_level':4})
         self.settings = DocutilsHelper.parse_docinfo(self.doctree, self.settings)
 
@@ -222,9 +225,10 @@ class SlidesParser:
         #with codecs.open(self.input_file, 'r', 'utf8') as infile:
         #self.parts = DocutilsHelper.publish_parts_from_doctree(self.doctree, writer=self.html_writer)
         # We need to redo the full parsing, since we have now loaded plugins
-        self.doctree = docutils.core.publish_doctree(source)
-        #self.parts = docutils.core.publish_parts(source=source, writer=self.html_writer)
-        self.parts = DocutilsHelper.publish_parts_from_doctree(self.doctree, writer=self.html_writer)
+        #self.doctree = docutils.core.publish_doctree(source)
+        VideoDirective.video_directive_resources = self.resources
+        self.parts = docutils.core.publish_parts(source=source, writer=self.html_writer, settings_overrides={'resources':self.resources})
+        #self.parts = DocutilsHelper.publish_parts_from_doctree(self.doctree, writer=self.html_writer)
 
         self.settings['title'] = self.parts['title']
         self.settings['subtitle'] = self.parts['subtitle']
@@ -321,6 +325,8 @@ class SlidesParser:
 
         document_content = header + body + footer
 
+        document_content.split()
+
         with codecs.open(self.output_file, 'w', 'utf8') as wfile:
             wfile.write(document_content)
 
@@ -361,7 +367,7 @@ class SlidesParser:
     <br>
     <p><a href="mailto:%(email)s">%(author)s</a> %(is_institution)s %(institution)s</p>
     <p><small>%(email)s</small></p>
-    <p><small>%(note)s</small></p>
+    <p class="align-left" style="width: 75%%; margin-left: auto; margin-right: auto"><small>%(note)s</small></p>
     <p>%(date)s</p>
     </section>
 """
@@ -399,7 +405,7 @@ class SlidesParser:
         if self.mode != 'handout':
             self.settings['js_files'] = [
                 os.path.join(self.reveal_root, 'reveal.js'),
-                os.path.join(self.reveal_plugins_root, 'reveal.js-menu','menu.js'),
+                os.path.join(self.reveal_plugins_root, 'reveal.js-menu','menu_modified.js'),
                 os.path.join(self.reveal_plugins_root, 'toc-progress','toc-progress.js')
             ] + self.settings['js_files']
         self.settings['js_files'] = [ os.path.join(self.mathjax_root, 'tex-svg.js') ] + self.settings['js_files']
@@ -428,6 +434,8 @@ class SlidesParser:
         if self.mode != 'handout':
             self.settings['css_files'] = [
                 os.path.join(self.reveal_root,'reveal.css'),
+                os.path.join(self.reveal_plugins_root,'reveal.js-menu','menu.css'),
+                #os.path.join(self.reveal_plugins_root,'reveal.js-menu','font-awesome','css','all.css'),
                 os.path.join(self.rstslide_root,'css','rstslide.css')
             ] + self.settings['css_files']
         else:

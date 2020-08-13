@@ -34,11 +34,7 @@ class ClassAttribute2(Transform):
                         element.attributes['attributes'].update(pending.details['attributes'])
                     else:
                         element.attributes['attributes'] = pending.details['attributes']
-                if 'slide-attributes' in pending.details and pending.details['slide-attributes'] is not None:
-                    if 'slide-attributes' in element.attributes:
-                        element.attributes['slide-attributes'].update(pending.details['slide-attributes'])
-                    else:
-                        element.attributes['slide-attributes'] = pending.details['slide-attributes']
+
                 pending.parent.remove(pending)
                 return
             else:
@@ -66,7 +62,7 @@ class Class(Directive):
     final_argument_whitespace = True
     has_content = True
 
-    option_spec = {'attributes': directives.unchanged, 'slide-attributes': directives.unchanged}
+    option_spec = {'attributes': directives.unchanged}
 
     def run(self):
 
@@ -82,25 +78,36 @@ class Class(Directive):
 
         if 'attributes' in self.options and self.options['attributes'] is not None:
             try:
-                attributes = ast.literal_eval(self.options['attributes'])
-            except ValueError:
+                attributes = []
+                for attribute in self.options['attributes'].split("\n"):
+
+                    left, sep, right = attribute.partition('=')
+                    if sep == '':
+                        a_rest_and_key = left
+                        a_val = None
+                    else:
+                        a_rest_and_key = left
+                        a_val = right
+
+                    a_list = a_rest_and_key.split(' ')
+                    if len(a_list) == 2:
+                        a_restriction = a_list[0]
+                        a_key = a_list[1]
+                    elif len(a_list) == 1:
+                        a_restriction = None
+                        a_key = a_list[0]
+                    else:
+                        raise ValueError("wrong format: "+attribute)
+
+                    attributes += [{'key':a_key, 'val':a_val, 'restriction':a_restriction}]
+
+            except ValueError as e:
                 raise self.error(
-                    'Could not parse attribute string: "%s"'
-                    % self.options['attributes'])
+                    'Could not parse attribute string: "%s" (%s)'
+                    % (self.options['attributes'], str(e)))
                 attributes = None
         else:
             attributes = None
-
-        if 'slide-attributes' in self.options and self.options['slide-attributes'] is not None:
-            try:
-                slide_attributes = ast.literal_eval(self.options['slide-attributes'])
-            except ValueError:
-                raise self.error(
-                    'Could not parse slide-attribute string: "%s"'
-                    % self.options['slide-attributes'])
-                slide_attributes = None
-        else:
-            slide_attributes = None
 
         node_list = []
         if self.content:
@@ -116,38 +123,12 @@ class Class(Directive):
                         node['attributes'].update(attributes)
                     else:
                         node['attributes'] = attributes
-                if slide_attributes is not None:
-                    if 'slide-attributes' in node:
-                        node['slide-attributes'].update(slide_attributes)
-                    else:
-                        node['slide-attributes'] = slide_attributes
 
             node_list.extend(container.children)
         else:
-            if 'attributes' in self.options and self.options['attributes'] is not None:
-                try:
-                    attributes = ast.literal_eval(self.options['attributes'])
-                except ValueError:
-                    raise self.error(
-                        'Could not parse attribute string: "%s"'
-                        % self.options['attributes'])
-                    attributes = None
-            else:
-                attributes = None
-            if 'slide-attributes' in self.options and self.options['slide-attributes'] is not None:
-                try:
-                    slide_attributes = ast.literal_eval(self.options['slide-attributes'])
-                except ValueError:
-                    raise self.error(
-                        'Could not parse slide-attribute string: "%s"'
-                        % self.options['slide-attributes'])
-                    slide_attributes = None
-            else:
-                slide_attributes = None
-
             pending = nodes.pending(
                 ClassAttribute2,
-                {'class': class_value, 'directive': self.name, 'attributes': attributes, 'slide-attributes': slide_attributes},
+                {'class': class_value, 'directive': self.name, 'attributes': attributes},
                 self.block_text)
             self.state_machine.document.note_pending(pending)
             node_list.append(pending)

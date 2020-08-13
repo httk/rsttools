@@ -2,9 +2,9 @@
 rstslide
 ========
 
-------------------------------------------
-Beautiful slides based on ReStructuredText
-------------------------------------------
+-------------------------------------
+Nice slides based on ReStructuredText
+-------------------------------------
 
 .. meta:: rstslide
 
@@ -13,19 +13,20 @@ Beautiful slides based on ReStructuredText
    :css_embedd-list-add:
       #toc-progress-footer-main
       {
-      background-image: url("logo.svg");
+        background-image: url("logo.svg");
       }
 
    :plugins-list-add: Matplotlib
 
 
-
 .. include:: <s5defs.txt>
 .. include:: <isonum.txt>
 
-:author: Rickard Armiento (forked from Julien Vitay)
+:author: Rickard Armiento
 :date: August 2020
-
+:note: rstslide is built on a fork of rst2reveal by Julien Vitay. It
+       translates reST files into a HTML presentations which rely on
+       reveal.js by Hakim El Hattab.
 
 Overview
 ========
@@ -622,34 +623,34 @@ Incremental display
 It is possible to make things appear out of order with a bit of markup::
 
   .. class:: incremental
-	   :attributes: {'data-fragment-index':'3'}
+	   :attributes: data-fragment-index=3
 
   This will appear last.
 
   .. class:: incremental
-	   :attributes: {'data-fragment-index':'1'}
+	   :attributes: data-fragment-index=1
 
   This will appear first.
 
   .. class:: incremental
-	   :attributes: {'data-fragment-index':'2'}
+	   :attributes: data-fragment-index=2
 
   This will appear second.
 
 This gives the behavior:
 
 .. class:: incremental
-	   :attributes: {'data-fragment-index':'3'}
+	   :attributes: data-fragment-index=3
 
 This will appear last.
 
 .. class:: incremental
-	   :attributes: {'data-fragment-index':'1'}
+	   :attributes: data-fragment-index=1
 
 This will appear first.
 
 .. class:: incremental
-	   :attributes: {'data-fragment-index':'2'}
+	   :attributes: data-fragment-index=2
 
 This will appear second.
 
@@ -674,15 +675,17 @@ Note, this is done automatically in the s5defs include file::
 
 
 .. class::
-   :slide-attributes: {'data-state':'no-toc-progress'}
+   :attributes: data-state=no-toc-progress
 
 Removing toc bar
 ----------------
 
-If you want to remove the table-of-contents bar from a slide, you can do so by adding a class markup right *before* the section header::
+This slide hides the table-of-contents bar at the bottom.
+
+To do this, add this class markup right *before* the section header::
 
   .. class::
-     :slide-attributes: {'data-state':'no-toc-progress'}
+     :attributes: data-state=no-toc-progress
 
   Removing navigation bar
   -----------------------
@@ -690,7 +693,7 @@ If you want to remove the table-of-contents bar from a slide, you can do so by a
 If you do not want the slide section header to show, you do this::
 
   .. class::
-     :attributes: {'style':'display: none'}
+     :attributes: style=display:none
 
   Removing navigation bar
   -----------------------
@@ -699,7 +702,12 @@ These can be combined.
 
 
 .. class:: center
-     :slide-attributes: {'data-background-video':'http://techslides.com/demos/sample-videos/small.ogv', 'data-background-video-muted':None, 'data-background-video-loop': 'loop', 'data-state':'no-toc-progress'}
+     :attributes:
+	data-background-video=http://techslides.com/demos/sample-videos/small.ogv
+	data-background-video-muted=None
+	data-background-video-loop=loop
+	data-state=no-toc-progress
+	h2 style=display:none
 
 Play background video
 ---------------------
@@ -707,14 +715,35 @@ Play background video
 If you want a video to play in the background of your video, that is possible::
 
   .. class::
-     :slide-attributes: {'data-background-video':'battlebeneathwall-trim.mp4',
-			'data-background-video-muted':None,
-			data-background-video-loop: 'loop',
-			'data-state':'no-toc-progress'}
+     :attributes:
+	data-background-video=http://techslides.com/demos/sample-videos/small.ogv
+	data-background-video-muted=None
+	data-background-video-loop=loop
+	data-state=no-toc-progress
 
   Play background video
   ---------------------
 
+.. class::
+  :attributes: data-transition=convex-in fade-out
+               data-transition-speed=slow
+
+Transitions
+-----------
+You can add fancy transitions to specific slides::
+
+  .. class::
+    :attributes: data-transition=convex-in fade-out
+
+    Transitions
+    -----------
+
+Or if you want to set the default transition, make
+the choice in your ``.. meta:: rstslide`` section set ``:transition: <something>``::
+
+  .. meta:: rstslide
+
+      :transition: convex
 
 Matplotlib
 ----------

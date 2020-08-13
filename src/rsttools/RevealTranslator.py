@@ -1,10 +1,11 @@
 __docformat__ = 'reStructuredText'
 
-import os, re, sys
+import os, re, sys, mimetypes, base64, codecs
 
 import docutils
 from docutils import nodes
 from docutils.writers.html4css1 import HTMLTranslator, Writer
+from .DocutilsHelper import DocutilsHelper
 
 # Retain python2 compatibility
 if sys.version[0] == "2":
@@ -50,7 +51,6 @@ class RevealTranslator(HTMLTranslator):
         self.context.append(len(self.body))
 
     def visit_meta(self, node):
-        print("HELLO")
         HTMLTranslator.visit_meta(self, node)
 
     def depart_header(self, node):
@@ -89,9 +89,9 @@ class RevealTranslator(HTMLTranslator):
             self.in_slide_title = True
             assert isinstance(node.parent, nodes.section)
             if self.hide_next_title:
-                self.body.append(' '*8 + self.starttag(node, 'h2', '', style='display:none', **self.delayed_header_attributes))
+                self.body.append(' '*8 + self.starttag(node, 'h2', '', style='display:none', attributes_list = self.delayed_header_attributes))
             else:
-                self.body.append(' '*8 + self.starttag(node, 'h2', '', **self.delayed_header_attributes))
+                self.body.append(' '*8 + self.starttag(node, 'h2', '', attributes_list = self.delayed_header_attributes))
             self.delayed_header_attributes = {}
             close_tag = '</h2>\n'
         self.context.append(close_tag)
@@ -127,8 +127,15 @@ class RevealTranslator(HTMLTranslator):
         if self.section_level == 2:
             if not self.hide_next_title:
                 self.body.append('    </section>\n')
-            self.delayed_header_attributes = node.get('attributes', {})
-            node.attributes['attributes'] = node.get('slide-attributes', {})
+            atts = []
+            delayed_atts = []
+            for a in node.get('attributes', []):
+                if a['restriction'] is None or a['restriction'] == 'section':
+                    atts += [a]
+                else:
+                    delayed_atts += [a]
+            node.attributes['attributes'] = atts
+            self.delayed_header_attributes = delayed_atts
             self.body.append('    ' + self.starttag(node, 'section', '\n', check="me"))
             self.hide_next_title = False
         else:
@@ -198,6 +205,11 @@ class RevealTranslator(HTMLTranslator):
     def visit_image(self, node):
         atts = {}
         uri = node['uri']
+        orig_uri = uri
+
+        if self.settings.resources == 'inline':
+            uri = DocutilsHelper.encode_uri(uri)
+
         # place SWF images in an <object> element
         types = {'.swf': 'application/x-shockwave-flash'}
         ext = os.path.splitext(uri)[1].lower()
@@ -206,7 +218,7 @@ class RevealTranslator(HTMLTranslator):
             atts['type'] = types[ext]
         else:
             atts['src'] = uri
-            atts['alt'] = node.get('alt', uri)
+            atts['alt'] = node.get('alt', orig_uri)
         # image size
         if 'width' in node:
             atts['width'] = node['width']
@@ -263,7 +275,7 @@ class RevealTranslator(HTMLTranslator):
         if ext in ('.swf',):  # place in an object element,
             # do NOT use an empty tag: incorrect rendering in browsers
             self.body.append(self.starttag(node, 'object', suffix, **atts) +
-                             node.get('alt', uri) + '</object>' + suffix)
+                             node.get('alt', orig_uri) + '</object>' + suffix)
         else:
             if align in [ 'align-left', 'align-right', 'align-center' ]:
                 self.body.append(' '*12 + '<div class=\"'+align+'\">\n')
@@ -342,17 +354,27 @@ class RevealTranslator(HTMLTranslator):
                 self.inline_lists = True
         HTMLTranslator.visit_sidebar(self, node)
 
-    def starttag(self, node, tagname, suffix='\n', empty=False, **attributes):
+    def starttag(self, node, tagname, suffix='\n', empty=False, attributes_list=None, **attributes):
         """
         Construct and return a start tag given a node (id & class attributes
         are extracted), tag name, and optional attributes.
         """
+
         tagname = tagname.lower()
         prefix = []
-        atts = node.get('attributes', {})
         ids = []
+
+        atts = {}
+        for a in node.get('attributes', []):
+            if a['restriction'] is None or a['restriction'] == tagname:
+                atts[a['key']] = a['val']
+        if attributes_list is not None:
+            for a in attributes_list:
+                if a['restriction'] is None or a['restriction'] == tagname:
+                    atts[a['key']] = a['val']
         for (name, value) in attributes.items():
             atts[name.lower()] = value
+
         classes = []
         languages = []
         # unify class arguments and move language specification
@@ -406,3 +428,4 @@ class RevealTranslator(HTMLTranslator):
         else:
             infix = ''
         return ''.join(prefix) + '<%s%s>' % (' '.join(parts), infix) + suffix
+

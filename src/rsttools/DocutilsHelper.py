@@ -1,3 +1,10 @@
+import codecs, base64
+
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib2 import urlopen
+
 import docutils, docutils.core
 from docutils.writers.null import Writer as NullWriter
 
@@ -154,6 +161,22 @@ class DocutilsHelper:
         pub.set_destination(None, None)
         output = pub.publish(enable_exit_status=enable_exit_status)
         return pub.document
+
+    @staticmethod
+    def encode_uri(uri):
+        if uri.startswith('https://') or uri.startswith('http://'):
+            with urlopen(uri) as f:
+                imgdata = f.read()
+                mimetype = f.headers['Content-Type']
+        else:
+            mimetype = mimetypes.guess_type(uri)
+            with open(os.path.join(self.settings['theme_path'], theme_filename), 'rb') as f:
+                    imgdata = f.read()
+        encoded = codecs.decode(base64.b64encode(imgdata),'utf-8')
+        imgdata = "data:"+mimetype+";base64," + encoded
+        return imgdata
+
+
 
 class RstslideDoctreeWriter(NullWriter):
 

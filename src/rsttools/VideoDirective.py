@@ -1,6 +1,8 @@
 from docutils import nodes
 from docutils.parsers.rst import directives
 
+from DocutilsHelper import DocutilsHelper
+
 VIDEO_CODE = """\
             <div class="align-%(align)s">
                 <video style="text-align:%(align)s; float:%(align)s" width="%(width)s" %(autoplay)s %(loop)s %(controls)s>
@@ -10,10 +12,13 @@ VIDEO_CODE = """\
             </div>
 """
 
+# TODO: Figure out a better way to handle this setting than via a global config variable
+video_directive_resources = 'central'
 
 def video_directive(name, args, options, content, lineno,
                     contentOffset, blockText, state, stateMachine):
     """ Restructured text extension for inserting videos """
+
     if len(content) == 0:
         print('Error: no filename was provided to the video directive')
         return []
@@ -28,6 +33,9 @@ def video_directive(name, args, options, content, lineno,
     else:
         print('Error: the video must be in .webm, .ogg, .ogv or .p4 format.')
         return []
+
+    if video_directive_resources == 'inline':
+        filename = DocutilsHelper.encode_uri(filename)
 
     # Process the arguments
     string_vars = {

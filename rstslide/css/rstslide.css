@@ -580,6 +580,8 @@ div.line-block div.line-block {
     padding-left: 0px;
     padding-right: 0px;
     text-align: right;
+    border-width: thin;
+    border-color: #eeeeee;
 }
 .reveal div.linenodiv pre{
     background: transparent;
@@ -589,10 +591,13 @@ div.line-block div.line-block {
     margin-left: 0px;
     margin-right: 0px;
     text-align: right;
+    border-width: thin;
+    border-color: #eeeeee;
 }
 .reveal td.code {
     width: 100%;
     padding-left: 0px;
+    border-width: 0px;
 }
 
 /*********************************************
@@ -653,11 +658,13 @@ div.line-block div.line-block {
 .reveal .sidebar.right {
     float: right;
     margin-right: 0px;
+    text-align: left;
 }
 .reveal .sidebar.left {
     float: left;
     margin-left: 0px;
     margin-right: 30px;
+    text-align: left;
 }
 .reveal .sidebar.center {
     float: center;
@@ -667,7 +674,7 @@ div.line-block div.line-block {
     color: #555;
 }
 .reveal .sidebar-subtitle {
-    text-align: right;
+    text-align: left;
     font-weight: italic;
     font-size: 80%;
     color: #555;
@@ -810,10 +817,10 @@ div .slide-menu-button {
 }
 
 .reveal div.slide-menu-button {
-    right: 0.5em;
+    right: 1vh;
     left: unset;
     top: unset;
-    bottom: 0.1em;
+    bottom: 1vh;
     opacity: 0.1;
 }
 
@@ -947,6 +954,7 @@ div.progress[style="display: block;"] ~ #toc-progress-footer
     clear: both;
 }
 
+/*
 .slides .center {
     display: block;
     text-align: center;
@@ -961,7 +969,7 @@ div.progress[style="display: block;"] ~ #toc-progress-footer
     display: block;
     text-align: right;
 }
-
+*/
 .reveal p {
     line-height: 120%;
     margin-top: 0ex;
@@ -1096,4 +1104,99 @@ td, th {
   padding: 0 1ex;
   border-width: thin;
   line-height: 120%;
+}
+
+.slide-menu-button .fas.fa-bars {
+  width: 4vh;
+  height: 4vh;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 80' width='40' height='40'><rect width='100' height='20'></rect><rect y='30' width='100' height='20'></rect><rect y='60' width='100' height='20'></rect></svg>");
+  display: block;
+}
+
+.slide-menu-wrapper .slide-menu .slide-menu-toolbar {
+    height: 0px;
+}
+
+.slide-menu .fas.fa-images {
+    width: 0em;
+    height: 0em;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0;
+  margin-bottom: 0;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' width='100' height='100'><rect x='10' y='10' width='80' height='80' stroke='white' fill-opacity='0' stroke-width='3'></rect></svg>");
+  display: inline-block;
+}
+
+.slide-menu .fas.fa-times {
+     width: 0em;
+    height: 0em;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0;
+  margin-bottom: 0;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' width='100' height='100'><circle cx='50' cy='50' r='40' stroke='white' fill-opacity='0' stroke-width='3' /></svg>"); 
+  display: inline-block;
+}
+
+.slide-menu .fas.fa-check-circle {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><circle cx='20' cy='18' r='16' stroke='white' fill-opacity='0' stroke-width='3' /></svg>");
+  display: inline-block;
+}
+
+.slide-menu .far.fa-circle {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><circle cx='20' cy='18' r='16' stroke='white' fill-opacity='0' stroke-width='3' /></svg>");
+  display: inline-block;
+}
+
+.slide-menu .fas.fa-arrow-alt-circle-right {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><circle cx='20' cy='18' r='16' stroke='white' fill='white' fill-opacity='1' stroke-width='3' /></svg>");
+  display: inline-block;
+}
+
+.slide-menu-wrapper .slide-menu-toolbar {
+    display: none;
+}
+
+.slide-menu-wrapper .slide-menu-panel {
+    height: 100%;
 }
