@@ -1,4 +1,4 @@
-import codecs, base64
+import os, codecs, base64, mimetypes
 
 try:
     from urllib.request import urlopen
@@ -13,9 +13,7 @@ class DocutilsHelper:
     @staticmethod
     def parse_docinfo(doctree, d=None):
 
-        #print("\n########doctree\n\n",doctree)
-
-        def getText(nodelist):
+        def getText(nodelist, debug=False):
             # Iterate all Nodes aggregate TEXT_NODE
             rc = []
             for node in nodelist:
@@ -24,7 +22,7 @@ class DocutilsHelper:
                 else:
                     # Recursive
                     rc.append(getText(node.childNodes))
-            result = (' '.join(rc)).replace("\0 ",'').replace("\0",'')
+            result = (''.join(rc)).replace("\0 ",'').replace("\0",'')
             #for repl in template:
             #    result = result.replace('|'+repl+'|',template[repl])
             return result
@@ -32,7 +30,11 @@ class DocutilsHelper:
         if d is None:
             d = {}
 
+        #print("**** doctree\n",doctree)
+
         docdom = doctree.asdom()
+
+        #print("**** docdoom\n",docdom.toxml())
 
         # Get all field lists in the document.
         docinfos = docdom.getElementsByTagName('docinfo')
@@ -60,7 +62,7 @@ class DocutilsHelper:
                         if field_body.firstChild.tagName == 'bullet_list':
                             d[field_name] += [getText(c.childNodes) for x in c.childNodes] #[x.firstChild.firstChild.nodeValue % template for c in field_body.childNodes for x in c.childNodes]
                         else:
-                            d[field_name] += [getText(field_body.childNodes)] #[getText(c.firstChild) % template for c in field_body.childNodes]
+                            d[field_name] += getText(field_body.childNodes).split("\n") #[getText(c.firstChild) % template for c in field_body.childNodes]
                     else:
                         d[field_name_str] = getText(field_body.childNodes)#" ".join(getText(c.firstChild) for c in field_body.childNodes) % template
 
@@ -131,6 +133,7 @@ class DocutilsHelper:
         pub.publish(enable_exit_status=enable_exit_status)
         return pub.writer.parts
 
+    @staticmethod
     def publish_doctree(source, source_path=None,
                         source_class=docutils.io.StringInput,
                         reader=None, reader_name='standalone',
@@ -165,12 +168,13 @@ class DocutilsHelper:
     @staticmethod
     def encode_uri(uri):
         if uri.startswith('https://') or uri.startswith('http://'):
-            with urlopen(uri) as f:
-                imgdata = f.read()
-                mimetype = f.headers['Content-Type']
+            f = urlopen(uri)
+            imgdata = f.read()
+            mimetype = f.headers['Content-Type']
+            f.close()
         else:
-            mimetype = mimetypes.guess_type(uri)
-            with open(os.path.join(self.settings['theme_path'], theme_filename), 'rb') as f:
+            mimetype = mimetypes.guess_type(uri)[0]
+            with open(uri, 'rb') as f:
                     imgdata = f.read()
         encoded = codecs.decode(base64.b64encode(imgdata),'utf-8')
         imgdata = "data:"+mimetype+";base64," + encoded

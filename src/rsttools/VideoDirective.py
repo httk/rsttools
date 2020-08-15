@@ -1,7 +1,7 @@
 from docutils import nodes
 from docutils.parsers.rst import directives
 
-from DocutilsHelper import DocutilsHelper
+from .DocutilsHelper import DocutilsHelper
 
 VIDEO_CODE = """\
             <div class="align-%(align)s">

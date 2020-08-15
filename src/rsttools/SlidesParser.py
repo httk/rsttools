@@ -12,8 +12,10 @@ import docutils, docutils.core
 try:
     from html import unescape
 except ImportError:
-    from cgi import unescape
-
+    from HTMLParser import HTMLParser
+    htmlparser = HTMLParser()
+    def unescape(s):
+        return htmlparser.unescape(s)
 
 from .RevealTranslator import RevealTranslator, HTMLWriter
 from .DocutilsHelper import DocutilsHelper
@@ -21,7 +23,7 @@ from .DocutilsHelper import DocutilsHelper
 # Import custom directives
 from .PygmentsDirective import *
 from .VideoDirective import *
-import VideoDirective
+from . import VideoDirective
 from .ClassDirective import *
 from .MetaDirective import *
 from .TemplateDirective import *
@@ -159,15 +161,19 @@ class SlidesParser:
 
         # Css to embed in the document
         self.settings['css_embedd'] = []
+        self.css_embedd = ""
 
         # Extra css files to add
         self.settings['css_files'] = []
+        self.css_files_info = []
 
         # Javascript code to embed in the document
         self.settings['js_embedd'] = []
+        self.js_embedd = ""
 
         # Extra js files to add
         self.settings['js_files'] = []
+        self.js_files_info = []
 
         # Style
         #self.settings['reveal_theme'] = 'white'
@@ -197,6 +203,8 @@ class SlidesParser:
         # Initalization html for reveal.js
         self.settings['init_html'] = ''
 
+        self.settings['deploy'] = []
+
     def create_slides(self):
         """Creates the HTML5 presentation based on the arguments given to the constructor."""
 
@@ -209,6 +217,7 @@ class SlidesParser:
         VideoDirective.video_directive_resources = 'central'
         self.doctree = DocutilsHelper.publish_doctree(source,settings_overrides={'report_level':4})
         self.settings = DocutilsHelper.parse_docinfo(self.doctree, self.settings)
+        self._deploy_embedd(self.curr_dir, '')
 
         for plugin in self.settings['plugins']:
             if os.path.exists(os.path.join(self.plugins_root,plugin)):
@@ -250,8 +259,9 @@ class SlidesParser:
                 with codecs.open(os.path.join(self.settings['theme_path'], theme_filename), 'r', 'utf8') as infile:
                     source = infile.read()
                 source = DocutilsHelper.dict_to_rst_replacements(self.settings) + source
-                doctree = docutils.core.publish_doctree(source)
+                doctree = DocutilsHelper.publish_doctree(source)
                 self.settings = DocutilsHelper.parse_docinfo(doctree, self.settings)
+                self._deploy_embedd(self.settings['theme_path'], self.settings['theme'])
                 del self.settings['theme_path']
             else:
                 #print(os.path.join(self.rstslide_root, 'themes', self.settings['theme'],'theme.rst'))
@@ -393,6 +403,12 @@ class SlidesParser:
 
     def _generate_header(self):
 
+        # These should have been copied over to self.css_embedd, self.js_embedd, self.css_files_info and self.js_files_info
+        assert(self.settings['css_embedd'] == [])
+        assert(self.settings['js_embedd'] == [])
+        assert(self.settings['css_files'] == [])
+        assert(self.settings['js_files'] == [])
+
         extra_meta = ""
         if 'abstract' in self.settings:
             extra_meta += '<meta description="%(abstract)s" />\n' % {'abstract' : self.settings['abstract']}
@@ -403,16 +419,17 @@ class SlidesParser:
                 extra_meta += '<meta author="%(author)s" />\n' % {'author' : author}
 
         if self.mode != 'handout':
-            self.settings['js_files'] = [
-                os.path.join(self.reveal_root, 'reveal.js'),
-                os.path.join(self.reveal_plugins_root, 'reveal.js-menu','menu_modified.js'),
-                os.path.join(self.reveal_plugins_root, 'toc-progress','toc-progress.js')
-            ] + self.settings['js_files']
-        self.settings['js_files'] = [ os.path.join(self.mathjax_root, 'tex-svg.js') ] + self.settings['js_files']
+            self.js_files_info = [
+                {'file':os.path.join(self.reveal_root, 'reveal.js'), 'deploy':[], 'src_abspath':''},
+                {'file':os.path.join(self.reveal_plugins_root, 'reveal.js-menu','menu_modified.js'), 'deploy':[], 'src_abspath':''},
+                {'file':os.path.join(self.reveal_plugins_root, 'toc-progress','toc-progress.js'), 'deploy':[], 'src_abspath':''}
+            ] + self.js_files_info
+        self.js_files_info = [ {'file':os.path.join(self.mathjax_root, 'tex-svg.js'), 'deploy':[] , 'src_abspath':''} ] + self.js_files_info
 
         js_embedd = ""
         custom_js = ""
-        for js_file in self.settings['js_files']:
+        for js_file_info in self.js_files_info:
+            js_file = js_file_info['file']
             if self.resources == 'local':
                 relpath = self._map_path(js_file)
                 abspath = os.path.join(self.resource_dir_abspath,relpath)
@@ -427,21 +444,20 @@ class SlidesParser:
             else:
                 with codecs.open(js_file, 'r', 'utf8') as infile:
                     js_embedd += '\n<!-- inlining %(path)s --->\n\n' % {'path' : path}
-                    js_embedd += infile.read() + '\n\n'
+                    js_embedd += self._deploy_inline(infile.read(), js_file_info['deploy'], js_file_info['src_abspath']) + '\n\n'
 
-        js_embedd += "\n".join(self.settings['js_embedd'])
+        js_embedd += "\n" + self.js_embedd
 
         if self.mode != 'handout':
-            self.settings['css_files'] = [
-                os.path.join(self.reveal_root,'reveal.css'),
-                os.path.join(self.reveal_plugins_root,'reveal.js-menu','menu.css'),
-                #os.path.join(self.reveal_plugins_root,'reveal.js-menu','font-awesome','css','all.css'),
-                os.path.join(self.rstslide_root,'css','rstslide.css')
-            ] + self.settings['css_files']
+            self.css_files_info = [
+                {'file':os.path.join(self.reveal_root,'reveal.css'), 'deploy':[], 'src_abspath':''},
+                {'file':os.path.join(self.reveal_plugins_root,'reveal.js-menu','menu.css'), 'deploy':[], 'src_abspath':''},
+                {'file':os.path.join(self.rstslide_root,'css','rstslide.css'), 'deploy':[], 'src_abspath':''}
+            ] + self.css_files_info
         else:
-            self.settings['css_files'] = [
-                os.path.join(self.rstslide_root,'css','rstslide-handout.css')
-            ] + self.settings['css_files']
+            self.css_files_info = [
+                {'file':os.path.join(self.rstslide_root,'css','rstslide-handout.css'), 'deploy':[], 'src_abspath':''}
+            ] + self.css_files_info
 
         css_embedd = ""
         if self.mode != 'handout': css_embedd += ".reveal .handout { display: none }\n"
@@ -450,8 +466,8 @@ class SlidesParser:
         if self.mode != 'outline': css_embedd += ".outline .slide-display { display: none }\n"
 
         custom_stylesheets = ""
-        for css_file in self.settings['css_files']:
-            css_file = css_file.strip()
+        for css_file_info in self.css_files_info:
+            css_file = css_file_info['file'].strip()
             if self.resources == 'local':
                 relpath = self._map_path(css_file)
                 abspath = os.path.join(self.resource_dir_abspath,relpath)
@@ -470,10 +486,9 @@ class SlidesParser:
             else:
                 with codecs.open(css_file, 'r', 'utf8') as infile:
                     css_embedd += '\n<!-- inlining %(path)s --->\n\n' % {'path' : path}
+                    css_embedd += self._deploy_inline(infile.read(), css_file_info['deploy'], css_file_info['src_abspath']) + '\n\n'
 
-                    css_embedd += infile.read()
-
-        css_embedd += "\n".join(self.settings['css_embedd'])
+        css_embedd += "\n" + self.css_embedd
 
         header = """<!doctype html>
         <html lang="en">
@@ -530,6 +545,48 @@ class SlidesParser:
 		        <script type="text/javascript" src="%(mathjax_path)s"></script>
         """
 
+    def _deploy_inline(self, text, deploy_info, src_abspath):
+        for entry in deploy_info:
+            abspath = os.path.join(src_abspath, entry)
+            newuri = DocutilsHelper.encode_uri(abspath)
+            text = text.replace(entry, newuri)
+        return text
+
+    def _deploy(self, text, deploy, src_abspath, dst_relpath):
+
+        for entry in deploy:
+            abspath = os.path.join(src_abspath, entry)
+            if self.resources == 'inline':
+                newuri = DocutilsHelper.encode_uri(abspath)
+                text = text.replace(entry, newuri)
+            elif self.resources == 'local':
+                dirname = os.path.dirname(entry)
+                newdir = os.path.join(self.resource_dir_abspath, dst_relpath, dirname)
+                if not os.path.exists(newdir):
+                    os.makedirs(newdir)
+                newpath = os.path.join(self.resource_dir_abspath, dst_relpath, entry)
+                if os.path.isdir(abspath):
+                    shutil.copytree(abspath,newpath)
+                else:
+                    shutil.copyfile(abspath,newpath)
+                newuri = os.path.join(self.resource_dir_relpath, dst_relpath, entry)
+                text = text.replace(entry, newuri)
+            elif self.resources == 'global':
+                newuri = os.path.abspath(os.path.join(src_abspath, entry))
+                text = text.replace(entry, newuri)
+
+        return text
+
+    def _deploy_embedd(self, src_abspath, dst_relpath):
+        self.css_embedd += "\n" + self._deploy(" ".join(self.settings['css_embedd']),self.settings['deploy'],src_abspath,dst_relpath)
+        self.js_embedd += "\n" + self._deploy(" ".join(self.settings['js_embedd']),self.settings['deploy'],src_abspath,dst_relpath)
+        self.settings['css_embedd'] = []
+        self.settings['js_embedd'] = []
+        self.css_files_info += [{'file':f, 'src_abspath':src_abspath, 'dst_relpath':dst_relpath, 'deploy': self.settings['deploy']} for f in self.settings['css_files']]
+        self.settings['css_files'] = []
+        self.js_files_info += [{'file':f, 'src_abspath':src_abspath, 'dst_relpath':dst_relpath, 'deploy': self.settings['deploy']} for f in self.settings['js_files']]
+        self.settings['js_files'] = []
+        self.settings['deploy'] = []
 
     def _generate_footer(self):
 

@@ -15,6 +15,7 @@ Nice slides based on ReStructuredText
       {
         background-image: url("logo.svg");
       }
+   :deploy-list-add: logo.svg
 
    :plugins-list-add: Matplotlib
 

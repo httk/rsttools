@@ -12,8 +12,10 @@ import docutils, docutils.core
 try:
     from html import unescape
 except ImportError:
-    from cgi import unescape
-
+    from HTMLParser import HTMLParser
+    htmlparser = HTMLParser()
+    def unescape(s):
+        return htmlparser.unescape(s)
 
 from .RevealTranslator import RevealTranslator, HTMLWriter
 from .DocutilsHelper import DocutilsHelper
