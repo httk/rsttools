@@ -23,7 +23,6 @@ from .DocutilsHelper import DocutilsHelper
 # Import custom directives
 from .PygmentsDirective import *
 from .VideoDirective import *
-from . import VideoDirective
 from .ClassDirective import *
 from .MetaDirective import *
 from .TemplateDirective import *
@@ -213,8 +212,6 @@ class SlidesParser:
         with codecs.open(self.input_file, 'r', 'utf8') as infile:
             source = infile.read()
 
-        # TODO: Fix this ugly workaround for communicating settings to the Video directive
-        VideoDirective.video_directive_resources = 'central'
         self.doctree = DocutilsHelper.publish_doctree(source,settings_overrides={'report_level':4})
         self.settings = DocutilsHelper.parse_docinfo(self.doctree, self.settings)
         self._deploy_embedd(self.curr_dir, '')
@@ -235,8 +232,30 @@ class SlidesParser:
         #self.parts = DocutilsHelper.publish_parts_from_doctree(self.doctree, writer=self.html_writer)
         # We need to redo the full parsing, since we have now loaded plugins
         #self.doctree = docutils.core.publish_doctree(source)
-        VideoDirective.video_directive_resources = self.resources
         self.parts = docutils.core.publish_parts(source=source, writer=self.html_writer, settings_overrides={'resources':self.resources})
+        deploy_parts = self.parts['body'].split('RSTTOOLS_DEPLOY(')
+        newbody = deploy_parts[0]
+        for deploy_part in deploy_parts[1:]:
+            uri, part, rest = deploy_part.partition(")RSTTOOLS_DEPLOY")
+            if os.path.isabs(uri):
+                abspath = uri
+            else:
+                abspath = os.path.join(self.curr_dir, uri)
+            if self.resources == 'inline':
+                newbody += DocutilsHelper.encode_uri(abspath)
+            elif self.resources == 'local':
+                dirname = os.path.dirname(uri)
+                newdir = os.path.join(self.resource_dir_abspath, dirname)
+                if not os.path.exists(newdir):
+                    os.makedirs(newdir)
+                newpath = os.path.join(self.resource_dir_abspath, uri)
+                shutil.copyfile(abspath,newpath)
+                newbody += os.path.join(self.resource_dir_relpath, uri)
+            else:
+                text = text.replace(entry, abspath)
+            newbody += rest
+        self.parts['body'] = newbody
+
         #self.parts = DocutilsHelper.publish_parts_from_doctree(self.doctree, writer=self.html_writer)
 
         self.settings['title'] = self.parts['title']
@@ -261,6 +280,9 @@ class SlidesParser:
                 source = DocutilsHelper.dict_to_rst_replacements(self.settings) + source
                 doctree = DocutilsHelper.publish_doctree(source)
                 self.settings = DocutilsHelper.parse_docinfo(doctree, self.settings)
+                # Handle media deployment in all templates
+                self.settings['firstslide_template'] = self._deploy(self.settings['firstslide_template'], self.settings['deploy'], self.settings['theme_path'], self.settings['theme'])
+                # Handle media deployment in css and js
                 self._deploy_embedd(self.settings['theme_path'], self.settings['theme'])
                 del self.settings['theme_path']
             else:
@@ -555,7 +577,11 @@ class SlidesParser:
     def _deploy(self, text, deploy, src_abspath, dst_relpath):
 
         for entry in deploy:
-            abspath = os.path.join(src_abspath, entry)
+
+            if os.path.isabs(entry):
+                abspath = entry
+            else:
+                abspath = os.path.join(src_abspath, entry)
             if self.resources == 'inline':
                 newuri = DocutilsHelper.encode_uri(abspath)
                 text = text.replace(entry, newuri)
@@ -668,12 +694,12 @@ class SlidesParser:
                                          highligh_main: '{ background-color: white; color: black;}'
                                        },
       	keyboard: {
-        37: 'prev', // right
-      	39: 'next', // left
+        37: function() {if(Reveal.getState()["overview"]) { Reveal.left(); } else { Reveal.prev(); }}, // left
+      	39: function() {if(Reveal.getState()["overview"]) { Reveal.right(); } else { Reveal.next(); }}, // right
+      	38: function() {if(Reveal.getState()["overview"]) { Reveal.up(); } else { Reveal.prev(); }}, // up
+      	40: function() {if(Reveal.getState()["overview"]) { Reveal.down(); } else { Reveal.next(); }}, // down
       	33: 'prev', // page up
       	34: 'next', // page down
-      	38: 'prev', // page up
-      	40: 'next', // page down
       	109: function() {Reveal.left(); Reveal.slide(Reveal.getIndices()['h'],0,0);}, // minus
       	107: function() {Reveal.right(); Reveal.slide(Reveal.getIndices()['h'],0,0);}, // plus
       	},
@@ -699,7 +725,6 @@ class SlidesParser:
                            'controls': 'true' if self.settings['controls'] else 'false'}
 
         return footer
-
 
 
 if __name__ == '__main__':

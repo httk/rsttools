@@ -1,0 +1,26 @@
+--- js/controllers/slidecontent.js.orig	2020-08-21 01:55:53.075595133 +0200
++++ js/controllers/slidecontent.js	2020-08-21 01:58:02.022241922 +0200
+@@ -119,9 +119,13 @@
+ 					}
+ 
+ 					// Support comma separated lists of video sources
+-					backgroundVideo.split( ',' ).forEach( source => {
+-						video.innerHTML += '<source src="'+ source +'">';
+-					} );
++                                        if(!backgroundVideo.startsWith("data:")) {
++				                backgroundVideo.split( ',' ).forEach( source => {
++						      video.innerHTML += '<source src="'+ source +'">';
++					        } );
++					} else {
++					        video.innerHTML += '<source src="'+ backgroundVideo +'">';
++					}
+ 
+ 					backgroundContent.appendChild( video );
+ 				}
+@@ -432,4 +436,4 @@
+ 
+ 	}
+ 
+-}
+\ No newline at end of file
++}

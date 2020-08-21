@@ -6,9 +6,15 @@ mathjax:
 
 reveal:
 	test "!" -e external/reveal.js && cd external && git clone https://github.com/hakimel/reveal.js.git && cd reveal.js && npm install
+	(cd external/reveal.js; patch -p0 < ../patches/reveal_videobg.patch)
+	(cd external/reveal.js; patch -p0 < ../patches/reveal_hash.patch)
+	(cd external/reveal.js; patch -p0 < ../patches/reveal_dist.patch)
 
 reveal_light:
 	test "!" -e external/reveal.js && mkdir -p external && cd external && curl -L https://github.com/hakimel/reveal.js/archive/master.zip -o master.zip && unzip master.zip && rm -f master.zip && mv reveal.js-master reveal.js
+	(cd external/reveal.js; patch -p0 < ../patches/reveal_videobg.patch)
+	(cd external/reveal.js; patch -p0 < ../patches/reveal_hash.patch)
+	(cd external/reveal.js; patch -p0 < ../patches/reveal_dist.patch)
 
 rstslide-light:
 	echo "Not implementated yet"

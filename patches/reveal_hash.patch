@@ -1,0 +1,20 @@
+--- js/controllers/backgrounds.js.orig	2020-08-21 02:03:54.434545773 +0200
++++ js/controllers/backgrounds.js	2020-08-21 02:02:13.515603973 +0200
+@@ -164,8 +164,8 @@
+ 		if( data.background || data.backgroundColor || data.backgroundImage || data.backgroundVideo || data.backgroundIframe ) {
+ 			element.setAttribute( 'data-background-hash', data.background +
+ 															data.backgroundSize +
+-															data.backgroundImage +
+-															data.backgroundVideo +
++															(data.backgroundImage ? data.backgroundImage.slice(50) + data.backgroundImage.slice(-50):null) +
++															(data.backgroundVideo ? data.backgroundVideo.slice(50) + data.backgroundVideo.slice(-50):null) +
+ 															data.backgroundIframe +
+ 															data.backgroundColor +
+ 															data.backgroundRepeat +
+@@ -394,4 +394,4 @@
+ 
+ 	}
+ 
+-}
+\ No newline at end of file
++}

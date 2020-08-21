@@ -34,8 +34,10 @@ def video_directive(name, args, options, content, lineno,
         print('Error: the video must be in .webm, .ogg, .ogv or .p4 format.')
         return []
 
-    if video_directive_resources == 'inline':
-        filename = DocutilsHelper.encode_uri(filename)
+    filename = "RSTTOOLS_DEPLOY("+filename+")RSTTOOLS_DEPLOY"
+
+    #if video_directive_resources == 'inline':
+    #    filename = DocutilsHelper.encode_uri(filename)
 
     # Process the arguments
     string_vars = {

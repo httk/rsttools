@@ -99,6 +99,9 @@ class Class(Directive):
                     else:
                         raise ValueError("wrong format: "+attribute)
 
+                    if a_key in ['data-background-image', 'data-background-video', 'data-src']:
+                        a_val = 'RSTTOOLS_DEPLOY(' + a_val + ')RSTTOOLS_DEPLOY'
+
                     attributes += [{'key':a_key, 'val':a_val, 'restriction':a_restriction}]
 
             except ValueError as e:
