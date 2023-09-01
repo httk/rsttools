@@ -25,6 +25,7 @@ from .PygmentsDirective import *
 from .VideoDirective import *
 from .ClassDirective import *
 from .MetaDirective import *
+from .SidebarDirective import *
 from .TemplateDirective import *
 
 class SlidesParser:
@@ -252,7 +253,7 @@ class SlidesParser:
                 shutil.copyfile(abspath,newpath)
                 newbody += os.path.join(self.resource_dir_relpath, uri)
             else:
-                text = text.replace(entry, abspath)
+                newbody += uri
             newbody += rest
         self.parts['body'] = newbody
 
@@ -279,7 +280,10 @@ class SlidesParser:
                     source = infile.read()
                 source = DocutilsHelper.dict_to_rst_replacements(self.settings) + source
                 doctree = DocutilsHelper.publish_doctree(source)
-                self.settings = DocutilsHelper.parse_docinfo(doctree, self.settings)
+                # Read in theme settings, but do not let them override settings in the main document
+                new_settings = DocutilsHelper.parse_docinfo(doctree, dict(self.settings))
+                new_settings.update(self.settings)
+                self.settings = new_settings
                 # Handle media deployment in all templates
                 self.settings['firstslide_template'] = self._deploy(self.settings['firstslide_template'], self.settings['deploy'], self.settings['theme_path'], self.settings['theme'])
                 # Handle media deployment in css and js

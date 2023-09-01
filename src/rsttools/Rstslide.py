@@ -97,6 +97,7 @@ class Rstslide:
         if args.pdf or args.serve:
             port = 8000
             handler = httpserver.SimpleHTTPRequestHandler
+            socketserver.TCPServer.allow_reuse_address = True
             httpd = socketserver.TCPServer(("", port), handler)
             if args.serve:
                 print("The slides are served here:")
@@ -114,5 +115,6 @@ class Rstslide:
             except KeyboardInterrupt:
                 pass
             finally:
+                print("Closing server")
                 # Clean-up server (close socket, etc.)
                 httpd.server_close()
